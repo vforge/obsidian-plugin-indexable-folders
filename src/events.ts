@@ -149,7 +149,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
 
                         console.debug('Indexable Folders Plugin: folders to rename (move down):', foldersToRename.map(r => ({ from: r.from.name, to: r.to })));
                         // Rename from highest index to lowest to avoid conflicts
-                        for (const rename of foldersToRename.sort((a, b) => parseInt(b.to) - parseInt(a.to))) {
+                        for (const rename of foldersToRename.sort((a, b) => parseInt(b.to.split('_')[0], 10) - parseInt(a.to.split('_')[0], 10))) {
                             if (rename.from.parent) {
                                 await plugin.app.fileManager.renameFile(rename.from, `${rename.from.parent.path}/${rename.to}`);
                             }
