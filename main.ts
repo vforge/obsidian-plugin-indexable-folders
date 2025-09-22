@@ -12,6 +12,7 @@ const DEFAULT_SETTINGS: IndexableFoldersSettings = {
 
 export default class IndexableFoldersPlugin extends Plugin {
     settings: IndexableFoldersSettings;
+    private folderObserver: MutationObserver;
 
     async onload() {
         await this.loadSettings();
@@ -76,10 +77,63 @@ export default class IndexableFoldersPlugin extends Plugin {
 
         // When registering intervals, this function will automatically clear the interval when the plugin is disabled.
         this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+
+        this.app.workspace.onLayoutReady(() => {
+            this.startFolderObserver();
+        });
     }
 
     onunload() {
+        if (this.folderObserver) {
+            this.folderObserver.disconnect();
+        }
+    }
 
+    startFolderObserver() {
+        const fileExplorer = this.app.workspace.containerEl.querySelector('.nav-files-container');
+
+        if (!fileExplorer) {
+            // If the file explorer is not available, try again in a moment.
+            setTimeout(() => this.startFolderObserver(), 500);
+            return;
+        }
+
+        this.folderObserver = new MutationObserver(() => {
+            this.prefixNumericFolders();
+        });
+
+        this.folderObserver.observe(fileExplorer, {
+            childList: true,
+            subtree: true
+        });
+
+        // Initial run
+        this.prefixNumericFolders();
+    }
+
+    prefixNumericFolders() {
+        const folderTitleElements = this.app.workspace.containerEl.querySelectorAll('.nav-folder-title-content');
+        folderTitleElements.forEach((el: HTMLElement) => {
+            if (el.dataset.indexableFolderProcessed === 'true') {
+                return;
+            }
+
+            const folderName = el.textContent;
+            const match = folderName?.match(/^(\d+)_/);
+
+            if (match) {
+                const numericPrefix = match[1];
+                const newFolderName = folderName.substring(match[0].length);
+
+                const label = el.createEl('span');
+                label.setText(numericPrefix);
+                label.addClass('indexable-folder-prefix');
+
+                el.textContent = newFolderName;
+                el.prepend(label);
+                el.dataset.indexableFolderProcessed = 'true';
+            }
+        });
     }
 
     async loadSettings() {
