@@ -68,11 +68,42 @@ export default class IndexableFoldersPlugin extends Plugin {
                         .setDisabled(currentNumber <= 0)
                         .onClick(async () => {
                             if (currentNumber <= 0) return;
-                            const newNumber = currentNumber - 1;
-                            const newPrefix = String(newNumber).padStart(prefixLength, '0');
-                            const newName = `${newPrefix}_${restOfName}`;
-                            const newPath = `${file.parent.path}/${newName}`;
-                            await this.app.fileManager.renameFile(file, newPath);
+                            if (!file.parent) return;
+
+                            const siblings = file.parent.children
+                                .filter((f): f is TFolder => f instanceof TFolder && f !== file)
+                                .filter(f => numericPrefixRegex.test(f.name));
+
+                            const siblingMap = new Map<number, TFolder>();
+                            siblings.forEach(sibling => {
+                                const m = sibling.name.match(numericPrefixRegex);
+                                if (m) {
+                                    siblingMap.set(parseInt(m[1], 10), sibling);
+                                }
+                            });
+
+                            const foldersToRename: { from: TFolder, to: string }[] = [];
+                            let currentNumToShift = currentNumber - 1;
+
+                            while (siblingMap.has(currentNumToShift) && currentNumToShift >= 0) {
+                                const folderToShift = siblingMap.get(currentNumToShift)!;
+                                const newNum = currentNumToShift - 1;
+                                if (newNum < 0) break; // Boundary hit
+
+                                const rest = folderToShift.name.substring(folderToShift.name.indexOf('_') + 1);
+                                const newPrefix = String(newNum).padStart(prefixLength, '0');
+                                foldersToRename.push({ from: folderToShift, to: `${newPrefix}_${rest}` });
+                                currentNumToShift--;
+                            }
+
+                            // Add the original folder to be renamed
+                            const newPrefix = String(currentNumber - 1).padStart(prefixLength, '0');
+                            foldersToRename.push({ from: file, to: `${newPrefix}_${restOfName}` });
+
+                            // Rename from lowest index to highest to avoid conflicts
+                            for (const rename of foldersToRename.sort((a, b) => parseInt(a.to) - parseInt(b.to))) {
+                                await this.app.fileManager.renameFile(rename.from, `${rename.from.parent.path}/${rename.to}`);
+                            }
                         });
                 });
 
@@ -85,11 +116,42 @@ export default class IndexableFoldersPlugin extends Plugin {
                         .setDisabled(currentNumber >= maxNumber)
                         .onClick(async () => {
                             if (currentNumber >= maxNumber) return;
-                            const newNumber = currentNumber + 1;
-                            const newPrefix = String(newNumber).padStart(prefixLength, '0');
-                            const newName = `${newPrefix}_${restOfName}`;
-                            const newPath = `${file.parent.path}/${newName}`;
-                            await this.app.fileManager.renameFile(file, newPath);
+                            if (!file.parent) return;
+
+                            const siblings = file.parent.children
+                                .filter((f): f is TFolder => f instanceof TFolder && f !== file)
+                                .filter(f => numericPrefixRegex.test(f.name));
+
+                            const siblingMap = new Map<number, TFolder>();
+                            siblings.forEach(sibling => {
+                                const m = sibling.name.match(numericPrefixRegex);
+                                if (m) {
+                                    siblingMap.set(parseInt(m[1], 10), sibling);
+                                }
+                            });
+
+                            const foldersToRename: { from: TFolder, to: string }[] = [];
+                            let currentNumToShift = currentNumber + 1;
+
+                            while (siblingMap.has(currentNumToShift) && currentNumToShift <= maxNumber) {
+                                const folderToShift = siblingMap.get(currentNumToShift)!;
+                                const newNum = currentNumToShift + 1;
+                                if (newNum > maxNumber) break; // Boundary hit
+
+                                const rest = folderToShift.name.substring(folderToShift.name.indexOf('_') + 1);
+                                const newPrefix = String(newNum).padStart(prefixLength, '0');
+                                foldersToRename.push({ from: folderToShift, to: `${newPrefix}_${rest}` });
+                                currentNumToShift++;
+                            }
+
+                            // Add the original folder to be renamed
+                            const newPrefix = String(currentNumber + 1).padStart(prefixLength, '0');
+                            foldersToRename.push({ from: file, to: `${newPrefix}_${restOfName}` });
+
+                            // Rename from highest index to lowest to avoid conflicts
+                            for (const rename of foldersToRename.sort((a, b) => parseInt(b.to) - parseInt(a.to))) {
+                                await this.app.fileManager.renameFile(rename.from, `${rename.from.parent.path}/${rename.to}`);
+                            }
                         });
                 });
             })
