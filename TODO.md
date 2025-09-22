@@ -1,0 +1,1 @@
+- Add drag and drop functionality to the folders - If I move one folder to before another, reindex them to keep the new order. update folder's indices at this point. do not change the index of the folders BEFORE the target index, only ones after the index
