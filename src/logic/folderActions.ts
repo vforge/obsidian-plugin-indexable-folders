@@ -1,4 +1,4 @@
-import { TFolder } from 'obsidian';
+import { TFolder, Notice } from 'obsidian';
 import IndexableFoldersPlugin from '../main';
 
 export async function updateFolderIndex(
@@ -82,13 +82,20 @@ export async function updateFolderIndex(
         'Indexable Folders Plugin: folders to rename (update index):',
         foldersToRename.map((r) => ({ from: r.from.name, to: r.to }))
     );
-    // Perform renames
+
+    // Perform renames and show notifications for all affected folders
     for (const rename of foldersToRename) {
         if (!rename.from.parent) continue;
+
+        const oldName = rename.from.name;
         await plugin.app.fileManager.renameFile(
             rename.from,
             `${rename.from.parent.path}/${rename.to}`
         );
+
+        // Show notification for each renamed folder (works for both up and down moves)
+        new Notice(`Folder renamed: "${oldName}" → "${rename.to}"`, 3000);
     }
-    console.log(`Updating index for folder: ${folder.path}`);
+
+    console.log(`Finished updating index for folder: ${folder.path}`);
 }
