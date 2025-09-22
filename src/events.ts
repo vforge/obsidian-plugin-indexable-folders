@@ -1,4 +1,4 @@
-import { Menu, TFolder, Notice } from 'obsidian';
+import { Menu, TFolder } from 'obsidian';
 import IndexableFoldersPlugin from './main';
 import { revertFolderName, startFolderObserver } from './logic/fileExplorer';
 import { updateStatusBar } from './logic/statusBar';
@@ -45,7 +45,6 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
             }
 
             const prefix = match[1];
-            const restOfName = file.name.substring(match[0].length);
             const currentNumber = parseInt(prefix, 10);
             const prefixLength = prefix.length;
 
@@ -79,86 +78,12 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                             file.name
                         );
                         if (currentNumber <= 0) return;
-                        if (!file.parent) return;
 
-                        const siblings = file.parent.children
-                            .filter(
-                                (f): f is TFolder =>
-                                    f instanceof TFolder && f !== file
-                            )
-                            .filter((f) => numericPrefixRegex.test(f.name));
-
-                        const siblingMap = new Map<number, TFolder>();
-                        siblings.forEach((sibling) => {
-                            const m = sibling.name.match(numericPrefixRegex);
-                            if (m) {
-                                siblingMap.set(parseInt(m[1], 10), sibling);
-                            }
-                        });
-
-                        const foldersToRename: { from: TFolder; to: string }[] =
-                            [];
-                        let currentNumToShift = currentNumber - 1;
-
-                        while (
-                            siblingMap.has(currentNumToShift) &&
-                            currentNumToShift >= 0
-                        ) {
-                            const folderToShift =
-                                siblingMap.get(currentNumToShift)!;
-                            const newNum = currentNumToShift - 1;
-                            if (newNum < 0) break; // Boundary hit
-
-                            const rest = folderToShift.name.substring(
-                                folderToShift.name.indexOf('_') + 1
-                            );
-                            const newPrefix = String(newNum).padStart(
-                                prefixLength,
-                                '0'
-                            );
-                            foldersToRename.push({
-                                from: folderToShift,
-                                to: `${newPrefix}_${rest}`,
-                            });
-                            currentNumToShift--;
-                        }
-
-                        // Add the original folder to be renamed
-                        const newPrefix = String(currentNumber - 1).padStart(
-                            prefixLength,
-                            '0'
+                        await updateFolderIndex(
+                            plugin,
+                            file,
+                            currentNumber - 1
                         );
-                        foldersToRename.push({
-                            from: file,
-                            to: `${newPrefix}_${restOfName}`,
-                        });
-
-                        console.debug(
-                            'Indexable Folders Plugin: folders to rename (move up):',
-                            foldersToRename.map((r) => ({
-                                from: r.from.name,
-                                to: r.to,
-                            }))
-                        );
-                        // Rename from lowest index to highest to avoid conflicts
-                        for (const rename of foldersToRename.sort(
-                            (a, b) =>
-                                parseInt(a.to.split('_')[0], 10) -
-                                parseInt(b.to.split('_')[0], 10)
-                        )) {
-                            if (rename.from.parent) {
-                                const oldName = rename.from.name;
-                                await plugin.app.fileManager.renameFile(
-                                    rename.from,
-                                    `${rename.from.parent.path}/${rename.to}`
-                                );
-                                // Show notification for each renamed folder
-                                new Notice(
-                                    `Folder renamed: "${oldName}" → "${rename.to}"`,
-                                    3000
-                                );
-                            }
-                        }
                     });
             });
 
@@ -174,86 +99,12 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                             file.name
                         );
                         if (currentNumber >= maxNumber) return;
-                        if (!file.parent) return;
 
-                        const siblings = file.parent.children
-                            .filter(
-                                (f): f is TFolder =>
-                                    f instanceof TFolder && f !== file
-                            )
-                            .filter((f) => numericPrefixRegex.test(f.name));
-
-                        const siblingMap = new Map<number, TFolder>();
-                        siblings.forEach((sibling) => {
-                            const m = sibling.name.match(numericPrefixRegex);
-                            if (m) {
-                                siblingMap.set(parseInt(m[1], 10), sibling);
-                            }
-                        });
-
-                        const foldersToRename: { from: TFolder; to: string }[] =
-                            [];
-                        let currentNumToShift = currentNumber + 1;
-
-                        while (
-                            siblingMap.has(currentNumToShift) &&
-                            currentNumToShift <= maxNumber
-                        ) {
-                            const folderToShift =
-                                siblingMap.get(currentNumToShift)!;
-                            const newNum = currentNumToShift + 1;
-                            if (newNum > maxNumber) break; // Boundary hit
-
-                            const rest = folderToShift.name.substring(
-                                folderToShift.name.indexOf('_') + 1
-                            );
-                            const newPrefix = String(newNum).padStart(
-                                prefixLength,
-                                '0'
-                            );
-                            foldersToRename.push({
-                                from: folderToShift,
-                                to: `${newPrefix}_${rest}`,
-                            });
-                            currentNumToShift++;
-                        }
-
-                        // Add the original folder to be renamed
-                        const newPrefix = String(currentNumber + 1).padStart(
-                            prefixLength,
-                            '0'
+                        await updateFolderIndex(
+                            plugin,
+                            file,
+                            currentNumber + 1
                         );
-                        foldersToRename.push({
-                            from: file,
-                            to: `${newPrefix}_${restOfName}`,
-                        });
-
-                        console.debug(
-                            'Indexable Folders Plugin: folders to rename (move down):',
-                            foldersToRename.map((r) => ({
-                                from: r.from.name,
-                                to: r.to,
-                            }))
-                        );
-                        // Rename from highest index to lowest to avoid conflicts
-                        for (const rename of foldersToRename.sort(
-                            (a, b) =>
-                                parseInt(b.to.split('_')[0], 10) -
-                                parseInt(a.to.split('_')[0], 10)
-                        )) {
-                            if (rename.from.parent) {
-                                const oldName = rename.from.name;
-                                await plugin.app.fileManager.renameFile(
-                                    rename.from,
-                                    `${rename.from.parent.path}/${rename.to}`
-                                );
-                                // Show notification for each renamed folder
-                                new Notice(
-                                    `Folder renamed: "${oldName}" → "${rename.to}"`,
-                                    3000
-                                );
-                            }
-                        }
                     });
             });
         })
