@@ -1,12 +1,7 @@
 /*
-
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
-
-If your plugin does not need CSS, delete this file.
-
-*/
-
+ * Styles for the prefix "pill" that appears in front of indexed folder names
+ * in the file explorer and the status bar.
+ */
 .indexable-folder-prefix {
     background-color: var(--interactive-accent);
     color: var(--text-on-accent);
@@ -17,6 +12,10 @@ If your plugin does not need CSS, delete this file.
     font-weight: bold;
 }
 
+/*
+ * Styles for the separator (e.g., "→") between folder path segments
+ * in the status bar.
+ */
 .indexable-folder-path-separator {
     margin: 0 0.4em;
 }
