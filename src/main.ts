@@ -24,6 +24,7 @@ export default class IndexableFoldersPlugin extends Plugin {
 		this.addSettingTab(new IndexableFoldersSettingTab(this.app, this));
 
 		registerEvents(this);
+		console.log('IndexableFoldersPlugin loaded');
 	}
 
 	onunload() {
@@ -31,6 +32,7 @@ export default class IndexableFoldersPlugin extends Plugin {
 		if (this.folderObserver) {
 			this.folderObserver.disconnect();
 		}
+		console.log('IndexableFoldersPlugin unloaded');
 	}
 
 	async loadSettings() {

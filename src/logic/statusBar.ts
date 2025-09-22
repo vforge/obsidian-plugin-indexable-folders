@@ -50,4 +50,7 @@ export function updateStatusBar(plugin: IndexableFoldersPlugin): void {
 			});
 		}
 	});
+	console.log(
+		`Status bar updated: ${this.indexedFoldersCount} indexed folders`
+	);
 }

@@ -15,6 +15,7 @@ export function startFolderObserver(plugin: IndexableFoldersPlugin) {
 		return;
 	}
 	console.debug('Indexable Folders Plugin: file explorer found');
+	console.log('File explorer pane found, adding indexable folder actions');
 
 	plugin.folderObserver = new MutationObserver((mutations) => {
 		console.debug('Indexable Folders Plugin: mutation observed', mutations);

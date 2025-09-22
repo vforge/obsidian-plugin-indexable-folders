@@ -90,4 +90,5 @@ export async function updateFolderIndex(
 			`${rename.from.parent.path}/${rename.to}`
 		);
 	}
+	console.log(`Updating index for folder: ${folder.path}`);
 }
