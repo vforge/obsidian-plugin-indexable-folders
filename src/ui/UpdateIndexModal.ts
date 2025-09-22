@@ -4,6 +4,7 @@ export class UpdateIndexModal extends Modal {
     folder: TFolder;
     onSubmit: (newIndex: number) => Promise<void>;
     conflictEl: HTMLElement;
+    errorEl: HTMLElement;
 
     constructor(
         app: App,
@@ -36,6 +37,32 @@ export class UpdateIndexModal extends Modal {
         return conflicts;
     }
 
+    private validateInput(
+        inputValue: string,
+        prefixLength: number
+    ): string | null {
+        if (!inputValue) {
+            return 'Index cannot be empty';
+        }
+
+        if (!/^\d+$/.test(inputValue)) {
+            return 'Index must contain only digits';
+        }
+
+        if (inputValue.length !== prefixLength) {
+            return `Index must be exactly ${prefixLength} digits long`;
+        }
+
+        const numValue = parseInt(inputValue, 10);
+        const maxNumber = Math.pow(10, prefixLength) - 1;
+
+        if (isNaN(numValue) || numValue < 0 || numValue > maxNumber) {
+            return `Index must be between ${'0'.repeat(prefixLength)} and ${'9'.repeat(prefixLength)}`;
+        }
+
+        return null;
+    }
+
     private updateConflictDisplay(conflicts: string[]) {
         this.conflictEl.empty();
 
@@ -62,6 +89,26 @@ export class UpdateIndexModal extends Modal {
         });
     }
 
+    private updateErrorDisplay(errorMessage: string | null) {
+        this.errorEl.empty();
+
+        if (!errorMessage) {
+            this.errorEl.style.display = 'none';
+            return;
+        }
+
+        this.errorEl.style.display = 'block';
+        this.errorEl.createEl('div', {
+            text: 'Error:',
+            cls: 'indexable-folder-error-header',
+        });
+
+        this.errorEl.createEl('div', {
+            text: errorMessage,
+            cls: 'indexable-folder-error-message',
+        });
+    }
+
     onOpen() {
         const { contentEl } = this;
         contentEl.empty();
@@ -76,7 +123,6 @@ export class UpdateIndexModal extends Modal {
 
         const prefix = match[1];
         const prefixLength = prefix.length;
-        const maxNumber = Math.pow(10, prefixLength) - 1;
 
         contentEl.createEl('h2', {
             text: `Update index for "${this.folder.name}"`,
@@ -88,25 +134,16 @@ export class UpdateIndexModal extends Modal {
             const input = form.querySelector('input')!;
             const inputValue = input.value;
 
-            // Validate the input has the correct number of digits
-            if (inputValue.length !== prefixLength) {
-                new Notice(
-                    `Index must be exactly ${prefixLength} digits long.`
-                );
+            const validationError = this.validateInput(
+                inputValue,
+                prefixLength
+            );
+            if (validationError) {
+                new Notice(validationError);
                 return;
             }
 
             const newIndex = parseInt(inputValue, 10);
-
-            if (isNaN(newIndex) || newIndex < 0 || newIndex > maxNumber) {
-                new Notice(
-                    `Please enter a number between ${'0'.repeat(
-                        prefixLength
-                    )} and ${'9'.repeat(prefixLength)}.`
-                );
-                return;
-            }
-
             this.close();
             await this.onSubmit(newIndex);
         };
@@ -124,6 +161,7 @@ export class UpdateIndexModal extends Modal {
 
                 text.inputEl.addEventListener('input', (e) => {
                     const target = e.target as HTMLInputElement;
+
                     // Only allow digits
                     target.value = target.value.replace(/\D/g, '');
 
@@ -132,9 +170,20 @@ export class UpdateIndexModal extends Modal {
                         target.value = target.value.slice(0, prefixLength);
                     }
 
-                    // Check for conflicts when user types
                     const currentValue = target.value;
-                    if (currentValue.length === prefixLength) {
+
+                    // Validate input and show errors
+                    const validationError = this.validateInput(
+                        currentValue,
+                        prefixLength
+                    );
+                    this.updateErrorDisplay(validationError);
+
+                    // Check for conflicts only if input is valid
+                    if (
+                        !validationError &&
+                        currentValue.length === prefixLength
+                    ) {
                         const conflicts = this.checkForConflicts(
                             currentValue,
                             prefixLength
@@ -149,22 +198,36 @@ export class UpdateIndexModal extends Modal {
                 text.inputEl.addEventListener('keypress', (e) => {
                     if (
                         !/\d/.test(e.key) &&
-                        !['Backspace', 'Delete', 'Tab', 'Enter'].includes(e.key)
+                        ![
+                            'Backspace',
+                            'Delete',
+                            'Tab',
+                            'Enter',
+                            'ArrowLeft',
+                            'ArrowRight',
+                        ].includes(e.key)
                     ) {
                         e.preventDefault();
                     }
                 });
 
-                // Initial conflict check
+                // Initial validation and conflict check
+                const initialError = this.validateInput(prefix, prefixLength);
                 const initialConflicts = this.checkForConflicts(
                     prefix,
                     prefixLength
                 );
-                setTimeout(
-                    () => this.updateConflictDisplay(initialConflicts),
-                    0
-                );
+
+                setTimeout(() => {
+                    this.updateErrorDisplay(initialError);
+                    this.updateConflictDisplay(initialConflicts);
+                }, 0);
             });
+
+        // Create error display element
+        this.errorEl = contentEl.createEl('div', {
+            cls: 'indexable-folder-errors',
+        });
 
         // Create conflict display element
         this.conflictEl = contentEl.createEl('div', {

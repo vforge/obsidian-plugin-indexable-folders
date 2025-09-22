@@ -20,6 +20,25 @@
     margin: 0 0.4em;
 }
 
+.indexable-folder-errors {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: var(--background-secondary);
+    border-radius: 6px;
+    border-left: 3px solid var(--color-red);
+}
+
+.indexable-folder-error-header {
+    font-weight: 600;
+    color: var(--color-red);
+    margin-bottom: 8px;
+}
+
+.indexable-folder-error-message {
+    color: var(--text-muted);
+    font-size: 0.9em;
+}
+
 .indexable-folder-conflicts {
     margin-top: 10px;
     padding: 10px;
