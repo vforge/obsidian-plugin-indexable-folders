@@ -16,3 +16,7 @@ If your plugin does not need CSS, delete this file.
     font-size: 0.8em;
     font-weight: bold;
 }
+
+.indexable-folder-path-separator {
+    margin: 0 0.4em;
+}

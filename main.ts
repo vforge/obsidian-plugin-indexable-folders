@@ -123,22 +123,47 @@ export default class IndexableFoldersPlugin extends Plugin {
     private updateStatusBar(): void {
         this.statusBarItemEl.empty();
         const activeFile = this.app.workspace.getActiveFile();
-        if (activeFile && activeFile.parent) {
-            const folderName = activeFile.parent.name;
-            const prefixRegex = this.getPrefixRegex();
+
+        if (!activeFile || !activeFile.parent) {
+            return;
+        }
+
+        const prefixRegex = this.getPrefixRegex();
+        const pathParts: DocumentFragment[] = [];
+
+        let currentFolder: TFolder | null = activeFile.parent;
+        while (currentFolder && !currentFolder.isRoot()) {
+            const folderName = currentFolder.name;
             const match = folderName.match(prefixRegex);
+
+            const fragment = document.createDocumentFragment();
 
             if (match) {
                 const prefix = match[1];
                 const nameWithoutPrefix = folderName.substring(match[0].length);
 
-                const label = this.statusBarItemEl.createEl('span');
+                const label = fragment.createEl('span');
                 label.setText(prefix);
                 label.addClass('indexable-folder-prefix');
-
-                this.statusBarItemEl.appendText(` ${nameWithoutPrefix}`);
+                fragment.append(label);
+                fragment.append(document.createTextNode(` ${nameWithoutPrefix}`));
+            } else {
+                fragment.append(document.createTextNode(folderName));
             }
+
+            pathParts.unshift(fragment);
+            currentFolder = currentFolder.parent;
         }
+
+        pathParts.forEach((part, index) => {
+            this.statusBarItemEl.appendChild(part);
+            if (index < pathParts.length - 1) {
+                this.statusBarItemEl.createEl('span', {
+                    text: '→',
+                    cls: 'indexable-folder-path-separator'
+                });
+            }
+        });
     }
 
     prefixNumericFolders() {
