@@ -19,3 +19,33 @@
 .indexable-folder-path-separator {
     margin: 0 0.4em;
 }
+
+.indexable-folder-conflicts {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: var(--background-secondary);
+    border-radius: 6px;
+    border-left: 3px solid var(--color-orange);
+}
+
+.indexable-folder-conflict-header {
+    font-weight: 600;
+    color: var(--color-orange);
+    margin-bottom: 8px;
+}
+
+.indexable-folder-conflict-list {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.indexable-folder-conflict-item {
+    color: var(--text-muted);
+    font-family: var(--font-monospace);
+    font-size: 0.9em;
+    margin-bottom: 4px;
+}
+
+.indexable-folder-conflict-item:last-child {
+    margin-bottom: 0;
+}
