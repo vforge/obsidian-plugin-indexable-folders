@@ -5,6 +5,7 @@ export class UpdateIndexModal extends Modal {
     onSubmit: (newIndex: number) => Promise<void>;
     conflictEl: HTMLElement;
     errorEl: HTMLElement;
+    successEl: HTMLElement;
 
     constructor(
         app: App,
@@ -109,6 +110,33 @@ export class UpdateIndexModal extends Modal {
         });
     }
 
+    private updateSuccessDisplay(
+        isValid: boolean,
+        hasConflicts: boolean,
+        newIndexValue: string
+    ) {
+        this.successEl.empty();
+
+        if (!isValid || hasConflicts) {
+            this.successEl.style.display = 'none';
+            return;
+        }
+
+        this.successEl.style.display = 'block';
+        this.successEl.createEl('div', {
+            text: 'Ready to update:',
+            cls: 'indexable-folder-success-header',
+        });
+
+        const currentName = this.folder.name;
+        const newName = currentName.replace(/^\d+/, newIndexValue);
+
+        this.successEl.createEl('div', {
+            text: `${currentName} → ${newName}`,
+            cls: 'indexable-folder-success-message',
+        });
+    }
+
     onOpen() {
         const { contentEl } = this;
         contentEl.empty();
@@ -179,19 +207,32 @@ export class UpdateIndexModal extends Modal {
                     );
                     this.updateErrorDisplay(validationError);
 
-                    // Check for conflicts only if input is valid
+                    // Check for conflicts
+                    const conflicts = this.checkForConflicts(
+                        currentValue,
+                        prefixLength
+                    );
+
                     if (
                         !validationError &&
                         currentValue.length === prefixLength
                     ) {
-                        const conflicts = this.checkForConflicts(
-                            currentValue,
-                            prefixLength
-                        );
                         this.updateConflictDisplay(conflicts);
                     } else {
                         this.updateConflictDisplay([]);
                     }
+
+                    // Show success feedback when everything is valid
+                    const isValid =
+                        !validationError &&
+                        currentValue.length === prefixLength;
+                    const hasConflicts = conflicts.length > 0;
+
+                    this.updateSuccessDisplay(
+                        isValid,
+                        hasConflicts,
+                        currentValue
+                    );
                 });
 
                 // Prevent non-digit characters on keypress
@@ -217,10 +258,18 @@ export class UpdateIndexModal extends Modal {
                     prefix,
                     prefixLength
                 );
+                const isInitiallyValid =
+                    !initialError && prefix.length === prefixLength;
+                const hasInitialConflicts = initialConflicts.length > 0;
 
                 setTimeout(() => {
                     this.updateErrorDisplay(initialError);
                     this.updateConflictDisplay(initialConflicts);
+                    this.updateSuccessDisplay(
+                        isInitiallyValid,
+                        hasInitialConflicts,
+                        prefix
+                    );
                 }, 0);
             });
 
@@ -232,6 +281,11 @@ export class UpdateIndexModal extends Modal {
         // Create conflict display element
         this.conflictEl = contentEl.createEl('div', {
             cls: 'indexable-folder-conflicts',
+        });
+
+        // Create success display element
+        this.successEl = contentEl.createEl('div', {
+            cls: 'indexable-folder-success',
         });
 
         new Setting(form).addButton((button) =>
