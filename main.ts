@@ -15,6 +15,7 @@ export default class IndexableFoldersPlugin extends Plugin {
     private folderObserver: MutationObserver;
 
     async onload() {
+        console.log('Indexable Folders Plugin: loading plugin');
         await this.loadSettings();
 
         // This creates an icon in the left ribbon.
@@ -79,6 +80,7 @@ export default class IndexableFoldersPlugin extends Plugin {
         this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 
         this.app.workspace.onLayoutReady(() => {
+            console.log('Indexable Folders Plugin: layout ready');
             this.startFolderObserver();
         });
 
@@ -92,20 +94,30 @@ export default class IndexableFoldersPlugin extends Plugin {
     }
 
     onunload() {
+        console.log('Indexable Folders Plugin: unloading plugin');
         if (this.folderObserver) {
             this.folderObserver.disconnect();
         }
     }
 
     startFolderObserver() {
+        console.log('Indexable Folders Plugin: starting folder observer');
         const fileExplorer = this.app.workspace.containerEl.querySelector('.nav-files-container');
 
         if (!fileExplorer) {
+            console.log('Indexable Folders Plugin: file explorer not found, retrying...');
             setTimeout(() => this.startFolderObserver(), 500);
             return;
         }
+        console.log('Indexable Folders Plugin: file explorer found');
 
         this.folderObserver = new MutationObserver(() => {
+            console.log('Indexable Folders Plugin: mutation observed');
+            // If a rename is in progress, do nothing.
+            if (this.app.workspace.containerEl.querySelector('input.nav-rename-input')) {
+                console.log('Indexable Folders Plugin: rename in progress, skipping prefixing');
+                return;
+            }
             this.prefixNumericFolders();
         });
 
@@ -115,10 +127,12 @@ export default class IndexableFoldersPlugin extends Plugin {
         });
 
         // Initial run
+        console.log('Indexable Folders Plugin: initial run of prefixNumericFolders');
         this.prefixNumericFolders();
     }
 
     revertFolderName(file: TFolder) {
+        console.log(`Indexable Folders Plugin: reverting folder name for ${file.path}`);
         const fileExplorer = this.app.workspace.containerEl.querySelector('.nav-files-container');
         if (!fileExplorer) return;
 
@@ -130,25 +144,26 @@ export default class IndexableFoldersPlugin extends Plugin {
             if (prefixSpan) {
                 const originalName = prefixSpan.getAttribute('data-original-name');
                 if (originalName) {
-                    // Revert the name and mark the element as temporarily ignored
+                    console.log(`Indexable Folders Plugin: reverting to ${originalName}`);
+                    // Simply revert the name. The observer will handle the rest.
                     folderTitleEl.textContent = originalName;
-                    folderTitleEl.dataset.indexableFolderIgnore = 'true';
-
-                    // After a short delay, remove the ignore flag so it can be styled again.
-                    // This gives the context menu time to appear.
-                    setTimeout(() => {
-                        delete folderTitleEl.dataset.indexableFolderIgnore;
-                    }, 500);
                 }
             }
         }
     }
 
     prefixNumericFolders() {
-        const folderTitleElements = this.app.workspace.containerEl.querySelectorAll('.nav-folder-title-content');
+        console.log('Indexable Folders Plugin: running prefixNumericFolders');
+        const fileExplorer = this.app.workspace.containerEl.querySelector('.nav-files-container');
+        if (!fileExplorer) return;
+
+        const folderTitleElements = fileExplorer.querySelectorAll('.nav-folder-title-content');
         folderTitleElements.forEach((el: HTMLElement) => {
-            // If the element is marked to be ignored, skip it.
-            if (el.dataset.indexableFolderIgnore === 'true') {
+            const folderItem = el.closest('.nav-folder');
+
+            // NEW GUARD: If the parent folder item has the 'is-being-renamed' class,
+            // do not apply any styling to it.
+            if (folderItem && folderItem.classList.contains('is-being-renamed')) {
                 return;
             }
 
@@ -161,6 +176,7 @@ export default class IndexableFoldersPlugin extends Plugin {
             const match = folderName?.match(/^(\d+)_/);
 
             if (match) {
+                console.log(`Indexable Folders Plugin: found matching folder: ${folderName}`);
                 const numericPrefix = match[1];
                 const newFolderName = folderName.substring(match[0].length);
 
@@ -180,10 +196,12 @@ export default class IndexableFoldersPlugin extends Plugin {
     }
 
     async loadSettings() {
+        console.log('Indexable Folders Plugin: loading settings');
         this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
     }
 
     async saveSettings() {
+        console.log('Indexable Folders Plugin: saving settings');
         await this.saveData(this.settings);
     }
 }
@@ -224,6 +242,7 @@ class IndexableFoldersSettingTab extends PluginSettingTab {
                 .setPlaceholder('Enter your secret')
                 .setValue(this.plugin.settings.mySetting)
                 .onChange(async (value) => {
+                    console.log('Indexable Folders Plugin: setting #1 changed to: ' + value);
                     this.plugin.settings.mySetting = value;
                     await this.plugin.saveSettings();
                 }));
