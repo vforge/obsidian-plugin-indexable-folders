@@ -1,4 +1,4 @@
-import { App, Notice, Plugin, PluginSettingTab, Setting, TFolder } from 'obsidian';
+import { App, Notice, Plugin, PluginSettingTab, Setting, TFile, TFolder } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
@@ -13,22 +13,14 @@ const DEFAULT_SETTINGS: IndexableFoldersSettings = {
 export default class IndexableFoldersPlugin extends Plugin {
     settings: IndexableFoldersSettings;
     private folderObserver: MutationObserver;
+    private statusBarItemEl: HTMLElement;
 
     async onload() {
         console.log('Indexable Folders Plugin: loading plugin');
         await this.loadSettings();
 
-        // This creates an icon in the left ribbon.
-        const ribbonIconEl = this.addRibbonIcon('folder-search', 'Indexable Folders Plugin', (_evt: MouseEvent) => {
-            // Called when the user clicks the icon.
-            new Notice('This is a notice!');
-        });
-        // Perform additional things with the ribbon
-        ribbonIconEl.addClass('indexable-folders-plugin-ribbon-class');
-
         // This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-        const statusBarItemEl = this.addStatusBarItem();
-        statusBarItemEl.setText('Status Bar Text');
+        this.statusBarItemEl = this.addStatusBarItem();
 
         // This adds a settings tab so the user can configure various aspects of the plugin
         this.addSettingTab(new IndexableFoldersSettingTab(this.app, this));
@@ -39,7 +31,14 @@ export default class IndexableFoldersPlugin extends Plugin {
         this.app.workspace.onLayoutReady(() => {
             console.log('Indexable Folders Plugin: layout ready');
             this.startFolderObserver();
+            this.updateStatusBar();
         });
+
+        this.registerEvent(
+            this.app.workspace.on('file-open', () => {
+                this.updateStatusBar();
+            })
+        );
 
         this.registerEvent(
             this.app.workspace.on('file-menu', (menu, file) => {
@@ -109,11 +108,7 @@ export default class IndexableFoldersPlugin extends Plugin {
         }
     }
 
-    prefixNumericFolders() {
-        console.log('Indexable Folders Plugin: running prefixNumericFolders');
-        const fileExplorer = this.app.workspace.containerEl.querySelector('.nav-files-container');
-        if (!fileExplorer) return;
-
+    private getPrefixRegex(): RegExp {
         const blacklisted = this.settings.blacklistedPrefixes
             .split(',')
             .map(p => p.trim())
@@ -122,7 +117,36 @@ export default class IndexableFoldersPlugin extends Plugin {
             .map(p => p.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
 
         const pattern = `^((?:\\d+)|(?:${blacklisted.join('|')}))_`;
-        const prefixRegex = new RegExp(pattern, 'i');
+        return new RegExp(pattern, 'i');
+    }
+
+    private updateStatusBar(): void {
+        this.statusBarItemEl.empty();
+        const activeFile = this.app.workspace.getActiveFile();
+        if (activeFile && activeFile.parent) {
+            const folderName = activeFile.parent.name;
+            const prefixRegex = this.getPrefixRegex();
+            const match = folderName.match(prefixRegex);
+
+            if (match) {
+                const prefix = match[1];
+                const nameWithoutPrefix = folderName.substring(match[0].length);
+
+                const label = this.statusBarItemEl.createEl('span');
+                label.setText(prefix);
+                label.addClass('indexable-folder-prefix');
+
+                this.statusBarItemEl.appendText(` ${nameWithoutPrefix}`);
+            }
+        }
+    }
+
+    prefixNumericFolders() {
+        console.log('Indexable Folders Plugin: running prefixNumericFolders');
+        const fileExplorer = this.app.workspace.containerEl.querySelector('.nav-files-container');
+        if (!fileExplorer) return;
+
+        const prefixRegex = this.getPrefixRegex();
 
         const folderTitleElements = fileExplorer.querySelectorAll('.nav-folder-title-content');
         folderTitleElements.forEach((el: HTMLElement) => {
@@ -197,6 +221,8 @@ class IndexableFoldersSettingTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                     // Re-render folders to apply new settings
                     this.plugin.prefixNumericFolders();
+                    // Update status bar in case the current folder is affected
+                    this.plugin.updateStatusBar();
                 }));
     }
 }
