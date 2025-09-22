@@ -42,9 +42,56 @@ export default class IndexableFoldersPlugin extends Plugin {
 
         this.registerEvent(
             this.app.workspace.on('file-menu', (menu, file) => {
-                if (file instanceof TFolder) {
-                    this.revertFolderName(file);
+                if (!(file instanceof TFolder)) {
+                    return;
                 }
+
+                this.revertFolderName(file);
+
+                const numericPrefixRegex = /^(\d+)_/;
+                const match = file.name.match(numericPrefixRegex);
+
+                if (!match) {
+                    return;
+                }
+
+                const prefix = match[1];
+                const restOfName = file.name.substring(match[0].length);
+                const currentNumber = parseInt(prefix, 10);
+                const prefixLength = prefix.length;
+
+                // Add "Move up" option
+                menu.addItem((item) => {
+                    item
+                        .setTitle('Move up')
+                        .setIcon('arrow-up')
+                        .setDisabled(currentNumber <= 0)
+                        .onClick(async () => {
+                            if (currentNumber <= 0) return;
+                            const newNumber = currentNumber - 1;
+                            const newPrefix = String(newNumber).padStart(prefixLength, '0');
+                            const newName = `${newPrefix}_${restOfName}`;
+                            const newPath = `${file.parent.path}/${newName}`;
+                            await this.app.fileManager.renameFile(file, newPath);
+                        });
+                });
+
+                // Add "Move down" option
+                menu.addItem((item) => {
+                    const maxNumber = Math.pow(10, prefixLength) - 1;
+                    item
+                        .setTitle('Move down')
+                        .setIcon('arrow-down')
+                        .setDisabled(currentNumber >= maxNumber)
+                        .onClick(async () => {
+                            if (currentNumber >= maxNumber) return;
+                            const newNumber = currentNumber + 1;
+                            const newPrefix = String(newNumber).padStart(prefixLength, '0');
+                            const newName = `${newPrefix}_${restOfName}`;
+                            const newPath = `${file.parent.path}/${newName}`;
+                            await this.app.fileManager.renameFile(file, newPath);
+                        });
+                });
             })
         );
     }
