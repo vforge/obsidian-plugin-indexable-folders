@@ -7,10 +7,11 @@
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
-		"lint": "eslint ./src/"
+		"lint": "eslint ./src/ --ext .ts --quiet --fix",
+		"format": "prettier --write ./src"
 	},
 	"keywords": [],
-	"author": "",
+	"author": "vforge",
 	"license": "MIT",
 	"devDependencies": {
 		"@types/node": "^16.11.6",
@@ -21,7 +22,9 @@
 		"obsidian": "latest",
 		"tslib": "2.4.0",
 		"typescript": "4.7.4",
-		"eslint": "^8.57.1"
+		"eslint": "^8.57.1",
+		"eslint-config-prettier": "^9.1.0",
+		"prettier": "^3.3.2"
 	},
 	"dependencies": {
 	}
