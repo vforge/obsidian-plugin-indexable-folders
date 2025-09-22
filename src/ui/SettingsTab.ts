@@ -28,5 +28,17 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     // Update status bar in case the current folder is affected
                     this.plugin.updateStatusBar();
                 }));
+
+        new Setting(containerEl)
+            .setName('Status bar separator')
+            .setDesc('The character(s) used to separate folder paths in the status bar.')
+            .addText(text => text
+                .setPlaceholder('e.g., → or /')
+                .setValue(this.plugin.settings.statusBarSeparator)
+                .onChange(async (value) => {
+                    this.plugin.settings.statusBarSeparator = value;
+                    await this.plugin.saveSettings();
+                    this.plugin.updateStatusBar();
+                }));
     }
 }

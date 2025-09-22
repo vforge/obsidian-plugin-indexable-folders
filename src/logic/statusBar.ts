@@ -40,7 +40,7 @@ export function updateStatusBar(plugin: IndexableFoldersPlugin): void {
         plugin.statusBarItemEl.appendChild(part);
         if (index < pathParts.length - 1) {
             plugin.statusBarItemEl.createEl('span', {
-                text: '→',
+                text: plugin.settings.statusBarSeparator,
                 cls: 'indexable-folder-path-separator'
             });
         }
