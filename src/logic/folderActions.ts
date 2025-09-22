@@ -54,6 +54,7 @@ export async function updateFolderIndex(plugin: IndexableFoldersPlugin, folder: 
 
     // Perform renames
     for (const rename of foldersToRename) {
+        if (!rename.from.parent) continue;
         await plugin.app.fileManager.renameFile(rename.from, `${rename.from.parent.path}/${rename.to}`);
     }
 }
