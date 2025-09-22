@@ -7,13 +7,14 @@ import { updateFolderIndex } from './logic/folderActions';
 
 export function registerEvents(plugin: IndexableFoldersPlugin) {
     plugin.app.workspace.onLayoutReady(() => {
-        console.log('Indexable Folders Plugin: layout ready');
+        console.debug('Indexable Folders Plugin: layout ready');
         startFolderObserver(plugin);
         updateStatusBar(plugin);
     });
 
     plugin.registerEvent(
-        plugin.app.workspace.on('file-open', () => {
+        plugin.app.workspace.on('file-open', (file) => {
+            console.debug('Indexable Folders Plugin: file-open event for', file?.path);
             updateStatusBar(plugin);
         })
     );
@@ -23,6 +24,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
             if (!(file instanceof TFolder)) {
                 return;
             }
+            console.debug('Indexable Folders Plugin: file-menu event for folder:', file.path);
 
             revertFolderName(plugin, file);
 
@@ -30,6 +32,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
             const match = file.name.match(numericPrefixRegex);
 
             if (!match) {
+                console.debug('Indexable Folders Plugin: folder does not have a numeric prefix, skipping context menu items.');
                 return;
             }
 
@@ -44,6 +47,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                     .setTitle('Update index...')
                     .setIcon('edit')
                     .onClick(() => {
+                        console.debug('Indexable Folders Plugin: "Update index" clicked for', file.name);
                         new UpdateIndexModal(plugin.app, file, async (newIndex) => {
                             await updateFolderIndex(plugin, file, newIndex);
                         }).open();
@@ -57,6 +61,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                     .setIcon('arrow-up')
                     .setDisabled(currentNumber <= 0)
                     .onClick(async () => {
+                        console.debug('Indexable Folders Plugin: "Move up" clicked for', file.name);
                         if (currentNumber <= 0) return;
                         if (!file.parent) return;
 
@@ -90,6 +95,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                         const newPrefix = String(currentNumber - 1).padStart(prefixLength, '0');
                         foldersToRename.push({ from: file, to: `${newPrefix}_${restOfName}` });
 
+                        console.debug('Indexable Folders Plugin: folders to rename (move up):', foldersToRename.map(r => ({ from: r.from.name, to: r.to })));
                         // Rename from lowest index to highest to avoid conflicts
                         for (const rename of foldersToRename.sort((a, b) => parseInt(a.to) - parseInt(b.to))) {
                             if (rename.from.parent) {
@@ -107,6 +113,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                     .setIcon('arrow-down')
                     .setDisabled(currentNumber >= maxNumber)
                     .onClick(async () => {
+                        console.debug('Indexable Folders Plugin: "Move down" clicked for', file.name);
                         if (currentNumber >= maxNumber) return;
                         if (!file.parent) return;
 
@@ -140,6 +147,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                         const newPrefix = String(currentNumber + 1).padStart(prefixLength, '0');
                         foldersToRename.push({ from: file, to: `${newPrefix}_${restOfName}` });
 
+                        console.debug('Indexable Folders Plugin: folders to rename (move down):', foldersToRename.map(r => ({ from: r.from.name, to: r.to })));
                         // Rename from highest index to lowest to avoid conflicts
                         for (const rename of foldersToRename.sort((a, b) => parseInt(b.to) - parseInt(a.to))) {
                             if (rename.from.parent) {

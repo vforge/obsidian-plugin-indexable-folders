@@ -2,6 +2,7 @@ import { TFolder } from 'obsidian';
 import IndexableFoldersPlugin from '../main';
 
 export async function updateFolderIndex(plugin: IndexableFoldersPlugin, folder: TFolder, newIndex: number) {
+    console.debug(`Indexable Folders Plugin: updating index for ${folder.name} to ${newIndex}`);
     if (!folder.parent) return;
 
     const numericPrefixRegex = /^(\d+)_/;
@@ -12,7 +13,10 @@ export async function updateFolderIndex(plugin: IndexableFoldersPlugin, folder: 
     const prefixLength = match[1].length;
     const restOfName = folder.name.substring(match[0].length);
 
-    if (newIndex === oldIndex) return;
+    if (newIndex === oldIndex) {
+        console.debug('Indexable Folders Plugin: new index is same as old, no action needed.');
+        return;
+    }
 
     const siblings = folder.parent.children
         .filter((f): f is TFolder => f instanceof TFolder && f !== folder)
@@ -52,6 +56,7 @@ export async function updateFolderIndex(plugin: IndexableFoldersPlugin, folder: 
     const newPrefix = String(newIndex).padStart(prefixLength, '0');
     foldersToRename.push({ from: folder, to: `${newPrefix}_${restOfName}` });
 
+    console.debug('Indexable Folders Plugin: folders to rename (update index):', foldersToRename.map(r => ({ from: r.from.name, to: r.to })));
     // Perform renames
     for (const rename of foldersToRename) {
         if (!rename.from.parent) continue;

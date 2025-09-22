@@ -2,18 +2,18 @@ import { TFolder } from 'obsidian';
 import IndexableFoldersPlugin from '../main';
 
 export function startFolderObserver(plugin: IndexableFoldersPlugin) {
-    console.log('Indexable Folders Plugin: starting folder observer');
+    console.debug('Indexable Folders Plugin: starting folder observer');
     const fileExplorer = plugin.app.workspace.containerEl.querySelector('.nav-files-container');
 
     if (!fileExplorer) {
-        console.log('Indexable Folders Plugin: file explorer not found, retrying...');
+        console.debug('Indexable Folders Plugin: file explorer not found, retrying...');
         setTimeout(() => startFolderObserver(plugin), 500);
         return;
     }
-    console.log('Indexable Folders Plugin: file explorer found');
+    console.debug('Indexable Folders Plugin: file explorer found');
 
-    plugin.folderObserver = new MutationObserver(() => {
-        console.log('Indexable Folders Plugin: mutation observed');
+    plugin.folderObserver = new MutationObserver((mutations) => {
+        console.debug('Indexable Folders Plugin: mutation observed', mutations);
         plugin.prefixNumericFolders();
     });
 
@@ -23,12 +23,12 @@ export function startFolderObserver(plugin: IndexableFoldersPlugin) {
     });
 
     // Initial run
-    console.log('Indexable Folders Plugin: initial run of prefixNumericFolders');
+    console.debug('Indexable Folders Plugin: initial run of prefixNumericFolders');
     plugin.prefixNumericFolders();
 }
 
 export function prefixNumericFolders(plugin: IndexableFoldersPlugin) {
-    console.log('Indexable Folders Plugin: running prefixNumericFolders');
+    console.debug('Indexable Folders Plugin: running prefixNumericFolders');
     const fileExplorer = plugin.app.workspace.containerEl.querySelector('.nav-files-container');
     if (!fileExplorer) return;
 
@@ -45,7 +45,7 @@ export function prefixNumericFolders(plugin: IndexableFoldersPlugin) {
         const match = folderName?.match(prefixRegex);
 
         if (match) {
-            console.log(`Indexable Folders Plugin: found matching folder: ${folderName}`);
+            console.debug(`Indexable Folders Plugin: found matching folder: ${folderName}`);
             const numericPrefix = match[1];
             const newFolderName = folderName.substring(match[0].length);
 
@@ -65,7 +65,7 @@ export function prefixNumericFolders(plugin: IndexableFoldersPlugin) {
 }
 
 export function revertFolderName(plugin: IndexableFoldersPlugin, file: TFolder) {
-    console.log(`Indexable Folders Plugin: reverting folder name for ${file.path}`);
+    console.debug(`Indexable Folders Plugin: reverting folder name for ${file.path}`);
     const fileExplorer = plugin.app.workspace.containerEl.querySelector('.nav-files-container');
     if (!fileExplorer) return;
 
@@ -78,7 +78,7 @@ export function revertFolderName(plugin: IndexableFoldersPlugin, file: TFolder) 
         if (prefixSpan) {
             const originalName = prefixSpan.getAttribute('data-original-name');
             if (originalName) {
-                console.log(`Indexable Folders Plugin: reverting to ${originalName}`);
+                console.debug(`Indexable Folders Plugin: reverting to ${originalName}`);
                 folderTitleEl.textContent = originalName;
             }
         }

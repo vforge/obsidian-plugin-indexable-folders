@@ -21,6 +21,7 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                 .setPlaceholder('e.g., zz, xx, archive')
                 .setValue(this.plugin.settings.blacklistedPrefixes)
                 .onChange(async (value) => {
+                    console.debug('Indexable Folders Plugin: blacklisted prefixes setting changed to:', value);
                     this.plugin.settings.blacklistedPrefixes = value;
                     await this.plugin.saveSettings();
                     // Re-render folders to apply new settings
@@ -36,6 +37,7 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                 .setPlaceholder('e.g., → or /')
                 .setValue(this.plugin.settings.statusBarSeparator)
                 .onChange(async (value) => {
+                    console.debug('Indexable Folders Plugin: status bar separator setting changed to:', value);
                     this.plugin.settings.statusBarSeparator = value;
                     await this.plugin.saveSettings();
                     this.plugin.updateStatusBar();

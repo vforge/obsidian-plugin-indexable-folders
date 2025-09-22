@@ -16,7 +16,7 @@ export default class IndexableFoldersPlugin extends Plugin {
     public updateStatusBar: () => void = () => updateStatusBar(this);
 
     async onload() {
-        console.log('Indexable Folders Plugin: loading plugin');
+        console.debug('Indexable Folders Plugin: loading plugin');
         await this.loadSettings();
 
         this.statusBarItemEl = this.addStatusBarItem();
@@ -26,19 +26,19 @@ export default class IndexableFoldersPlugin extends Plugin {
     }
 
     onunload() {
-        console.log('Indexable Folders Plugin: unloading plugin');
+        console.debug('Indexable Folders Plugin: unloading plugin');
         if (this.folderObserver) {
             this.folderObserver.disconnect();
         }
     }
 
     async loadSettings() {
-        console.log('Indexable Folders Plugin: loading settings');
+        console.debug('Indexable Folders Plugin: loading settings');
         this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
     }
 
     async saveSettings() {
-        console.log('Indexable Folders Plugin: saving settings');
+        console.debug('Indexable Folders Plugin: saving settings');
         await this.saveData(this.settings);
     }
 
@@ -47,9 +47,10 @@ export default class IndexableFoldersPlugin extends Plugin {
             .split(',')
             .map(p => p.trim())
             .filter(Boolean)
-            .map(p => p.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'));
+            .map(p => p.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&'));
 
         const pattern = `^((?:\\d+)|(?:${blacklisted.join('|')}))_`;
+        console.debug('Indexable Folders Plugin: generated prefix regex pattern:', pattern);
         return new RegExp(pattern, 'i');
     }
 }

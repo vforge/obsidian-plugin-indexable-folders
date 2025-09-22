@@ -4,6 +4,7 @@ import IndexableFoldersPlugin from '../main';
 export function updateStatusBar(plugin: IndexableFoldersPlugin): void {
     plugin.statusBarItemEl.empty();
     const activeFile = plugin.app.workspace.getActiveFile();
+    console.debug('Indexable Folders Plugin: updating status bar for file:', activeFile?.path);
 
     if (!activeFile || !activeFile.parent) {
         return;
@@ -36,6 +37,7 @@ export function updateStatusBar(plugin: IndexableFoldersPlugin): void {
         currentFolder = currentFolder.parent;
     }
 
+    console.debug('Indexable Folders Plugin: status bar path parts:', pathParts);
     pathParts.forEach((part, index) => {
         plugin.statusBarItemEl.appendChild(part);
         if (index < pathParts.length - 1) {
