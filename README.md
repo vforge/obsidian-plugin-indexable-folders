@@ -26,15 +26,21 @@ To work on this plugin locally:
 
 1. Clone this repository.
 2. Make sure your NodeJS is at least v16 (`node --version`).
-3. Run `npm i` to install dependencies.
-4. Run `npm run dev` to start compilation in watch mode.
+3. Run `pnpm install` to install dependencies.
+4. Run `pnpm dev` to start compilation in watch mode.
+
+To create a production build of the plugin, run the following command:
+
+```bash
+pnpm run build
+```
 
 ### Code Quality
 
 This project uses ESLint to maintain code quality. To run the linter, use the command:
 
 ```bash
-npm run lint
+pnpm lint
 ```
 
 ## Releasing New Releases

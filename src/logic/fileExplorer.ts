@@ -44,7 +44,7 @@ export function prefixNumericFolders(plugin: IndexableFoldersPlugin) {
         const folderName = el.textContent;
         const match = folderName?.match(prefixRegex);
 
-        if (match) {
+        if (match && folderName) {
             console.debug(`Indexable Folders Plugin: found matching folder: ${folderName}`);
             const numericPrefix = match[1];
             const newFolderName = folderName.substring(match[0].length);
