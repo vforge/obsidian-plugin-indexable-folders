@@ -1,4 +1,4 @@
-import { App, Notice, Plugin, PluginSettingTab, Setting, TFile, TFolder } from 'obsidian';
+import { App, Modal, Notice, Plugin, PluginSettingTab, Setting, TFile, TFolder } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
@@ -59,6 +59,18 @@ export default class IndexableFoldersPlugin extends Plugin {
                 const restOfName = file.name.substring(match[0].length);
                 const currentNumber = parseInt(prefix, 10);
                 const prefixLength = prefix.length;
+
+                // Add "Update index" option
+                menu.addItem((item) => {
+                    item
+                        .setTitle('Update index...')
+                        .setIcon('edit')
+                        .onClick(() => {
+                            new UpdateIndexModal(this.app, file, async (newIndex) => {
+                                await this.updateFolderIndex(file, newIndex);
+                            }).open();
+                        });
+                });
 
                 // Add "Move up" option
                 menu.addItem((item) => {
@@ -156,6 +168,63 @@ export default class IndexableFoldersPlugin extends Plugin {
                 });
             })
         );
+    }
+
+    async updateFolderIndex(folder: TFolder, newIndex: number) {
+        if (!folder.parent) return;
+
+        const numericPrefixRegex = /^(\d+)_/;
+        const match = folder.name.match(numericPrefixRegex);
+        if (!match) return;
+
+        const oldIndex = parseInt(match[1], 10);
+        const prefixLength = match[1].length;
+        const restOfName = folder.name.substring(match[0].length);
+
+        if (newIndex === oldIndex) return;
+
+        const siblings = folder.parent.children
+            .filter((f): f is TFolder => f instanceof TFolder && f !== folder)
+            .filter(f => numericPrefixRegex.test(f.name));
+
+        const foldersToRename: { from: TFolder, to: string }[] = [];
+
+        if (newIndex > oldIndex) { // Moving down
+            const affectedSiblings = siblings.filter(f => {
+                const idx = parseInt(f.name.match(numericPrefixRegex)![1], 10);
+                return idx > oldIndex && idx <= newIndex;
+            });
+
+            for (const sibling of affectedSiblings) {
+                const siblingMatch = sibling.name.match(numericPrefixRegex)!;
+                const siblingIndex = parseInt(siblingMatch[1], 10);
+                const siblingRest = sibling.name.substring(siblingMatch[0].length);
+                const newSiblingPrefix = String(siblingIndex - 1).padStart(prefixLength, '0');
+                foldersToRename.push({ from: sibling, to: `${newSiblingPrefix}_${siblingRest}` });
+            }
+        } else { // Moving up
+            const affectedSiblings = siblings.filter(f => {
+                const idx = parseInt(f.name.match(numericPrefixRegex)![1], 10);
+                return idx >= newIndex && idx < oldIndex;
+            });
+
+            for (const sibling of affectedSiblings) {
+                const siblingMatch = sibling.name.match(numericPrefixRegex)!;
+                const siblingIndex = parseInt(siblingMatch[1], 10);
+                const siblingRest = sibling.name.substring(siblingMatch[0].length);
+                const newSiblingPrefix = String(siblingIndex + 1).padStart(prefixLength, '0');
+                foldersToRename.push({ from: sibling, to: `${newSiblingPrefix}_${siblingRest}` });
+            }
+        }
+
+        // Add the original folder to the list
+        const newPrefix = String(newIndex).padStart(prefixLength, '0');
+        foldersToRename.push({ from: folder, to: `${newPrefix}_${restOfName}` });
+
+        // Perform renames
+        for (const rename of foldersToRename) {
+            await this.app.fileManager.renameFile(rename.from, `${rename.from.parent.path}/${rename.to}`);
+        }
     }
 
     onunload() {
@@ -358,5 +427,76 @@ class IndexableFoldersSettingTab extends PluginSettingTab {
                     // Update status bar in case the current folder is affected
                     this.plugin.updateStatusBar();
                 }));
+    }
+}
+
+class UpdateIndexModal extends Modal {
+    folder: TFolder;
+    onSubmit: (newIndex: number) => Promise<void>;
+
+    constructor(app: App, folder: TFolder, onSubmit: (newIndex: number) => Promise<void>) {
+        super(app);
+        this.folder = folder;
+        this.onSubmit = onSubmit;
+    }
+
+    onOpen() {
+        const { contentEl } = this;
+        contentEl.empty();
+        contentEl.addClass('indexable-folder-modal');
+
+        const numericPrefixRegex = /^(\d+)_/;
+        const match = this.folder.name.match(numericPrefixRegex);
+        if (!match) {
+            this.close();
+            return;
+        }
+
+        const prefix = match[1];
+        const prefixLength = prefix.length;
+        const maxNumber = Math.pow(10, prefixLength) - 1;
+
+        contentEl.createEl('h2', { text: `Update index for "${this.folder.name}"` });
+
+        const form = contentEl.createEl('form');
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const input = form.querySelector('input')!;
+            const newIndex = parseInt(input.value, 10);
+
+            if (isNaN(newIndex) || newIndex < 0 || newIndex > maxNumber) {
+                new Notice(`Please enter a number between 0 and ${maxNumber}.`);
+                return;
+            }
+
+            this.close();
+            await this.onSubmit(newIndex);
+        };
+
+        new Setting(form)
+            .setName(`New index (0 - ${maxNumber})`)
+            .addText(text => {
+                text.inputEl.type = 'number';
+                text.setPlaceholder(`Enter a value from 0 to ${maxNumber}`)
+                    .setValue(prefix);
+                text.inputEl.maxLength = prefixLength;
+                text.inputEl.addEventListener('input', () => {
+                    if (text.inputEl.value.length > prefixLength) {
+                        text.inputEl.value = text.inputEl.value.slice(0, prefixLength);
+                    }
+                });
+            });
+
+        new Setting(form)
+            .addButton(button => button
+                .setButtonText('Update')
+                .setCta()
+                .onClick(() => {
+                    form.requestSubmit();
+                }));
+    }
+
+    onClose() {
+        this.contentEl.empty();
     }
 }
