@@ -1,4 +1,4 @@
-import { Menu, TFolder } from 'obsidian';
+import { Menu, TFolder, Notice } from 'obsidian';
 import IndexableFoldersPlugin from './main';
 import { revertFolderName, startFolderObserver } from './logic/fileExplorer';
 import { updateStatusBar } from './logic/statusBar';
@@ -147,9 +147,15 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                                 parseInt(b.to.split('_')[0], 10)
                         )) {
                             if (rename.from.parent) {
+                                const oldName = rename.from.name;
                                 await plugin.app.fileManager.renameFile(
                                     rename.from,
                                     `${rename.from.parent.path}/${rename.to}`
+                                );
+                                // Show notification for each renamed folder
+                                new Notice(
+                                    `Folder renamed: "${oldName}" → "${rename.to}"`,
+                                    3000
                                 );
                             }
                         }
@@ -236,9 +242,15 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                                 parseInt(a.to.split('_')[0], 10)
                         )) {
                             if (rename.from.parent) {
+                                const oldName = rename.from.name;
                                 await plugin.app.fileManager.renameFile(
                                     rename.from,
                                     `${rename.from.parent.path}/${rename.to}`
+                                );
+                                // Show notification for each renamed folder
+                                new Notice(
+                                    `Folder renamed: "${oldName}" → "${rename.to}"`,
+                                    3000
                                 );
                             }
                         }
