@@ -3,11 +3,11 @@ import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Set
 // Remember to rename these classes and interfaces!
 
 interface IndexableFoldersSettings {
-    mySetting: string;
+    blacklistedPrefixes: string;
 }
 
 const DEFAULT_SETTINGS: IndexableFoldersSettings = {
-    mySetting: 'default'
+    blacklistedPrefixes: 'zz, xx'
 }
 
 export default class IndexableFoldersPlugin extends Plugin {
@@ -157,6 +157,16 @@ export default class IndexableFoldersPlugin extends Plugin {
         const fileExplorer = this.app.workspace.containerEl.querySelector('.nav-files-container');
         if (!fileExplorer) return;
 
+        const blacklisted = this.settings.blacklistedPrefixes
+            .split(',')
+            .map(p => p.trim())
+            .filter(Boolean)
+            // Escape special regex characters
+            .map(p => p.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
+
+        const pattern = `^((?:\\d+)|(?:${blacklisted.join('|')}))_`;
+        const prefixRegex = new RegExp(pattern, 'i');
+
         const folderTitleElements = fileExplorer.querySelectorAll('.nav-folder-title-content');
         folderTitleElements.forEach((el: HTMLElement) => {
             const folderItem = el.closest('.nav-folder');
@@ -173,7 +183,7 @@ export default class IndexableFoldersPlugin extends Plugin {
             }
 
             const folderName = el.textContent;
-            const match = folderName?.match(/^(\d+)_/);
+            const match = folderName?.match(prefixRegex);
 
             if (match) {
                 console.log(`Indexable Folders Plugin: found matching folder: ${folderName}`);
@@ -236,15 +246,16 @@ class IndexableFoldersSettingTab extends PluginSettingTab {
         containerEl.empty();
 
         new Setting(containerEl)
-            .setName('Setting #1')
-            .setDesc('It\'s a secret')
+            .setName('Blacklisted prefixes')
+            .setDesc('A comma-separated list of case-insensitive prefixes that will be styled but not changeable (e.g., for archive folders).')
             .addText(text => text
-                .setPlaceholder('Enter your secret')
-                .setValue(this.plugin.settings.mySetting)
+                .setPlaceholder('e.g., zz, xx, archive')
+                .setValue(this.plugin.settings.blacklistedPrefixes)
                 .onChange(async (value) => {
-                    console.log('Indexable Folders Plugin: setting #1 changed to: ' + value);
-                    this.plugin.settings.mySetting = value;
+                    this.plugin.settings.blacklistedPrefixes = value;
                     await this.plugin.saveSettings();
+                    // Re-render folders to apply new settings
+                    this.plugin.prefixNumericFolders();
                 }));
     }
 }
