@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, TAbstractFile, TFolder } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
@@ -81,6 +81,14 @@ export default class IndexableFoldersPlugin extends Plugin {
         this.app.workspace.onLayoutReady(() => {
             this.startFolderObserver();
         });
+
+        this.registerEvent(
+            this.app.workspace.on('file-menu', (menu, file) => {
+                if (file instanceof TFolder) {
+                    this.revertFolderName(file);
+                }
+            })
+        );
     }
 
     onunload() {
@@ -93,7 +101,6 @@ export default class IndexableFoldersPlugin extends Plugin {
         const fileExplorer = this.app.workspace.containerEl.querySelector('.nav-files-container');
 
         if (!fileExplorer) {
-            // If the file explorer is not available, try again in a moment.
             setTimeout(() => this.startFolderObserver(), 500);
             return;
         }
@@ -111,10 +118,42 @@ export default class IndexableFoldersPlugin extends Plugin {
         this.prefixNumericFolders();
     }
 
+    revertFolderName(file: TFolder) {
+        const fileExplorer = this.app.workspace.containerEl.querySelector('.nav-files-container');
+        if (!fileExplorer) return;
+
+        const folderEl = fileExplorer.querySelector(`[data-path="${file.path}"]`);
+        const folderTitleEl = folderEl?.querySelector('.nav-folder-title-content');
+
+        if (folderTitleEl) {
+            const prefixSpan = folderTitleEl.querySelector('span.indexable-folder-prefix');
+            if (prefixSpan) {
+                const originalName = prefixSpan.getAttribute('data-original-name');
+                if (originalName) {
+                    // Revert the name and mark the element as temporarily ignored
+                    folderTitleEl.textContent = originalName;
+                    folderTitleEl.dataset.indexableFolderIgnore = 'true';
+
+                    // After a short delay, remove the ignore flag so it can be styled again.
+                    // This gives the context menu time to appear.
+                    setTimeout(() => {
+                        delete folderTitleEl.dataset.indexableFolderIgnore;
+                    }, 500);
+                }
+            }
+        }
+    }
+
     prefixNumericFolders() {
         const folderTitleElements = this.app.workspace.containerEl.querySelectorAll('.nav-folder-title-content');
         folderTitleElements.forEach((el: HTMLElement) => {
-            if (el.dataset.indexableFolderProcessed === 'true') {
+            // If the element is marked to be ignored, skip it.
+            if (el.dataset.indexableFolderIgnore === 'true') {
+                return;
+            }
+
+            // If our prefix span already exists, skip this element.
+            if (el.querySelector('span.indexable-folder-prefix')) {
                 return;
             }
 
@@ -125,13 +164,17 @@ export default class IndexableFoldersPlugin extends Plugin {
                 const numericPrefix = match[1];
                 const newFolderName = folderName.substring(match[0].length);
 
+                // Clear the original text content before adding new elements.
+                el.textContent = '';
+
                 const label = el.createEl('span');
                 label.setText(numericPrefix);
                 label.addClass('indexable-folder-prefix');
+                // Store original name to revert for rename
+                label.setAttribute('data-original-name', folderName);
 
-                el.textContent = newFolderName;
-                el.prepend(label);
-                el.dataset.indexableFolderProcessed = 'true';
+                el.appendChild(label);
+                el.appendChild(document.createTextNode(newFolderName));
             }
         });
     }
