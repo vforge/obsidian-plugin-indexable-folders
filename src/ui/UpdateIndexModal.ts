@@ -86,10 +86,24 @@ export class UpdateIndexModal extends Modal {
         form.onsubmit = async (e) => {
             e.preventDefault();
             const input = form.querySelector('input')!;
-            const newIndex = parseInt(input.value, 10);
+            const inputValue = input.value;
+
+            // Validate the input has the correct number of digits
+            if (inputValue.length !== prefixLength) {
+                new Notice(
+                    `Index must be exactly ${prefixLength} digits long.`
+                );
+                return;
+            }
+
+            const newIndex = parseInt(inputValue, 10);
 
             if (isNaN(newIndex) || newIndex < 0 || newIndex > maxNumber) {
-                new Notice(`Please enter a number between 0 and ${maxNumber}.`);
+                new Notice(
+                    `Please enter a number between ${'0'.repeat(
+                        prefixLength
+                    )} and ${'9'.repeat(prefixLength)}.`
+                );
                 return;
             }
 
@@ -98,25 +112,29 @@ export class UpdateIndexModal extends Modal {
         };
 
         new Setting(form)
-            .setName(`New index (0 - ${maxNumber})`)
+            .setName(`New index (must be ${prefixLength} digits)`)
+            .setDesc(`Enter exactly ${prefixLength} digits (e.g., ${prefix})`)
             .addText((text) => {
-                text.inputEl.type = 'number';
+                text.inputEl.type = 'text';
+                text.inputEl.pattern = `\\d{${prefixLength}}`;
                 text.setPlaceholder(
-                    `Enter a value from 0 to ${maxNumber}`
+                    `${'0'.repeat(prefixLength)} - ${'9'.repeat(prefixLength)}`
                 ).setValue(prefix);
                 text.inputEl.maxLength = prefixLength;
 
-                text.inputEl.addEventListener('input', () => {
-                    if (text.inputEl.value.length > prefixLength) {
-                        text.inputEl.value = text.inputEl.value.slice(
-                            0,
-                            prefixLength
-                        );
+                text.inputEl.addEventListener('input', (e) => {
+                    const target = e.target as HTMLInputElement;
+                    // Only allow digits
+                    target.value = target.value.replace(/\D/g, '');
+
+                    // Enforce exact length
+                    if (target.value.length > prefixLength) {
+                        target.value = target.value.slice(0, prefixLength);
                     }
 
                     // Check for conflicts when user types
-                    const currentValue = text.inputEl.value;
-                    if (currentValue) {
+                    const currentValue = target.value;
+                    if (currentValue.length === prefixLength) {
                         const conflicts = this.checkForConflicts(
                             currentValue,
                             prefixLength
@@ -124,6 +142,16 @@ export class UpdateIndexModal extends Modal {
                         this.updateConflictDisplay(conflicts);
                     } else {
                         this.updateConflictDisplay([]);
+                    }
+                });
+
+                // Prevent non-digit characters on keypress
+                text.inputEl.addEventListener('keypress', (e) => {
+                    if (
+                        !/\d/.test(e.key) &&
+                        !['Backspace', 'Delete', 'Tab', 'Enter'].includes(e.key)
+                    ) {
+                        e.preventDefault();
                     }
                 });
 
