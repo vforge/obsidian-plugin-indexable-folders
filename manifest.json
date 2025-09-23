@@ -1,7 +1,7 @@
 {
 	"id": "obsidian-plugin-indexable-folders",
 	"name": "Indexable Folders",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"minAppVersion": "1.0.0",
 	"description": "Enhance folder organization with visual indexing, context menu reordering, and styled status bar paths for numbered folders.",
 	"author": "vforge",
