@@ -1,5 +1,6 @@
 import { TFolder, Notice } from 'obsidian';
 import IndexableFoldersPlugin from '../main';
+import { log } from '../utils/logger';
 
 export function isSpecialIndex(index: number): boolean {
     const indexStr = index.toString();
@@ -13,12 +14,10 @@ export async function updateFolderIndex(
     folder: TFolder,
     newIndex: number
 ) {
-    console.debug(
-        `Indexable Folders Plugin: updating index for ${folder.name} to ${newIndex}`
-    );
+    log('updating index for', folder.name, 'to', newIndex);
     if (!folder.parent) return;
 
-    const numericPrefixRegex = /^(\d+)_/;
+    const numericPrefixRegex = plugin.getNumericPrefixRegex();
     const match = folder.name.match(numericPrefixRegex);
     if (!match) return;
 
@@ -27,9 +26,7 @@ export async function updateFolderIndex(
 
     // Check if this folder has a special index that shouldn't be moved
     if (isSpecialIndex(oldIndex)) {
-        console.debug(
-            'Indexable Folders Plugin: folder has special index (all 0s or all 9s), cannot be moved.'
-        );
+        log('folder has special index (all 0s or all 9s), cannot be moved');
         new Notice(
             `Cannot move folder with special index: ${folder.name}`,
             3000
@@ -39,17 +36,15 @@ export async function updateFolderIndex(
 
     // Check if target index is special
     if (isSpecialIndex(newIndex)) {
-        console.debug(
-            'Indexable Folders Plugin: target index is special (all 0s or all 9s), cannot move to this position.'
+        log(
+            'target index is special (all 0s or all 9s), cannot move to this position'
         );
         new Notice(`Cannot move to special index position: ${newIndex}`, 3000);
         return;
     }
 
     if (newIndex === oldIndex) {
-        console.debug(
-            'Indexable Folders Plugin: new index is same as old, no action needed.'
-        );
+        log('new index is same as old, no action needed');
         return;
     }
 
@@ -73,7 +68,7 @@ async function trySimpleMove(
 ): Promise<boolean> {
     if (!folder.parent) return false;
 
-    const numericPrefixRegex = /^(\d+)_/;
+    const numericPrefixRegex = plugin.getNumericPrefixRegex();
 
     // Get all indexed folders in the parent directory
     const allFolders = folder.parent.children
@@ -91,9 +86,7 @@ async function trySimpleMove(
     });
 
     if (targetConflict) {
-        console.debug(
-            'Target index conflicts with special folder, need full reindexing'
-        );
+        log('target index conflicts with special folder, need full reindexing');
         return false;
     }
 
@@ -127,8 +120,11 @@ async function trySimpleMove(
 
         if (!sourcePositionOccupied) {
             // Smart swap is possible!
-            console.debug(
-                `Performing smart swap: ${folder.name} ↔ ${regularConflict.name}`
+            log(
+                'performing smart swap:',
+                folder.name,
+                '↔',
+                regularConflict.name
             );
             return await performSmartSwap(
                 plugin,
@@ -140,8 +136,8 @@ async function trySimpleMove(
             );
         }
 
-        console.debug(
-            'Target index conflicts with regular folder, and smart swap not possible, need full reindexing'
+        log(
+            'target index conflicts with regular folder, and smart swap not possible, need full reindexing'
         );
         return false;
     }
@@ -150,9 +146,9 @@ async function trySimpleMove(
     const match = folder.name.match(numericPrefixRegex)!;
     const restOfName = folder.name.substring(match[0].length);
     const newPrefix = String(newIndex).padStart(prefixLength, '0');
-    const newName = `${newPrefix}_${restOfName}`;
+    const newName = `${newPrefix}${plugin.settings.separator}${restOfName}`;
 
-    console.debug(`Performing simple move: ${folder.name} → ${newName}`);
+    log('performing simple move:', folder.name, '→', newName);
 
     await plugin.app.fileManager.renameFile(
         folder,
@@ -173,7 +169,7 @@ async function performSmartSwap(
 ): Promise<boolean> {
     if (!folder1.parent || !folder2.parent) return false;
 
-    const numericPrefixRegex = /^(\d+)_/;
+    const numericPrefixRegex = plugin.getNumericPrefixRegex();
 
     // Get the names without indices
     const folder1Match = folder1.name.match(numericPrefixRegex)!;
@@ -187,17 +183,17 @@ async function performSmartSwap(
         prefixLength,
         '0'
     );
-    const folder1NewName = `${folder1NewPrefix}_${folder1Name}`;
+    const folder1NewName = `${folder1NewPrefix}${plugin.settings.separator}${folder1Name}`;
 
     const folder2NewPrefix = String(folder2NewIndex).padStart(
         prefixLength,
         '0'
     );
-    const folder2NewName = `${folder2NewPrefix}_${folder2Name}`;
+    const folder2NewName = `${folder2NewPrefix}${plugin.settings.separator}${folder2Name}`;
 
     try {
         // Rename folder1 to temporary name first to avoid conflicts
-        const tempName = `temp_${Date.now()}_${folder1Name}`;
+        const tempName = `temp${plugin.settings.separator}${Date.now()}${plugin.settings.separator}${folder1Name}`;
         await plugin.app.fileManager.renameFile(
             folder1,
             `${folder1.parent.path}/${tempName}`
@@ -215,8 +211,11 @@ async function performSmartSwap(
             `${folder1.parent.path}/${folder1NewName}`
         );
 
-        console.debug(
-            `Smart swap completed: ${folder1Match[0]}${folder1Name} ↔ ${folder2Match[0]}${folder2Name}`
+        log(
+            'smart swap completed:',
+            `${folder1Match[0]}${folder1Name}`,
+            '↔',
+            `${folder2Match[0]}${folder2Name}`
         );
 
         new Notice(
@@ -239,7 +238,7 @@ async function fullReindexWithConflictResolution(
 ) {
     if (!targetFolder.parent) return;
 
-    const numericPrefixRegex = /^(\d+)_/;
+    const numericPrefixRegex = plugin.getNumericPrefixRegex();
 
     // Get all indexed folders in the parent directory
     const allFolders = targetFolder.parent.children
@@ -319,7 +318,7 @@ async function fullReindexWithConflictResolution(
             prefixLength,
             '0'
         );
-        const newName = `${newPrefix}_${restOfName}`;
+        const newName = `${newPrefix}${plugin.settings.separator}${restOfName}`;
 
         if (folder.name !== newName) {
             foldersToRename.push({
@@ -331,8 +330,8 @@ async function fullReindexWithConflictResolution(
         nextAvailableIndex++;
     }
 
-    console.debug(
-        'Indexable Folders Plugin: folders to rename (full reindex):',
+    log(
+        'folders to rename (full reindex):',
         foldersToRename.map((r) => ({ from: r.from.name, to: r.to }))
     );
 
@@ -349,5 +348,5 @@ async function fullReindexWithConflictResolution(
         new Notice(`Folder renamed: "${oldName}" → "${rename.to}"`, 3000);
     }
 
-    console.log(`Finished full reindexing for folder: ${targetFolder.path}`);
+    log('finished full reindexing for folder:', targetFolder.path);
 }

@@ -4,6 +4,7 @@ import { IndexableFoldersSettingTab } from './ui/SettingsTab';
 import { registerEvents } from './events';
 import { prefixNumericFolders, revertFolderName } from './logic/fileExplorer';
 import { updateStatusBar } from './logic/statusBar';
+import { log } from './utils/logger';
 
 export default class IndexableFoldersPlugin extends Plugin {
     settings: IndexableFoldersSettings;
@@ -11,32 +12,34 @@ export default class IndexableFoldersPlugin extends Plugin {
     statusBarItemEl: HTMLElement;
 
     // Expose methods for modules
-    public prefixNumericFolders: () => void = () => prefixNumericFolders(this);
+    public prefixNumericFolders: (forceRefresh?: boolean) => void = (
+        forceRefresh = false
+    ) => prefixNumericFolders(this, forceRefresh);
     public revertFolderName: (file: TFolder) => void = (file) =>
         revertFolderName(this, file);
     public updateStatusBar: () => void = () => updateStatusBar(this);
 
     async onload() {
-        console.debug('Indexable Folders Plugin: loading plugin');
+        log('loading plugin');
         await this.loadSettings();
 
         this.statusBarItemEl = this.addStatusBarItem();
         this.addSettingTab(new IndexableFoldersSettingTab(this.app, this));
 
         registerEvents(this);
-        console.log('IndexableFoldersPlugin loaded');
+        log('plugin loaded');
     }
 
     onunload() {
-        console.debug('Indexable Folders Plugin: unloading plugin');
+        log('unloading plugin');
         if (this.folderObserver) {
             this.folderObserver.disconnect();
         }
-        console.log('IndexableFoldersPlugin unloaded');
+        log('plugin unloaded');
     }
 
     async loadSettings() {
-        console.debug('Indexable Folders Plugin: loading settings');
+        log('loading settings');
         this.settings = Object.assign(
             {},
             DEFAULT_SETTINGS,
@@ -45,22 +48,30 @@ export default class IndexableFoldersPlugin extends Plugin {
     }
 
     async saveSettings() {
-        console.debug('Indexable Folders Plugin: saving settings');
+        log('saving settings');
         await this.saveData(this.settings);
     }
 
+    private getEscapedSeparator(): string {
+        return this.settings.separator.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
+    }
+
     getPrefixRegex(): RegExp {
-        const blacklisted = this.settings.blacklistedPrefixes
+        const special = this.settings.specialPrefixes
             .split(',')
             .map((p) => p.trim())
             .filter(Boolean)
             .map((p) => p.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&'));
 
-        const pattern = `^((?:\\d+)|(?:${blacklisted.join('|')}))_`;
-        console.debug(
-            'Indexable Folders Plugin: generated prefix regex pattern:',
-            pattern
-        );
+        const escapedSeparator = this.getEscapedSeparator();
+        const pattern = `^((?:\\d+)|(?:${special.join('|')}))${escapedSeparator}`;
+        log('generated prefix regex pattern:', pattern);
         return new RegExp(pattern, 'i');
+    }
+
+    getNumericPrefixRegex(): RegExp {
+        const escapedSeparator = this.getEscapedSeparator();
+        const pattern = `^(\\d+)${escapedSeparator}`;
+        return new RegExp(pattern);
     }
 }

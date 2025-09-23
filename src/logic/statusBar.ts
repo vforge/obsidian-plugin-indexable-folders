@@ -1,13 +1,11 @@
 import { TFolder } from 'obsidian';
 import IndexableFoldersPlugin from '../main';
+import { log } from '../utils/logger';
 
 export function updateStatusBar(plugin: IndexableFoldersPlugin): void {
     plugin.statusBarItemEl.empty();
     const activeFile = plugin.app.workspace.getActiveFile();
-    console.debug(
-        'Indexable Folders Plugin: updating status bar for file:',
-        activeFile?.path
-    );
+    log('updating status bar for file:', activeFile?.path);
 
     if (!activeFile || !activeFile.parent) {
         return;
@@ -40,10 +38,7 @@ export function updateStatusBar(plugin: IndexableFoldersPlugin): void {
         currentFolder = currentFolder.parent;
     }
 
-    console.debug(
-        'Indexable Folders Plugin: status bar path parts:',
-        pathParts
-    );
+    log('status bar path parts:', pathParts);
     pathParts.forEach((part, index) => {
         plugin.statusBarItemEl.appendChild(part);
         if (index < pathParts.length - 1) {
@@ -53,7 +48,5 @@ export function updateStatusBar(plugin: IndexableFoldersPlugin): void {
             });
         }
     });
-    console.log(
-        `Status bar updated: ${this.indexedFoldersCount} indexed folders`
-    );
+    log('status bar updated');
 }

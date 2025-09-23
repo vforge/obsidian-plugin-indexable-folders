@@ -1,24 +1,23 @@
 import { TFolder } from 'obsidian';
 import IndexableFoldersPlugin from '../main';
+import { log } from '../utils/logger';
 
 export function startFolderObserver(plugin: IndexableFoldersPlugin) {
-    console.debug('Indexable Folders Plugin: starting folder observer');
+    log('starting folder observer');
     const fileExplorer = plugin.app.workspace.containerEl.querySelector(
         '.nav-files-container'
     );
 
     if (!fileExplorer) {
-        console.debug(
-            'Indexable Folders Plugin: file explorer not found, retrying...'
-        );
+        log('file explorer not found, retrying...');
         setTimeout(() => startFolderObserver(plugin), 500);
         return;
     }
-    console.debug('Indexable Folders Plugin: file explorer found');
-    console.log('File explorer pane found, adding indexable folder actions');
+    log('file explorer found');
+    log('file explorer pane found, adding indexable folder actions');
 
     plugin.folderObserver = new MutationObserver((mutations) => {
-        console.debug('Indexable Folders Plugin: mutation observed', mutations);
+        log('mutation observed', mutations);
         plugin.prefixNumericFolders();
     });
 
@@ -28,14 +27,15 @@ export function startFolderObserver(plugin: IndexableFoldersPlugin) {
     });
 
     // Initial run
-    console.debug(
-        'Indexable Folders Plugin: initial run of prefixNumericFolders'
-    );
+    log('initial run of prefixNumericFolders');
     plugin.prefixNumericFolders();
 }
 
-export function prefixNumericFolders(plugin: IndexableFoldersPlugin) {
-    console.debug('Indexable Folders Plugin: running prefixNumericFolders');
+export function prefixNumericFolders(
+    plugin: IndexableFoldersPlugin,
+    forceRefresh = false
+) {
+    log('running prefixNumericFolders', { forceRefresh });
     const fileExplorer = plugin.app.workspace.containerEl.querySelector(
         '.nav-files-container'
     );
@@ -47,8 +47,19 @@ export function prefixNumericFolders(plugin: IndexableFoldersPlugin) {
         '.nav-folder-title-content'
     );
     folderTitleElements.forEach((el: HTMLElement) => {
-        // If our prefix span already exists, skip this element.
-        if (el.querySelector('span.indexable-folder-prefix')) {
+        const existingPrefixSpan = el.querySelector(
+            'span.indexable-folder-prefix'
+        );
+
+        // If forcing refresh, restore original name first
+        if (forceRefresh && existingPrefixSpan) {
+            const originalName =
+                existingPrefixSpan.getAttribute('data-original-name');
+            if (originalName) {
+                el.textContent = originalName;
+            }
+        } else if (existingPrefixSpan) {
+            // If our prefix span already exists and not forcing refresh, skip this element.
             return;
         }
 
@@ -56,9 +67,7 @@ export function prefixNumericFolders(plugin: IndexableFoldersPlugin) {
         const match = folderName?.match(prefixRegex);
 
         if (match && folderName) {
-            console.debug(
-                `Indexable Folders Plugin: found matching folder: ${folderName}`
-            );
+            log('found matching folder:', folderName);
             const numericPrefix = match[1];
             const newFolderName = folderName.substring(match[0].length);
 
@@ -81,9 +90,7 @@ export function revertFolderName(
     plugin: IndexableFoldersPlugin,
     file: TFolder
 ) {
-    console.debug(
-        `Indexable Folders Plugin: reverting folder name for ${file.path}`
-    );
+    log('reverting folder name for', file.path);
     const fileExplorer = plugin.app.workspace.containerEl.querySelector(
         '.nav-files-container'
     );
@@ -100,9 +107,7 @@ export function revertFolderName(
         if (prefixSpan) {
             const originalName = prefixSpan.getAttribute('data-original-name');
             if (originalName) {
-                console.debug(
-                    `Indexable Folders Plugin: reverting to ${originalName}`
-                );
+                log('reverting to', originalName);
                 folderTitleEl.textContent = originalName;
             }
         }
