@@ -53,36 +53,36 @@ jobs:
             main.js manifest.json styles.css ${{ env.PLUGIN_NAME }}-${{ env.PLUGIN_VERSION }}.zip
 
   # Optional: Auto-update release notes
-#   update-release-notes:
-#     runs-on: ubuntu-latest
-#     needs: build
-#     if: success()
+  update-release-notes:
+    runs-on: ubuntu-latest
+    needs: build
+    if: success()
     
-#     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 0
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-#       - name: Generate release notes
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#         run: |
-#           tag="${GITHUB_REF#refs/tags/}"
+      - name: Generate release notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
           
-#           # Get previous tag
-#           previous_tag=$(git describe --tags --abbrev=0 "$tag^" 2>/dev/null || echo "")
+          # Get previous tag
+          previous_tag=$(git describe --tags --abbrev=0 "$tag^" 2>/dev/null || echo "")
           
-#           # Generate release notes
-#           if [ -n "$previous_tag" ]; then
-#             echo "## What's Changed" > release_notes.md
-#             echo "" >> release_notes.md
-#             git log --pretty=format:"- %s" "$previous_tag..$tag" >> release_notes.md
-#           else
-#             echo "## Initial Release" > release_notes.md
-#             echo "" >> release_notes.md
-#             echo "First release of the Indexable Folders plugin for Obsidian." >> release_notes.md
-#           fi
+          # Generate release notes
+          if [ -n "$previous_tag" ]; then
+            echo "## What's Changed" > release_notes.md
+            echo "" >> release_notes.md
+            git log --pretty=format:"- %s" "$previous_tag..$tag" >> release_notes.md
+          else
+            echo "## Initial Release" > release_notes.md
+            echo "" >> release_notes.md
+            echo "First release of the Indexable Folders plugin for Obsidian." >> release_notes.md
+          fi
           
-#           # Update release with notes
-#           gh release edit "$tag" --notes-file release_notes.md
+          # Update release with notes
+          gh release edit "$tag" --notes-file release_notes.md
