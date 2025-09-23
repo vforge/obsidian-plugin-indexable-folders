@@ -25,7 +25,7 @@ If you find this plugin useful, you can support my work by buying me a coffee.
 To work on this plugin locally:
 
 1. Clone this repository.
-2. Make sure your NodeJS is at least v16 (`node --version`).
+2. Make sure your NodeJS is at least v22.19.0 (`node --version`).
 3. Run `pnpm install` to install dependencies.
 4. Run `pnpm dev` to start compilation in watch mode.
 
