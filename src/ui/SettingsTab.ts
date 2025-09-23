@@ -73,8 +73,8 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                         );
                         this.plugin.settings.separator = value;
                         await this.plugin.saveSettings();
-                        // Re-render folders to apply new settings
-                        this.plugin.prefixNumericFolders();
+                        // Re-render folders to apply new settings (force refresh to update separator)
+                        this.plugin.prefixNumericFolders(true);
                         // Update status bar in case the current folder is affected
                         this.plugin.updateStatusBar();
                     })

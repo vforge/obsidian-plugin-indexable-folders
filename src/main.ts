@@ -11,7 +11,9 @@ export default class IndexableFoldersPlugin extends Plugin {
     statusBarItemEl: HTMLElement;
 
     // Expose methods for modules
-    public prefixNumericFolders: () => void = () => prefixNumericFolders(this);
+    public prefixNumericFolders: (forceRefresh?: boolean) => void = (
+        forceRefresh = false
+    ) => prefixNumericFolders(this, forceRefresh);
     public revertFolderName: (file: TFolder) => void = (file) =>
         revertFolderName(this, file);
     public updateStatusBar: () => void = () => updateStatusBar(this);

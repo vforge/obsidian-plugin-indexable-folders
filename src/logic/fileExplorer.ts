@@ -34,8 +34,13 @@ export function startFolderObserver(plugin: IndexableFoldersPlugin) {
     plugin.prefixNumericFolders();
 }
 
-export function prefixNumericFolders(plugin: IndexableFoldersPlugin) {
-    console.debug('Indexable Folders Plugin: running prefixNumericFolders');
+export function prefixNumericFolders(
+    plugin: IndexableFoldersPlugin,
+    forceRefresh = false
+) {
+    console.debug('Indexable Folders Plugin: running prefixNumericFolders', {
+        forceRefresh,
+    });
     const fileExplorer = plugin.app.workspace.containerEl.querySelector(
         '.nav-files-container'
     );
@@ -47,8 +52,19 @@ export function prefixNumericFolders(plugin: IndexableFoldersPlugin) {
         '.nav-folder-title-content'
     );
     folderTitleElements.forEach((el: HTMLElement) => {
-        // If our prefix span already exists, skip this element.
-        if (el.querySelector('span.indexable-folder-prefix')) {
+        const existingPrefixSpan = el.querySelector(
+            'span.indexable-folder-prefix'
+        );
+
+        // If forcing refresh, restore original name first
+        if (forceRefresh && existingPrefixSpan) {
+            const originalName =
+                existingPrefixSpan.getAttribute('data-original-name');
+            if (originalName) {
+                el.textContent = originalName;
+            }
+        } else if (existingPrefixSpan) {
+            // If our prefix span already exists and not forcing refresh, skip this element.
             return;
         }
 
