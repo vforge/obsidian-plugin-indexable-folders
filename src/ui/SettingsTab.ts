@@ -1,5 +1,6 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import IndexableFoldersPlugin from '../main';
+import { log } from '../utils/logger';
 
 export class IndexableFoldersSettingTab extends PluginSettingTab {
     plugin: IndexableFoldersPlugin;
@@ -24,10 +25,7 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     .setPlaceholder('e.g., zz, xx, archive')
                     .setValue(this.plugin.settings.specialPrefixes)
                     .onChange(async (value) => {
-                        console.debug(
-                            'Indexable Folders Plugin: special prefixes setting changed to:',
-                            value
-                        );
+                        log('special prefixes setting changed to:', value);
                         this.plugin.settings.specialPrefixes = value;
                         await this.plugin.saveSettings();
                         // Re-render folders to apply new settings
@@ -47,10 +45,7 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     .setPlaceholder('e.g., → or /')
                     .setValue(this.plugin.settings.statusBarSeparator)
                     .onChange(async (value) => {
-                        console.debug(
-                            'Indexable Folders Plugin: status bar separator setting changed to:',
-                            value
-                        );
+                        log('status bar separator setting changed to:', value);
                         this.plugin.settings.statusBarSeparator = value;
                         await this.plugin.saveSettings();
                         this.plugin.updateStatusBar();
@@ -67,10 +62,7 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     .setPlaceholder('e.g., _ or -')
                     .setValue(this.plugin.settings.separator)
                     .onChange(async (value) => {
-                        console.debug(
-                            'Indexable Folders Plugin: separator setting changed to:',
-                            value
-                        );
+                        log('separator setting changed to:', value);
                         this.plugin.settings.separator = value;
                         await this.plugin.saveSettings();
                         // Re-render folders to apply new settings (force refresh to update separator)

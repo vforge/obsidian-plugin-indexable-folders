@@ -4,6 +4,7 @@ import { IndexableFoldersSettingTab } from './ui/SettingsTab';
 import { registerEvents } from './events';
 import { prefixNumericFolders, revertFolderName } from './logic/fileExplorer';
 import { updateStatusBar } from './logic/statusBar';
+import { log } from './utils/logger';
 
 export default class IndexableFoldersPlugin extends Plugin {
     settings: IndexableFoldersSettings;
@@ -19,26 +20,26 @@ export default class IndexableFoldersPlugin extends Plugin {
     public updateStatusBar: () => void = () => updateStatusBar(this);
 
     async onload() {
-        console.debug('Indexable Folders Plugin: loading plugin');
+        log('loading plugin');
         await this.loadSettings();
 
         this.statusBarItemEl = this.addStatusBarItem();
         this.addSettingTab(new IndexableFoldersSettingTab(this.app, this));
 
         registerEvents(this);
-        console.log('IndexableFoldersPlugin loaded');
+        log('plugin loaded');
     }
 
     onunload() {
-        console.debug('Indexable Folders Plugin: unloading plugin');
+        log('unloading plugin');
         if (this.folderObserver) {
             this.folderObserver.disconnect();
         }
-        console.log('IndexableFoldersPlugin unloaded');
+        log('plugin unloaded');
     }
 
     async loadSettings() {
-        console.debug('Indexable Folders Plugin: loading settings');
+        log('loading settings');
         this.settings = Object.assign(
             {},
             DEFAULT_SETTINGS,
@@ -47,7 +48,7 @@ export default class IndexableFoldersPlugin extends Plugin {
     }
 
     async saveSettings() {
-        console.debug('Indexable Folders Plugin: saving settings');
+        log('saving settings');
         await this.saveData(this.settings);
     }
 
@@ -64,10 +65,7 @@ export default class IndexableFoldersPlugin extends Plugin {
 
         const escapedSeparator = this.getEscapedSeparator();
         const pattern = `^((?:\\d+)|(?:${special.join('|')}))${escapedSeparator}`;
-        console.debug(
-            'Indexable Folders Plugin: generated prefix regex pattern:',
-            pattern
-        );
+        log('generated prefix regex pattern:', pattern);
         return new RegExp(pattern, 'i');
     }
 
