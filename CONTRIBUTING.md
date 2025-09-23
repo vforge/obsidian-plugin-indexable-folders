@@ -19,11 +19,13 @@ pnpm build
 
 ## Code Quality
 
-This project uses ESLint to maintain code quality. To run the linter, use the command:
+This project uses Prettier for code formatting and ESLint for linting. To format and lint the code, use the command:
 
 ```bash
 pnpm lint
 ```
+
+This command will automatically format the code with Prettier and then run ESLint to check for issues and apply fixes.
 
 ## Releasing New Releases
 
