@@ -9,10 +9,7 @@
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"lint": "eslint ./src/ --ext .ts --quiet --fix",
 		"format": "prettier --write ./src",
-		"prepare": "husky",
-		"test": "vitest",
-		"test:run": "vitest run",
-		"test:ui": "vitest --ui"
+		"prepare": "husky"
 	},
 	"keywords": [],
 	"author": "vforge",
@@ -30,11 +27,7 @@
 		"eslint-config-prettier": "^9.1.0",
 		"prettier": "^3.3.2",
 		"husky": "^9.0.11",
-		"lint-staged": "^15.2.7",
-		"vitest": "^2.0.5",
-		"@vitest/ui": "^2.0.5",
-		"jsdom": "^25.0.0",
-		"@types/jsdom": "^21.1.7"
+		"lint-staged": "^15.2.7"
 	},
 	"dependencies": {
 	},
