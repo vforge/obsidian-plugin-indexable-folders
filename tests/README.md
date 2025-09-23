@@ -31,9 +31,9 @@ tests/
 - **Dependencies**: Require Obsidian API mocks, DOM simulation
 - **Examples**: File operations, UI updates, plugin lifecycle
 - **Files**:
-    - `obsidian-dom.test.ts` (16 tests) - DOM & UI integration
-    - `folder-actions.test.ts` (17 tests) - Context menu functionality
-    - `file-system.test.ts` (19 tests) - File system operations
+  - `obsidian-dom.test.ts` (16 tests) - DOM & UI integration
+  - `folder-actions.test.ts` (17 tests) - Context menu functionality
+  - `file-system.test.ts` (19 tests) - File system operations
 
 ### Mocks (`__mocks__/`)
 
@@ -45,17 +45,17 @@ tests/
 
 ```bash
 # Run all tests
-pnpm test
+pnpm test:run
 
 # Run specific category
-pnpm exec vitest run tests/unit/
-pnpm exec vitest run tests/integration/
+pnpm test run tests/unit/
+pnpm test run tests/integration/
 
 # Run specific test file
-pnpm exec vitest run tests/integration/obsidian-dom.test.ts
+pnpm test run tests/integration/obsidian-dom.test.ts
 
 # Watch mode
-pnpm exec vitest
+pnpm test
 
 # UI mode
 pnpm test:ui
@@ -66,14 +66,14 @@ pnpm test:ui
 - **Total Tests**: 95
 - **Test Files**: 4
 - **Coverage Areas**:
-    - Core folder indexing logic
-    - DOM manipulation and styling
-    - Obsidian API integration
-    - File system operations
-    - Context menu functionality
-    - Settings management
-    - Error handling and edge cases
-    - Performance testing
+  - Core folder indexing logic
+  - DOM manipulation and styling
+  - Obsidian API integration
+  - File system operations
+  - Context menu functionality
+  - Settings management
+  - Error handling and edge cases
+  - Performance testing
 
 ## Writing New Tests
 

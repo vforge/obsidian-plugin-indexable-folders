@@ -45,10 +45,10 @@ This project includes comprehensive tests (95 tests) to ensure reliability withi
 
 ```bash
 # Run all tests
-pnpm test
+pnpm test:run
 
 # Run tests in watch mode
-pnpm exec vitest
+pnpm test
 
 # Run tests with UI
 pnpm test:ui
