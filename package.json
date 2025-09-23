@@ -1,7 +1,7 @@
 {
 	"name": "obsidian-plugin-indexable-folders",
 	"version": "0.0.1",
-	"description": "An Obsidian plugin to make folders indexable.",
+	"description": "An Obsidian plugin that enhances folder organization by styling numeric prefixes and providing context menu actions for reordering indexed folders.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
@@ -10,9 +10,25 @@
 		"lint": "prettier --write ./src && eslint ./src/ --ext .ts --quiet --fix",
 		"prepare": "husky"
 	},
-	"keywords": [],
+	"keywords": [
+		"obsidian",
+		"plugin",
+		"folders",
+		"organization", 
+		"indexing",
+		"file-explorer",
+		"productivity"
+	],
 	"author": "vforge",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/vforge/obsidian-plugin-indexable-folders.git"
+	},
+	"homepage": "https://github.com/vforge/obsidian-plugin-indexable-folders#readme",
+	"bugs": {
+		"url": "https://github.com/vforge/obsidian-plugin-indexable-folders/issues"
+	},
 	"devDependencies": {
 		"@types/node": "^16.11.6",
 		"@typescript-eslint/eslint-plugin": "5.29.0",
