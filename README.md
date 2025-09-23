@@ -45,13 +45,13 @@ This project includes comprehensive tests (95 tests) to ensure reliability withi
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
 # Run tests in watch mode
-npx vitest
+pnpm exec vitest
 
 # Run tests with UI
-npm run test:ui
+pnpm test:ui
 ```
 
 For detailed information about the test suite, see [`tests/README.md`](tests/README.md).
@@ -72,7 +72,7 @@ pnpm lint
 - Upload the files `main.js`, `manifest.json`, and `styles.css` as binary attachments.
 - Publish the release.
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`. The command will bump the version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`.
+> You can simplify the version bump process by running `pnpm version patch`, `pnpm version minor` or `pnpm version major` after updating `minAppVersion` manually in `manifest.json`. The command will bump the version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`.
 
 ## Adding your plugin to the community plugin list
 

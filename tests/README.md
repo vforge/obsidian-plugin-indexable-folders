@@ -45,20 +45,20 @@ tests/
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
 # Run specific category
-npx vitest run tests/unit/
-npx vitest run tests/integration/
+pnpm exec vitest run tests/unit/
+pnpm exec vitest run tests/integration/
 
 # Run specific test file
-npx vitest run tests/integration/obsidian-dom.test.ts
+pnpm exec vitest run tests/integration/obsidian-dom.test.ts
 
 # Watch mode
-npx vitest
+pnpm exec vitest
 
 # UI mode
-npm run test:ui
+pnpm test:ui
 ```
 
 ## Test Coverage
