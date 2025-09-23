@@ -56,14 +56,14 @@ export default class IndexableFoldersPlugin extends Plugin {
     }
 
     getPrefixRegex(): RegExp {
-        const blacklisted = this.settings.blacklistedPrefixes
+        const special = this.settings.specialPrefixes
             .split(',')
             .map((p) => p.trim())
             .filter(Boolean)
             .map((p) => p.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&'));
 
         const escapedSeparator = this.getEscapedSeparator();
-        const pattern = `^((?:\\d+)|(?:${blacklisted.join('|')}))${escapedSeparator}`;
+        const pattern = `^((?:\\d+)|(?:${special.join('|')}))${escapedSeparator}`;
         console.debug(
             'Indexable Folders Plugin: generated prefix regex pattern:',
             pattern

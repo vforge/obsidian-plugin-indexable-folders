@@ -1,11 +1,11 @@
 export interface IndexableFoldersSettings {
-    blacklistedPrefixes: string;
+    specialPrefixes: string;
     statusBarSeparator: string;
     separator: string;
 }
 
 export const DEFAULT_SETTINGS: IndexableFoldersSettings = {
-    blacklistedPrefixes: 'zz, xx',
+    specialPrefixes: 'zz, xx',
     statusBarSeparator: '→',
     separator: '_',
 };

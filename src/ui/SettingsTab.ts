@@ -15,20 +15,20 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
         containerEl.empty();
 
         new Setting(containerEl)
-            .setName('Blacklisted prefixes')
+            .setName('Special prefixes')
             .setDesc(
                 'A comma-separated list of case-insensitive prefixes that will be styled but not changeable (e.g., for archive folders).'
             )
             .addText((text) =>
                 text
                     .setPlaceholder('e.g., zz, xx, archive')
-                    .setValue(this.plugin.settings.blacklistedPrefixes)
+                    .setValue(this.plugin.settings.specialPrefixes)
                     .onChange(async (value) => {
                         console.debug(
-                            'Indexable Folders Plugin: blacklisted prefixes setting changed to:',
+                            'Indexable Folders Plugin: special prefixes setting changed to:',
                             value
                         );
-                        this.plugin.settings.blacklistedPrefixes = value;
+                        this.plugin.settings.specialPrefixes = value;
                         await this.plugin.saveSettings();
                         // Re-render folders to apply new settings
                         this.plugin.prefixNumericFolders();
