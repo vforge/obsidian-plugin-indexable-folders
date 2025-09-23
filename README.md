@@ -18,46 +18,20 @@ If you find this plugin useful, you can support my work by buying me a coffee.
 
 [![Buy Me A Coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=vforge1&button_colour=FFDD00&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff)](https://www.buymeacoffee.com/vforge1)
 
-## Development
+## Installation
 
-To work on this plugin locally:
+### From Obsidian Community Plugins
 
-1. Clone this repository.
-2. Make sure your NodeJS is at least v22.19.0 (`node --version`).
-3. Run `pnpm install` to install dependencies.
-4. Run `pnpm dev` to start compilation in watch mode.
+1. Open Settings in Obsidian
+2. Go to Community Plugins and disable Safe Mode
+3. Click Browse and search for "Indexable Folders"
+4. Install and enable the plugin
 
-To create a production build of the plugin, run the following command:
+### Manual Installation
 
-```bash
-pnpm build
-```
+Copy `main.js`, `styles.css`, and `manifest.json` to your vault's plugin folder:
+`VaultFolder/.obsidian/plugins/obsidian-plugin-indexable-folders/`
 
-### Code Quality
+## Contributing
 
-This project uses ESLint to maintain code quality. To run the linter, use the command:
-
-```bash
-pnpm lint
-```
-
-## Releasing New Releases
-
-- Update your `manifest.json` with your new version number, such as `0.0.2`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create a new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`.
-- Upload the files `main.js`, `manifest.json`, and `styles.css` as binary attachments.
-- Publish the release.
-
-> You can simplify the version bump process by running `pnpm version patch`, `pnpm version minor` or `pnpm version major` after updating `minAppVersion` manually in `manifest.json`. The command will bump the version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`.
-
-## Adding your plugin to the community plugin list
-
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at <https://github.com/obsidianmd/obsidian-releases> to add your plugin.
-
-## Manually installing the plugin
-
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/obsidian-plugin-indexable-folders/`.
+Interested in contributing to this plugin? Please see [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, code quality guidelines, and release processes.
