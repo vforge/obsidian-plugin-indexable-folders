@@ -10,7 +10,7 @@ This plugin for Obsidian enhances folder organization by allowing you to prefix 
   - **Move up/down**: Shifts the folder's index by one, automatically cascading the change to other folders to maintain a unique sequence.
   - **Update index...**: Opens a dialog to set a specific index, intelligently shifting other folders to accommodate the new position.
 - **Indexed Status Bar Path**: The status bar displays the full, styled path of the active file's parent folders, including the index pills, providing clear context for nested notes.
-- **Customizable Separator**: The separator used in the status bar path can be customized in the settings (defaults to "→").
+- **Customizable Separators**: Both the separator used in the status bar path (defaults to "→") and the prefix separator used in folder names (defaults to "_") can be customized in the settings.
 
 ## Support
 
