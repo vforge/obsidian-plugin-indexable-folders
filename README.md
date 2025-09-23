@@ -4,14 +4,14 @@ This plugin for Obsidian enhances folder organization by allowing you to prefix 
 
 > [!IMPORTANT]
 > **Personal Project Disclaimer**
-> 
+>
 > This plugin was developed for personal use to address my specific organizational needs. While anyone is welcome to use it if they find it useful, please be aware that:
-> 
+>
 > - This project was created with the assistance of AI tools as part of my learning process
 > - The code may contain bugs or issues that haven't been discovered
 > - There is **no warranty** provided - use at your own risk
 > - The plugin may not work perfectly in all environments or use cases
-> 
+>
 > If you encounter issues or have suggestions for improvements, feel free to open an issue or contribute to the project!
 
 ## Features
@@ -23,6 +23,12 @@ This plugin for Obsidian enhances folder organization by allowing you to prefix 
   - **Update index...**: Opens a dialog to set a specific index, intelligently shifting other folders to accommodate the new position.
 - **Indexed Status Bar Path**: The status bar displays the full, styled path of the active file's parent folders, including the index pills, providing clear context for nested notes.
 - **Customizable Separators**: Both the separator used in the status bar path (defaults to "→") and the prefix separator used in folder names (defaults to "_") can be customized in the settings.
+
+## Example
+
+Here's what the plugin looks like in action:
+
+![Plugin Example](example.png)
 
 ## Support
 
