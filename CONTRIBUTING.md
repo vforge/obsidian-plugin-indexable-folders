@@ -2,6 +2,9 @@
 
 Thank you for your interest in contributing to this project! This document provides information for developers who want to work on the plugin.
 
+> [!NOTE]
+> This is a personal project developed with AI assistance for learning purposes. While contributions are welcome, please understand that the codebase may contain areas for improvement and there's no warranty on functionality.
+
 ## Development Setup
 
 To work on this plugin locally:

@@ -1,5 +1,8 @@
 # Obsidian community plugin
 
+> [!WARNING]
+> **AI Assistant Context**: This is a personal learning project developed with AI assistance. The codebase may contain areas for improvement, potential bugs, and unconventional patterns. Use discretion when making suggestions and always verify functionality after changes.
+
 ## Project overview
 
 - Target: Obsidian Community Plugin (TypeScript → bundled JavaScript).

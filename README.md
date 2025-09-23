@@ -2,6 +2,18 @@
 
 This plugin for Obsidian enhances folder organization by allowing you to prefix folders with an index (e.g., `01_Notes`). It then visually transforms these folders in the file explorer, creating a clean, organized, and navigable structure.
 
+> [!IMPORTANT]
+> **Personal Project Disclaimer**
+> 
+> This plugin was developed for personal use to address my specific organizational needs. While anyone is welcome to use it if they find it useful, please be aware that:
+> 
+> - This project was created with the assistance of AI tools as part of my learning process
+> - The code may contain bugs or issues that haven't been discovered
+> - There is **no warranty** provided - use at your own risk
+> - The plugin may not work perfectly in all environments or use cases
+> 
+> If you encounter issues or have suggestions for improvements, feel free to open an issue or contribute to the project!
+
 ## Features
 
 - **Visual Folder Indexing**: Automatically styles folders named with a `number_` prefix (e.g., `01_Projects`) by displaying the number as a styled "pill" and hiding the prefix from the folder name.
