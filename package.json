@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-plugin-indexable-folders",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"description": "An Obsidian plugin to make folders indexable.",
 	"main": "main.js",
 	"scripts": {
