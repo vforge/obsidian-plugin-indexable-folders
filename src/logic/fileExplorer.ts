@@ -17,6 +17,10 @@ export function startFolderObserver(plugin: IndexableFoldersPlugin) {
     log('file explorer pane found, adding indexable folder actions');
 
     plugin.folderObserver = new MutationObserver((mutations) => {
+        if (plugin.ignoreMutationsWhileMenuOpen) {
+            log('mutation ignored due to context menu');
+            return;
+        }
         log('mutation observed', mutations);
         plugin.prefixNumericFolders();
     });

@@ -10,6 +10,7 @@ export default class IndexableFoldersPlugin extends Plugin {
     settings: IndexableFoldersSettings;
     folderObserver: MutationObserver;
     statusBarItemEl: HTMLElement;
+    ignoreMutationsWhileMenuOpen = false;
 
     // Expose methods for modules
     public prefixNumericFolders: (forceRefresh?: boolean) => void = (

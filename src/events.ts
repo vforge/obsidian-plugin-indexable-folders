@@ -27,6 +27,42 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
             }
             log('file-menu event for folder:', file.path);
 
+            // Ignore mutations while context menu is open
+            plugin.ignoreMutationsWhileMenuOpen = true;
+            log('ignoreMutationsWhileMenuOpen = true');
+
+            // Find folder DOM element
+            const fileExplorer = plugin.app.workspace.containerEl.querySelector(
+                '.nav-files-container'
+            );
+            let folderEl: HTMLElement | null = null;
+            if (fileExplorer) {
+                folderEl = fileExplorer.querySelector(
+                    `[data-path="${file.path}"]`
+                );
+            }
+
+            // Handler to re-enable mutations
+            const reenableMutations = () => {
+                plugin.ignoreMutationsWhileMenuOpen = false;
+                log(
+                    'ignoreMutationsWhileMenuOpen = false (focusout or menu hide)'
+                );
+            };
+
+            // Listen for folder losing focus
+            if (folderEl) {
+                folderEl.addEventListener('focusout', reenableMutations);
+            }
+
+            // Resume mutations when menu closes and clean up focusout listener
+            menu.onHide(() => {
+                reenableMutations();
+                if (folderEl) {
+                    folderEl.removeEventListener('focusout', reenableMutations);
+                }
+            });
+
             revertFolderName(plugin, file);
 
             const numericPrefixRegex = plugin.getNumericPrefixRegex();
@@ -59,6 +95,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                             file,
                             async (newIndex) => {
                                 await updateFolderIndex(plugin, file, newIndex);
+                                plugin.prefixNumericFolders(true);
                             }
                         ).open();
                     });
@@ -78,6 +115,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                             file,
                             currentNumber - 1
                         );
+                        plugin.prefixNumericFolders(true);
                     });
             });
 
@@ -97,6 +135,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                             file,
                             currentNumber + 1
                         );
+                        plugin.prefixNumericFolders(true);
                     });
             });
         })
