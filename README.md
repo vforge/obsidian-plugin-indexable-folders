@@ -35,6 +35,27 @@ To create a production build of the plugin, run the following command:
 pnpm build
 ```
 
+### Testing
+
+This project includes comprehensive tests (95 tests) to ensure reliability within Obsidian's ecosystem. The test suite is organized in the `tests/` directory:
+
+- **Unit tests**: Pure logic testing without external dependencies
+- **Integration tests**: Tests with Obsidian API interactions
+- **Complete API mocks**: Realistic Obsidian API simulation
+
+```bash
+# Run all tests
+pnpm test:run
+
+# Run tests in watch mode
+pnpm test
+
+# Run tests with UI
+pnpm test:ui
+```
+
+For detailed information about the test suite, see [`tests/README.md`](tests/README.md).
+
 ### Code Quality
 
 This project uses ESLint to maintain code quality. To run the linter, use the command:
