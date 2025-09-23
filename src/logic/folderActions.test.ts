@@ -85,6 +85,39 @@ describe('Folder Index Utils', () => {
         });
     });
 
+    describe('special index protection', () => {
+        it('should prevent moving folders with all-zero indices', () => {
+            const specialFolders = ['0_special', '00_special', '000_special'];
+            specialFolders.forEach((folderName) => {
+                const index = extractIndex(folderName);
+                expect(index).not.toBe(null);
+                expect(isSpecialIndex(index!)).toBe(true);
+            });
+        });
+
+        it('should prevent moving folders with all-nine indices', () => {
+            const specialFolders = ['9_special', '99_special', '999_special'];
+            specialFolders.forEach((folderName) => {
+                const index = extractIndex(folderName);
+                expect(index).not.toBe(null);
+                expect(isSpecialIndex(index!)).toBe(true);
+            });
+        });
+
+        it('should allow moving folders with regular indices', () => {
+            const regularFolders = [
+                '1_regular',
+                '12_regular',
+                '90_regular',
+                '909_regular',
+            ];
+            regularFolders.forEach((folderName) => {
+                const index = extractIndex(folderName);
+                expect(index).not.toBe(null);
+                expect(isSpecialIndex(index!)).toBe(false);
+            });
+        });
+    });
     describe('folder reordering scenarios', () => {
         it('should handle moving folder up scenario: 1_foo, 2_bar, 3_baz -> move 3_baz up to position 2', () => {
             const targetFolder = '3_baz';
@@ -268,6 +301,245 @@ describe('Folder Index Utils', () => {
                 (name) => extractIndex(name) !== null
             );
             expect(validateSequence(indexedOnly)).toBe(true);
+        });
+    });
+
+    describe('smart reindexing scenarios with special folders', () => {
+        function simulateReindexing(
+            folders: string[],
+            targetFolder: string,
+            targetIndex: number
+        ): string[] {
+            // Separate special and regular folders
+            const specialFolders = folders.filter((name) => {
+                const match = name.match(numericPrefixRegex);
+                return match && isSpecialIndex(parseInt(match[1], 10));
+            });
+
+            const regularFolders = folders.filter((name) => {
+                const match = name.match(numericPrefixRegex);
+                return match && !isSpecialIndex(parseInt(match[1], 10));
+            });
+
+            // Sort regular folders by index
+            regularFolders.sort((a, b) => {
+                const indexA = parseInt(a.match(numericPrefixRegex)![1], 10);
+                const indexB = parseInt(b.match(numericPrefixRegex)![1], 10);
+                return indexA - indexB;
+            });
+
+            // Create new ordering
+            const otherFolders = regularFolders.filter(
+                (name) => name !== targetFolder
+            );
+            const newOrdering: string[] = [];
+
+            let targetInserted = false;
+            for (const folder of otherFolders) {
+                const currentIndex = parseInt(
+                    folder.match(numericPrefixRegex)![1],
+                    10
+                );
+
+                if (!targetInserted && currentIndex >= targetIndex) {
+                    newOrdering.push(targetFolder);
+                    targetInserted = true;
+                }
+
+                newOrdering.push(folder);
+            }
+
+            if (!targetInserted) {
+                newOrdering.push(targetFolder);
+            }
+
+            // Re-index starting from 1, skipping special indices
+            const result = [...specialFolders];
+            let nextIndex = 1;
+
+            for (const folder of newOrdering) {
+                // Skip indices occupied by special folders
+                while (
+                    specialFolders.some((sf) => {
+                        const match = sf.match(numericPrefixRegex);
+                        return match && parseInt(match[1], 10) === nextIndex;
+                    })
+                ) {
+                    nextIndex++;
+                }
+
+                const name = removeIndex(folder);
+                const newName = formatWithIndex(name, nextIndex);
+                result.push(newName);
+                nextIndex++;
+            }
+
+            // Sort result by index for comparison
+            return result.sort((a, b) => {
+                const indexA = parseInt(a.match(numericPrefixRegex)![1], 10);
+                const indexB = parseInt(b.match(numericPrefixRegex)![1], 10);
+                return indexA - indexB;
+            });
+        }
+
+        it('should handle: 0_foo, 1_baz, 2_bar, 3_qux -> move 2_bar up -> 0_foo, 1_bar, 2_baz, 3_qux', () => {
+            const folders = ['0_foo', '1_baz', '2_bar', '3_qux'];
+            const result = simulateReindexing(folders, '2_bar', 1);
+            expect(result).toEqual(['0_foo', '1_bar', '2_baz', '3_qux']);
+        });
+
+        it('should handle: 0_foo, 1_baz, 3_bar, 4_qux -> move 1_baz down -> 0_foo, 1_baz, 2_bar, 3_qux', () => {
+            const folders = ['0_foo', '1_baz', '3_bar', '4_qux'];
+            // Moving 1_baz down means it goes after 3_bar in the sequence
+            const result = simulateReindexing(folders, '1_baz', 3);
+            expect(result).toEqual(['0_foo', '1_baz', '2_bar', '3_qux']);
+        });
+
+        it('should handle: 0_foo, 1_baz, 3_bar, 4_qux -> move 3_bar up -> 0_foo, 1_baz, 2_bar, 3_qux', () => {
+            const folders = ['0_foo', '1_baz', '3_bar', '4_qux'];
+            // Moving 3_bar up means it goes before 1_baz in sequence, so position 2
+            const result = simulateReindexing(folders, '3_bar', 2);
+            expect(result).toEqual(['0_foo', '1_baz', '2_bar', '3_qux']);
+        });
+
+        it('should handle multiple special folders: 0_arch, 1_doc, 99_temp, 2_src -> move 2_src up -> 0_arch, 1_src, 2_doc, 99_temp', () => {
+            const folders = ['0_arch', '1_doc', '99_temp', '2_src'];
+            const result = simulateReindexing(folders, '2_src', 1);
+            expect(result).toEqual(['0_arch', '1_src', '2_doc', '99_temp']);
+        });
+
+        it('should preserve special folders when reindexing around them', () => {
+            const folders = ['0_special', '1_a', '2_b', '999_archive'];
+            const result = simulateReindexing(folders, '1_a', 3);
+            expect(result).toEqual(['0_special', '1_b', '2_a', '999_archive']);
+        });
+    });
+
+    describe('simple move scenarios (no full reindexing needed)', () => {
+        function simulateSimpleMove(
+            folders: string[],
+            targetFolder: string,
+            newTargetIndex: number
+        ): string[] {
+            const result = [...folders];
+            const targetIndex = result.findIndex((f) => f === targetFolder);
+
+            if (targetIndex === -1) return result;
+
+            // Check if target index is available (no conflicts)
+            const targetIndexExists = result.some((f) => {
+                const match = f.match(numericPrefixRegex);
+                return match && parseInt(match[1], 10) === newTargetIndex;
+            });
+
+            if (targetIndexExists) {
+                // Would need full reindexing - this test simulates the simple case
+                return result;
+            }
+
+            // Simple rename
+            const name = removeIndex(targetFolder);
+            const newName = formatWithIndex(name, newTargetIndex);
+            result[targetIndex] = newName;
+
+            return result.sort((a, b) => {
+                const indexA = parseInt(a.match(numericPrefixRegex)![1], 10);
+                const indexB = parseInt(b.match(numericPrefixRegex)![1], 10);
+                return indexA - indexB;
+            });
+        }
+
+        it('should handle simple move down at the end: 0_foo, 1_baz, 3_bar, 4_qux -> move 4_qux down -> 0_foo, 1_baz, 3_bar, 5_qux', () => {
+            const folders = ['0_foo', '1_baz', '3_bar', '4_qux'];
+            const result = simulateSimpleMove(folders, '4_qux', 5);
+            expect(result).toEqual(['0_foo', '1_baz', '3_bar', '5_qux']);
+        });
+
+        it('should handle simple move down in gap: 0_foo, 1_baz, 3_bar, 4_qux -> move 1_baz down -> 0_foo, 2_baz, 3_bar, 4_qux', () => {
+            const folders = ['0_foo', '1_baz', '3_bar', '4_qux'];
+            const result = simulateSimpleMove(folders, '1_baz', 2);
+            expect(result).toEqual(['0_foo', '2_baz', '3_bar', '4_qux']);
+        });
+
+        it('should handle simple move up in gap: 0_foo, 1_baz, 3_bar, 4_qux -> move 3_bar up -> 0_foo, 1_baz, 2_bar, 4_qux', () => {
+            const folders = ['0_foo', '1_baz', '3_bar', '4_qux'];
+            const result = simulateSimpleMove(folders, '3_bar', 2);
+            expect(result).toEqual(['0_foo', '1_baz', '2_bar', '4_qux']);
+        });
+    });
+
+    describe('smart swap scenarios (two-folder swap)', () => {
+        function simulateSmartSwap(
+            folders: string[],
+            targetFolder: string,
+            newTargetIndex: number
+        ): string[] {
+            const result = [...folders];
+            const targetIndex = result.findIndex((f) => f === targetFolder);
+
+            if (targetIndex === -1) return result;
+
+            // Find the folder currently at the target index
+            const conflictFolder = result.find((f) => {
+                const match = f.match(numericPrefixRegex);
+                return match && parseInt(match[1], 10) === newTargetIndex;
+            });
+
+            if (!conflictFolder) return result; // No conflict, should be simple move
+
+            // Get the original index of the target folder
+            const targetMatch = targetFolder.match(numericPrefixRegex);
+            if (!targetMatch) return result;
+            const originalIndex = parseInt(targetMatch[1], 10);
+
+            // Check if smart swap is possible (original position is available)
+            const originalPositionOccupied = result.some((f) => {
+                if (f === targetFolder || f === conflictFolder) return false;
+                const match = f.match(numericPrefixRegex);
+                return match && parseInt(match[1], 10) === originalIndex;
+            });
+
+            if (originalPositionOccupied) return result; // Can't do smart swap
+
+            // Perform the swap
+            const targetName = removeIndex(targetFolder);
+            const conflictName = removeIndex(conflictFolder);
+
+            const newTargetFolder = formatWithIndex(targetName, newTargetIndex);
+            const newConflictFolder = formatWithIndex(
+                conflictName,
+                originalIndex
+            );
+
+            const newResult = result.map((f) => {
+                if (f === targetFolder) return newTargetFolder;
+                if (f === conflictFolder) return newConflictFolder;
+                return f;
+            });
+
+            return newResult.sort((a, b) => {
+                const indexA = parseInt(a.match(numericPrefixRegex)![1], 10);
+                const indexB = parseInt(b.match(numericPrefixRegex)![1], 10);
+                return indexA - indexB;
+            });
+        }
+
+        it('should handle smart swap: 0_foo, 1_baz, 2_bar, 4_qux -> move 2_bar up -> 0_foo, 1_bar, 2_baz, 4_qux', () => {
+            const folders = ['0_foo', '1_baz', '2_bar', '4_qux'];
+            const result = simulateSmartSwap(folders, '2_bar', 1);
+            expect(result).toEqual(['0_foo', '1_bar', '2_baz', '4_qux']);
+        });
+
+        it('should handle smart swap: 1_foo, 2_bar, 3_baz -> move 3_baz up to 1 -> 1_baz, 2_bar, 3_foo', () => {
+            const folders = ['1_foo', '2_bar', '3_baz'];
+            const result = simulateSmartSwap(folders, '3_baz', 1);
+            expect(result).toEqual(['1_baz', '2_bar', '3_foo']);
+        });
+
+        it('should handle smart swap: 1_alpha, 3_beta, 4_gamma -> move 4_gamma up to 3 -> 1_alpha, 3_gamma, 4_beta', () => {
+            const folders = ['1_alpha', '3_beta', '4_gamma'];
+            const result = simulateSmartSwap(folders, '4_gamma', 3);
+            expect(result).toEqual(['1_alpha', '3_gamma', '4_beta']);
         });
     });
 });

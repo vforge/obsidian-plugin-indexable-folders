@@ -3,7 +3,7 @@ import IndexableFoldersPlugin from './main';
 import { revertFolderName, startFolderObserver } from './logic/fileExplorer';
 import { updateStatusBar } from './logic/statusBar';
 import { UpdateIndexModal } from './ui/UpdateIndexModal';
-import { updateFolderIndex } from './logic/folderActions';
+import { updateFolderIndex, isSpecialIndex } from './logic/folderActions';
 
 export function registerEvents(plugin: IndexableFoldersPlugin) {
     plugin.app.workspace.onLayoutReady(() => {
@@ -48,10 +48,14 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
             const currentNumber = parseInt(prefix, 10);
             const prefixLength = prefix.length;
 
+            // Check if this is a special index folder (all 0s or all 9s)
+            const isSpecialFolder = isSpecialIndex(currentNumber);
+
             // Add "Update index" option
             menu.addItem((item) => {
                 item.setTitle('Update index...')
                     .setIcon('edit')
+                    .setDisabled(isSpecialFolder)
                     .onClick(() => {
                         console.debug(
                             'Indexable Folders Plugin: "Update index" clicked for',
@@ -71,13 +75,13 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
             menu.addItem((item) => {
                 item.setTitle('Move up')
                     .setIcon('arrow-up')
-                    .setDisabled(currentNumber <= 0)
+                    .setDisabled(currentNumber <= 0 || isSpecialFolder)
                     .onClick(async () => {
                         console.debug(
                             'Indexable Folders Plugin: "Move up" clicked for',
                             file.name
                         );
-                        if (currentNumber <= 0) return;
+                        if (currentNumber <= 0 || isSpecialFolder) return;
 
                         await updateFolderIndex(
                             plugin,
@@ -92,13 +96,14 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                 const maxNumber = Math.pow(10, prefixLength) - 1;
                 item.setTitle('Move down')
                     .setIcon('arrow-down')
-                    .setDisabled(currentNumber >= maxNumber)
+                    .setDisabled(currentNumber >= maxNumber || isSpecialFolder)
                     .onClick(async () => {
                         console.debug(
                             'Indexable Folders Plugin: "Move down" clicked for',
                             file.name
                         );
-                        if (currentNumber >= maxNumber) return;
+                        if (currentNumber >= maxNumber || isSpecialFolder)
+                            return;
 
                         await updateFolderIndex(
                             plugin,
