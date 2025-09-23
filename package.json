@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-plugin-indexable-folders",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "An Obsidian plugin that enhances folder organization by styling numeric prefixes and providing context menu actions for reordering indexed folders.",
 	"main": "main.js",
 	"scripts": {
