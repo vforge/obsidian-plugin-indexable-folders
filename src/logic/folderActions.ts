@@ -18,7 +18,7 @@ export async function updateFolderIndex(
     );
     if (!folder.parent) return;
 
-    const numericPrefixRegex = /^(\d+)_/;
+    const numericPrefixRegex = plugin.getNumericPrefixRegex();
     const match = folder.name.match(numericPrefixRegex);
     if (!match) return;
 
@@ -73,7 +73,7 @@ async function trySimpleMove(
 ): Promise<boolean> {
     if (!folder.parent) return false;
 
-    const numericPrefixRegex = /^(\d+)_/;
+    const numericPrefixRegex = plugin.getNumericPrefixRegex();
 
     // Get all indexed folders in the parent directory
     const allFolders = folder.parent.children
@@ -150,7 +150,7 @@ async function trySimpleMove(
     const match = folder.name.match(numericPrefixRegex)!;
     const restOfName = folder.name.substring(match[0].length);
     const newPrefix = String(newIndex).padStart(prefixLength, '0');
-    const newName = `${newPrefix}_${restOfName}`;
+    const newName = `${newPrefix}${plugin.settings.separator}${restOfName}`;
 
     console.debug(`Performing simple move: ${folder.name} → ${newName}`);
 
@@ -173,7 +173,7 @@ async function performSmartSwap(
 ): Promise<boolean> {
     if (!folder1.parent || !folder2.parent) return false;
 
-    const numericPrefixRegex = /^(\d+)_/;
+    const numericPrefixRegex = plugin.getNumericPrefixRegex();
 
     // Get the names without indices
     const folder1Match = folder1.name.match(numericPrefixRegex)!;
@@ -187,17 +187,17 @@ async function performSmartSwap(
         prefixLength,
         '0'
     );
-    const folder1NewName = `${folder1NewPrefix}_${folder1Name}`;
+    const folder1NewName = `${folder1NewPrefix}${plugin.settings.separator}${folder1Name}`;
 
     const folder2NewPrefix = String(folder2NewIndex).padStart(
         prefixLength,
         '0'
     );
-    const folder2NewName = `${folder2NewPrefix}_${folder2Name}`;
+    const folder2NewName = `${folder2NewPrefix}${plugin.settings.separator}${folder2Name}`;
 
     try {
         // Rename folder1 to temporary name first to avoid conflicts
-        const tempName = `temp_${Date.now()}_${folder1Name}`;
+        const tempName = `temp${plugin.settings.separator}${Date.now()}${plugin.settings.separator}${folder1Name}`;
         await plugin.app.fileManager.renameFile(
             folder1,
             `${folder1.parent.path}/${tempName}`
@@ -239,7 +239,7 @@ async function fullReindexWithConflictResolution(
 ) {
     if (!targetFolder.parent) return;
 
-    const numericPrefixRegex = /^(\d+)_/;
+    const numericPrefixRegex = plugin.getNumericPrefixRegex();
 
     // Get all indexed folders in the parent directory
     const allFolders = targetFolder.parent.children
@@ -319,7 +319,7 @@ async function fullReindexWithConflictResolution(
             prefixLength,
             '0'
         );
-        const newName = `${newPrefix}_${restOfName}`;
+        const newName = `${newPrefix}${plugin.settings.separator}${restOfName}`;
 
         if (folder.name !== newName) {
             foldersToRename.push({

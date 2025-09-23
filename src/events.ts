@@ -34,7 +34,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
 
             revertFolderName(plugin, file);
 
-            const numericPrefixRegex = /^(\d+)_/;
+            const numericPrefixRegex = plugin.getNumericPrefixRegex();
             const match = file.name.match(numericPrefixRegex);
 
             if (!match) {
@@ -63,6 +63,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                         );
                         new UpdateIndexModal(
                             plugin.app,
+                            plugin,
                             file,
                             async (newIndex) => {
                                 await updateFolderIndex(plugin, file, newIndex);

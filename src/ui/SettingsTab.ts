@@ -56,5 +56,28 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                         this.plugin.updateStatusBar();
                     })
             );
+
+        new Setting(containerEl)
+            .setName('Prefix separator')
+            .setDesc(
+                'The character used to separate numeric prefixes from folder names (e.g., "01_Folder Name").'
+            )
+            .addText((text) =>
+                text
+                    .setPlaceholder('e.g., _ or -')
+                    .setValue(this.plugin.settings.separator)
+                    .onChange(async (value) => {
+                        console.debug(
+                            'Indexable Folders Plugin: separator setting changed to:',
+                            value
+                        );
+                        this.plugin.settings.separator = value;
+                        await this.plugin.saveSettings();
+                        // Re-render folders to apply new settings
+                        this.plugin.prefixNumericFolders();
+                        // Update status bar in case the current folder is affected
+                        this.plugin.updateStatusBar();
+                    })
+            );
     }
 }

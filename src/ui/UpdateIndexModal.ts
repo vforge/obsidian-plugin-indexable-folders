@@ -1,7 +1,9 @@
 import { App, Modal, Notice, Setting, TFolder } from 'obsidian';
+import IndexableFoldersPlugin from '../main';
 
 export class UpdateIndexModal extends Modal {
     folder: TFolder;
+    plugin: IndexableFoldersPlugin;
     onSubmit: (newIndex: number) => Promise<void>;
     conflictEl: HTMLElement;
     errorEl: HTMLElement;
@@ -9,10 +11,12 @@ export class UpdateIndexModal extends Modal {
 
     constructor(
         app: App,
+        plugin: IndexableFoldersPlugin,
         folder: TFolder,
         onSubmit: (newIndex: number) => Promise<void>
     ) {
         super(app);
+        this.plugin = plugin;
         this.folder = folder;
         this.onSubmit = onSubmit;
     }
@@ -25,11 +29,17 @@ export class UpdateIndexModal extends Modal {
 
         const paddedIndex = newIndex.padStart(prefixLength, '0');
         const conflicts: string[] = [];
+        const escapedSeparator = this.plugin.settings.separator.replace(
+            /[-\\^$*+?.()|[\]{}]/g,
+            '\\$&'
+        );
 
         for (const child of this.folder.parent.children) {
             if (child === this.folder) continue;
 
-            const numericPrefixRegex = new RegExp(`^${paddedIndex}_`);
+            const numericPrefixRegex = new RegExp(
+                `^${paddedIndex}${escapedSeparator}`
+            );
             if (numericPrefixRegex.test(child.name)) {
                 conflicts.push(child.name);
             }
@@ -129,7 +139,11 @@ export class UpdateIndexModal extends Modal {
         });
 
         const currentName = this.folder.name;
-        const newName = currentName.replace(/^\d+/, newIndexValue);
+        const numericPrefixRegex = this.plugin.getNumericPrefixRegex();
+        const newName = currentName.replace(
+            numericPrefixRegex,
+            `${newIndexValue}${this.plugin.settings.separator}`
+        );
 
         this.successEl.createEl('div', {
             text: `${currentName} → ${newName}`,
@@ -142,7 +156,7 @@ export class UpdateIndexModal extends Modal {
         contentEl.empty();
         contentEl.addClass('indexable-folder-modal');
 
-        const numericPrefixRegex = /^(\d+)_/;
+        const numericPrefixRegex = this.plugin.getNumericPrefixRegex();
         const match = this.folder.name.match(numericPrefixRegex);
         if (!match) {
             this.close();

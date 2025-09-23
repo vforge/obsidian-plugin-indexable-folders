@@ -49,6 +49,10 @@ export default class IndexableFoldersPlugin extends Plugin {
         await this.saveData(this.settings);
     }
 
+    private getEscapedSeparator(): string {
+        return this.settings.separator.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
+    }
+
     getPrefixRegex(): RegExp {
         const blacklisted = this.settings.blacklistedPrefixes
             .split(',')
@@ -56,11 +60,18 @@ export default class IndexableFoldersPlugin extends Plugin {
             .filter(Boolean)
             .map((p) => p.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&'));
 
-        const pattern = `^((?:\\d+)|(?:${blacklisted.join('|')}))_`;
+        const escapedSeparator = this.getEscapedSeparator();
+        const pattern = `^((?:\\d+)|(?:${blacklisted.join('|')}))${escapedSeparator}`;
         console.debug(
             'Indexable Folders Plugin: generated prefix regex pattern:',
             pattern
         );
         return new RegExp(pattern, 'i');
+    }
+
+    getNumericPrefixRegex(): RegExp {
+        const escapedSeparator = this.getEscapedSeparator();
+        const pattern = `^(\\d+)${escapedSeparator}`;
+        return new RegExp(pattern);
     }
 }
