@@ -32,7 +32,7 @@ To work on this plugin locally:
 To create a production build of the plugin, run the following command:
 
 ```bash
-pnpm run build
+pnpm build
 ```
 
 ### Code Quality
@@ -51,7 +51,7 @@ pnpm lint
 - Upload the files `main.js`, `manifest.json`, and `styles.css` as binary attachments.
 - Publish the release.
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`. The command will bump the version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`.
+> You can simplify the version bump process by running `pnpm version patch`, `pnpm version minor` or `pnpm version major` after updating `minAppVersion` manually in `manifest.json`. The command will bump the version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`.
 
 ## Adding your plugin to the community plugin list
 
