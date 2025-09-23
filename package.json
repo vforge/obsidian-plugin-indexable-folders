@@ -32,7 +32,7 @@
 	"dependencies": {
 	},
 	"lint-staged": {
-		"src/**/*.ts": [
+		"{src,tests}/**/*.ts": [
 			"prettier --write",
 			"eslint --quiet --fix"
 		]
