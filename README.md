@@ -32,7 +32,7 @@ To work on this plugin locally:
 To create a production build of the plugin, run the following command:
 
 ```bash
-pnpm run build
+pnpm build
 ```
 
 ### Testing
