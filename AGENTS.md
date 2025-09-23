@@ -33,12 +33,12 @@ pnpm dev
 pnpm build
 ```
 
-## Linting
+## Code Quality
 
-- To use eslint install eslint from terminal: `pnpm add -g eslint`
-- To use eslint to analyze this project use this command: `pnpm lint`
-- eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder: `pnpm exec eslint ./src/`
+- To format and lint the code use this command: `pnpm lint`
+- This command runs Prettier to format the code and then ESLint to check for issues and apply fixes automatically.
+- ESLint will create a report with suggestions for code improvement by file and line number.
+- The command handles both formatting and linting in one step, ensuring consistent code style and quality.
 
 ## File & folder conventions
 
@@ -245,7 +245,7 @@ this.registerInterval(window.setInterval(() => { /* ... */ }, 1000));
 
 ## Troubleshooting
 
-- Plugin doesn't load after build: ensure `main.js` and `manifest.json` are at the top level of the plugin folder under `<Vault>/.obsidian/plugins/<plugin-id>/`. 
+- Plugin doesn't load after build: ensure `main.js` and `manifest.json` are at the top level of the plugin folder under `<Vault>/.obsidian/plugins/<plugin-id>/`.
 - Build issues: if `main.js` is missing, run `pnpm build` or `pnpm dev` to compile your TypeScript source code.
 - Commands not appearing: verify `addCommand` runs after `onload` and IDs are unique.
 - Settings not persisting: ensure `loadData`/`saveData` are awaited and you re-render the UI after changes.
