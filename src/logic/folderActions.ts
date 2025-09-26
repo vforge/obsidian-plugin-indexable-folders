@@ -44,7 +44,6 @@ export async function updateFolderIndex(
     }
 
     if (newIndex === oldIndex) {
-        log('new index is same as old, no action needed');
         return;
     }
 

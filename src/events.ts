@@ -8,7 +8,6 @@ import { log } from './utils/logger';
 
 export function registerEvents(plugin: IndexableFoldersPlugin) {
     plugin.app.workspace.onLayoutReady(() => {
-        log('layout ready');
         startFolderObserver(plugin);
         updateStatusBar(plugin);
     });
@@ -29,7 +28,6 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
 
             // Ignore mutations while context menu is open
             plugin.ignoreMutationsWhileMenuOpen = true;
-            log('ignoreMutationsWhileMenuOpen = true');
 
             // Find folder DOM element
             const fileExplorer = plugin.app.workspace.containerEl.querySelector(

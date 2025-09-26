@@ -38,7 +38,6 @@ export function updateStatusBar(plugin: IndexableFoldersPlugin): void {
         currentFolder = currentFolder.parent;
     }
 
-    log('status bar path parts:', pathParts);
     pathParts.forEach((part, index) => {
         plugin.statusBarItemEl.appendChild(part);
         if (index < pathParts.length - 1) {
@@ -48,5 +47,4 @@ export function updateStatusBar(plugin: IndexableFoldersPlugin): void {
             });
         }
     });
-    log('status bar updated');
 }
