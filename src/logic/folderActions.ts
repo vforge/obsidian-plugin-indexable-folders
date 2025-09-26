@@ -4,6 +4,11 @@ import { log } from '../utils/logger';
 
 export function isSpecialIndex(index: number): boolean {
     const indexStr = index.toString();
+    // Only consider multi-digit numbers with all same digits as special
+    // Single digits (0-9) are considered normal indices
+    if (indexStr.length <= 1) {
+        return false;
+    }
     const allZeros = /^0+$/.test(indexStr);
     const allNines = /^9+$/.test(indexStr);
     return allZeros || allNines;
