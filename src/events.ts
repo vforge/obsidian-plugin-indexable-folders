@@ -14,7 +14,11 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
 
     plugin.registerEvent(
         plugin.app.workspace.on('file-open', (file) => {
-            log('file-open event for', file?.path);
+            log(
+                plugin.settings.debugEnabled,
+                'file-open event for',
+                file?.path
+            );
             updateStatusBar(plugin);
         })
     );
@@ -24,7 +28,11 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
             if (!(file instanceof TFolder)) {
                 return;
             }
-            log('file-menu event for folder:', file.path);
+            log(
+                plugin.settings.debugEnabled,
+                'file-menu event for folder:',
+                file.path
+            );
 
             // Ignore mutations while context menu is open
             plugin.ignoreMutationsWhileMenuOpen = true;
@@ -44,6 +52,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
             const reenableMutations = () => {
                 plugin.ignoreMutationsWhileMenuOpen = false;
                 log(
+                    plugin.settings.debugEnabled,
                     'ignoreMutationsWhileMenuOpen = false (focusout or menu hide)'
                 );
             };
@@ -68,6 +77,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
 
             if (!match) {
                 log(
+                    plugin.settings.debugEnabled,
                     'folder does not have a numeric prefix, skipping context menu items'
                 );
                 return;
@@ -86,7 +96,11 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                     .setIcon('edit')
                     .setDisabled(isSpecialFolder)
                     .onClick(() => {
-                        log('"Update index" clicked for', file.name);
+                        log(
+                            plugin.settings.debugEnabled,
+                            '"Update index" clicked for',
+                            file.name
+                        );
                         new UpdateIndexModal(
                             plugin.app,
                             plugin,
@@ -105,7 +119,11 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                     .setIcon('arrow-up')
                     .setDisabled(currentNumber <= 0 || isSpecialFolder)
                     .onClick(async () => {
-                        log('"Move up" clicked for', file.name);
+                        log(
+                            plugin.settings.debugEnabled,
+                            '"Move up" clicked for',
+                            file.name
+                        );
                         if (currentNumber <= 0 || isSpecialFolder) return;
 
                         await updateFolderIndex(
@@ -124,7 +142,11 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                     .setIcon('arrow-down')
                     .setDisabled(currentNumber >= maxNumber || isSpecialFolder)
                     .onClick(async () => {
-                        log('"Move down" clicked for', file.name);
+                        log(
+                            plugin.settings.debugEnabled,
+                            '"Move down" clicked for',
+                            file.name
+                        );
                         if (currentNumber >= maxNumber || isSpecialFolder)
                             return;
 

@@ -3,25 +3,33 @@ import IndexableFoldersPlugin from '../main';
 import { log } from '../utils/logger';
 
 export function startFolderObserver(plugin: IndexableFoldersPlugin) {
-    log('starting folder observer');
+    log(plugin.settings.debugEnabled, 'starting folder observer');
     const fileExplorer = plugin.app.workspace.containerEl.querySelector(
         '.nav-files-container'
     );
 
     if (!fileExplorer) {
-        log('file explorer not found, retrying...');
+        log(
+            plugin.settings.debugEnabled,
+            'file explorer not found, retrying...'
+        );
         setTimeout(() => startFolderObserver(plugin), 500);
         return;
     }
-    log('file explorer found');
-    log('file explorer pane found, adding indexable folder actions');
+    log(
+        plugin.settings.debugEnabled,
+        'file explorer pane found, adding indexable folder actions'
+    );
 
     plugin.folderObserver = new MutationObserver((mutations) => {
         if (plugin.ignoreMutationsWhileMenuOpen) {
-            log('mutation ignored due to context menu');
+            log(
+                plugin.settings.debugEnabled,
+                'mutation ignored due to context menu'
+            );
             return;
         }
-        log('mutation observed', mutations);
+        log(plugin.settings.debugEnabled, 'mutation observed', mutations);
         plugin.prefixNumericFolders();
     });
 
@@ -31,7 +39,7 @@ export function startFolderObserver(plugin: IndexableFoldersPlugin) {
     });
 
     // Initial run
-    log('initial run of prefixNumericFolders');
+    log(plugin.settings.debugEnabled, 'initial run of prefixNumericFolders');
     plugin.prefixNumericFolders();
 }
 
@@ -39,7 +47,9 @@ export function prefixNumericFolders(
     plugin: IndexableFoldersPlugin,
     forceRefresh = false
 ) {
-    log('running prefixNumericFolders', { forceRefresh });
+    log(plugin.settings.debugEnabled, 'running prefixNumericFolders', {
+        forceRefresh,
+    });
     const fileExplorer = plugin.app.workspace.containerEl.querySelector(
         '.nav-files-container'
     );
@@ -71,7 +81,11 @@ export function prefixNumericFolders(
         const match = folderName?.match(prefixRegex);
 
         if (match && folderName) {
-            log('found matching folder:', folderName);
+            log(
+                plugin.settings.debugEnabled,
+                'found matching folder:',
+                folderName
+            );
             const numericPrefix = match[1];
             const newFolderName = folderName.substring(match[0].length);
 
@@ -94,7 +108,7 @@ export function revertFolderName(
     plugin: IndexableFoldersPlugin,
     file: TFolder
 ) {
-    log('reverting folder name for', file.path);
+    log(plugin.settings.debugEnabled, 'reverting folder name for', file.path);
     const fileExplorer = plugin.app.workspace.containerEl.querySelector(
         '.nav-files-container'
     );
@@ -111,7 +125,7 @@ export function revertFolderName(
         if (prefixSpan) {
             const originalName = prefixSpan.getAttribute('data-original-name');
             if (originalName) {
-                log('reverting to', originalName);
+                log(plugin.settings.debugEnabled, 'reverting to', originalName);
                 folderTitleEl.textContent = originalName;
             }
         }

@@ -7,9 +7,13 @@ const PREFIX = 'Indexable Folders Plugin:';
 const PREFIX_COLOR = '#4CAF50'; // Green color
 
 /**
- * Log a message with colored prefix
+ * Log a message with colored prefix (only if debugging is enabled)
  */
-export function log(...args: any[]) {
+export function log(debugEnabled: boolean, ...args: any[]) {
+    if (!debugEnabled) {
+        return;
+    }
+
     console.log(
         `%c${PREFIX}`,
         `color: ${PREFIX_COLOR}; font-weight: bold;`,

@@ -25,7 +25,11 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     .setPlaceholder('e.g., zz, xx, archive')
                     .setValue(this.plugin.settings.specialPrefixes)
                     .onChange(async (value) => {
-                        log('special prefixes setting changed to:', value);
+                        log(
+                            this.plugin.settings.debugEnabled,
+                            'special prefixes setting changed to:',
+                            value
+                        );
                         this.plugin.settings.specialPrefixes = value;
                         await this.plugin.saveSettings();
                         // Re-render folders to apply new settings
@@ -45,7 +49,11 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     .setPlaceholder('e.g., → or /')
                     .setValue(this.plugin.settings.statusBarSeparator)
                     .onChange(async (value) => {
-                        log('status bar separator setting changed to:', value);
+                        log(
+                            this.plugin.settings.debugEnabled,
+                            'status bar separator setting changed to:',
+                            value
+                        );
                         this.plugin.settings.statusBarSeparator = value;
                         await this.plugin.saveSettings();
                         this.plugin.updateStatusBar();
@@ -62,13 +70,31 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     .setPlaceholder('e.g., _ or -')
                     .setValue(this.plugin.settings.separator)
                     .onChange(async (value) => {
-                        log('separator setting changed to:', value);
+                        log(
+                            this.plugin.settings.debugEnabled,
+                            'separator setting changed to:',
+                            value
+                        );
                         this.plugin.settings.separator = value;
                         await this.plugin.saveSettings();
                         // Re-render folders to apply new settings (force refresh to update separator)
                         this.plugin.prefixNumericFolders(true);
                         // Update status bar in case the current folder is affected
                         this.plugin.updateStatusBar();
+                    })
+            );
+
+        new Setting(containerEl)
+            .setName('Enable debug logging')
+            .setDesc(
+                'Enable debug logging to the browser console. Useful for troubleshooting issues.'
+            )
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.debugEnabled)
+                    .onChange(async (value) => {
+                        this.plugin.settings.debugEnabled = value;
+                        await this.plugin.saveSettings();
                     })
             );
     }

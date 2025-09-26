@@ -14,7 +14,13 @@ export async function updateFolderIndex(
     folder: TFolder,
     newIndex: number
 ) {
-    log('updating index for', folder.name, 'to', newIndex);
+    log(
+        plugin.settings.debugEnabled,
+        'updating index for',
+        folder.name,
+        'to',
+        newIndex
+    );
     if (!folder.parent) return;
 
     const numericPrefixRegex = plugin.getNumericPrefixRegex();
@@ -26,7 +32,10 @@ export async function updateFolderIndex(
 
     // Check if this folder has a special index that shouldn't be moved
     if (isSpecialIndex(oldIndex)) {
-        log('folder has special index (all 0s or all 9s), cannot be moved');
+        log(
+            plugin.settings.debugEnabled,
+            'folder has special index (all 0s or all 9s), cannot be moved'
+        );
         new Notice(
             `Cannot move folder with special index: ${folder.name}`,
             3000
@@ -37,6 +46,7 @@ export async function updateFolderIndex(
     // Check if target index is special
     if (isSpecialIndex(newIndex)) {
         log(
+            plugin.settings.debugEnabled,
             'target index is special (all 0s or all 9s), cannot move to this position'
         );
         new Notice(`Cannot move to special index position: ${newIndex}`, 3000);
@@ -85,7 +95,10 @@ async function trySimpleMove(
     });
 
     if (targetConflict) {
-        log('target index conflicts with special folder, need full reindexing');
+        log(
+            plugin.settings.debugEnabled,
+            'target index conflicts with special folder, need full reindexing'
+        );
         return false;
     }
 
@@ -120,6 +133,7 @@ async function trySimpleMove(
         if (!sourcePositionOccupied) {
             // Smart swap is possible!
             log(
+                plugin.settings.debugEnabled,
                 'performing smart swap:',
                 folder.name,
                 '↔',
@@ -136,6 +150,7 @@ async function trySimpleMove(
         }
 
         log(
+            plugin.settings.debugEnabled,
             'target index conflicts with regular folder, and smart swap not possible, need full reindexing'
         );
         return false;
@@ -147,7 +162,13 @@ async function trySimpleMove(
     const newPrefix = String(newIndex).padStart(prefixLength, '0');
     const newName = `${newPrefix}${plugin.settings.separator}${restOfName}`;
 
-    log('performing simple move:', folder.name, '→', newName);
+    log(
+        plugin.settings.debugEnabled,
+        'performing simple move:',
+        folder.name,
+        '→',
+        newName
+    );
 
     await plugin.app.fileManager.renameFile(
         folder,
@@ -211,6 +232,7 @@ async function performSmartSwap(
         );
 
         log(
+            plugin.settings.debugEnabled,
             'smart swap completed:',
             `${folder1Match[0]}${folder1Name}`,
             '↔',
@@ -330,6 +352,7 @@ async function fullReindexWithConflictResolution(
     }
 
     log(
+        plugin.settings.debugEnabled,
         'folders to rename (full reindex):',
         foldersToRename.map((r) => ({ from: r.from.name, to: r.to }))
     );
@@ -347,5 +370,9 @@ async function fullReindexWithConflictResolution(
         new Notice(`Folder renamed: "${oldName}" → "${rename.to}"`, 3000);
     }
 
-    log('finished full reindexing for folder:', targetFolder.path);
+    log(
+        plugin.settings.debugEnabled,
+        'finished full reindexing for folder:',
+        targetFolder.path
+    );
 }
