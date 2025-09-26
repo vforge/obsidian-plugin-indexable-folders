@@ -4,7 +4,6 @@ import { IndexableFoldersSettingTab } from './ui/SettingsTab';
 import { registerEvents } from './events';
 import { prefixNumericFolders, revertFolderName } from './logic/fileExplorer';
 import { updateStatusBar } from './logic/statusBar';
-import { log } from './utils/logger';
 
 export default class IndexableFoldersPlugin extends Plugin {
     settings: IndexableFoldersSettings;
@@ -21,26 +20,21 @@ export default class IndexableFoldersPlugin extends Plugin {
     public updateStatusBar: () => void = () => updateStatusBar(this);
 
     async onload() {
-        log('loading plugin');
         await this.loadSettings();
 
         this.statusBarItemEl = this.addStatusBarItem();
         this.addSettingTab(new IndexableFoldersSettingTab(this.app, this));
 
         registerEvents(this);
-        log('plugin loaded');
     }
 
     onunload() {
-        log('unloading plugin');
         if (this.folderObserver) {
             this.folderObserver.disconnect();
         }
-        log('plugin unloaded');
     }
 
     async loadSettings() {
-        log('loading settings');
         this.settings = Object.assign(
             {},
             DEFAULT_SETTINGS,
@@ -49,7 +43,6 @@ export default class IndexableFoldersPlugin extends Plugin {
     }
 
     async saveSettings() {
-        log('saving settings');
         await this.saveData(this.settings);
     }
 
@@ -66,7 +59,6 @@ export default class IndexableFoldersPlugin extends Plugin {
 
         const escapedSeparator = this.getEscapedSeparator();
         const pattern = `^((?:\\d+)|(?:${special.join('|')}))${escapedSeparator}`;
-        log('generated prefix regex pattern:', pattern);
         return new RegExp(pattern, 'i');
     }
 
