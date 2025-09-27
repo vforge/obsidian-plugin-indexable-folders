@@ -282,7 +282,7 @@ Multiple simultaneous folder operations can conflict:
    // OLD: Compiled on every call
    const numericPrefixRegex = plugin.getNumericPrefixRegex();
    ```
-   
+
    **Status:** ✅ **RESOLVED** - Completed on September 26, 2025
    **Solution Implemented:** Added regex caching to `src/main.ts`
    - Cached `_prefixRegexCache` and `_numericPrefixRegexCache` properties
@@ -298,7 +298,7 @@ Multiple simultaneous folder operations can conflict:
 
 - ✅ Regex compilation performance: **RESOLVED** - Major performance gains achieved
 - ⏳ Memory usage growth over time: **Partially addressed** by regex caching
-- ⏳ Slow performance in large vaults: **Partially improved** 
+- ⏳ Slow performance in large vaults: **Partially improved**
 - ❌ UI lag during bulk operations: **Still needs addressing**
 - ❌ Battery drain on mobile devices: **Still needs addressing**
 
