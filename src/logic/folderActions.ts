@@ -2,13 +2,14 @@ import { TFolder, Notice } from 'obsidian';
 import IndexableFoldersPlugin from '../main';
 import { log } from '../utils/logger';
 
-export function isSpecialIndex(index: number): boolean {
-    const indexStr = index.toString();
-    // Only consider multi-digit numbers with all same digits as special
-    // Single digits (0-9) are considered normal indices
+export function isSpecialIndex(indexStr: string): boolean {
+    // Only multi-digit patterns with all same characters are considered special
+    // Single digits are always normal indices
     if (indexStr.length <= 1) {
         return false;
     }
+
+    // Check if all characters are "0"s or all characters are "9"s
     const allZeros = /^0+$/.test(indexStr);
     const allNines = /^9+$/.test(indexStr);
     return allZeros || allNines;
@@ -32,11 +33,13 @@ export async function updateFolderIndex(
     const match = folder.name.match(numericPrefixRegex);
     if (!match) return;
 
-    const oldIndex = parseInt(match[1], 10);
-    const prefixLength = match[1].length;
+    const oldIndexStr = match[1];
+    const oldIndex = parseInt(oldIndexStr, 10);
+    const prefixLength = oldIndexStr.length;
+    const newIndexStr = String(newIndex).padStart(prefixLength, '0');
 
     // Check if this folder has a special index that shouldn't be moved
-    if (isSpecialIndex(oldIndex)) {
+    if (isSpecialIndex(oldIndexStr)) {
         log(
             plugin.settings.debugEnabled,
             'folder has special index (all 0s or all 9s), cannot be moved'
@@ -49,7 +52,7 @@ export async function updateFolderIndex(
     }
 
     // Check if target index is special
-    if (isSpecialIndex(newIndex)) {
+    if (isSpecialIndex(newIndexStr)) {
         log(
             plugin.settings.debugEnabled,
             'target index is special (all 0s or all 9s), cannot move to this position'
@@ -94,7 +97,8 @@ async function trySimpleMove(
         const match = f.name.match(numericPrefixRegex);
         if (match) {
             const index = parseInt(match[1], 10);
-            return index === newIndex && isSpecialIndex(index);
+            const indexStr = match[1];
+            return index === newIndex && isSpecialIndex(indexStr);
         }
         return false;
     });
@@ -113,7 +117,8 @@ async function trySimpleMove(
         const match = f.name.match(numericPrefixRegex);
         if (match) {
             const index = parseInt(match[1], 10);
-            return index === newIndex && !isSpecialIndex(index);
+            const indexStr = match[1];
+            return index === newIndex && !isSpecialIndex(indexStr);
         }
         return false;
     });
@@ -278,8 +283,8 @@ async function fullReindexWithConflictResolution(
     for (const folder of allFolders) {
         const match = folder.name.match(numericPrefixRegex);
         if (match) {
-            const index = parseInt(match[1], 10);
-            if (isSpecialIndex(index)) {
+            const indexStr = match[1];
+            if (isSpecialIndex(indexStr)) {
                 specialFolders.push(folder);
             } else {
                 regularFolders.push(folder);

@@ -88,7 +88,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
             const prefixLength = prefix.length;
 
             // Check if this is a special index folder (all 0s or all 9s)
-            const isSpecialFolder = isSpecialIndex(currentNumber);
+            const isSpecialFolder = isSpecialIndex(prefix);
 
             // Add "Update index" option
             menu.addItem((item) => {
