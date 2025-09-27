@@ -60,6 +60,16 @@ export function prefixNumericFolders(
     const folderTitleElements = fileExplorer.querySelectorAll(
         '.nav-folder-title-content'
     );
+
+    // Batch DOM updates to prevent layout thrashing
+    const updates: Array<{
+        element: HTMLElement;
+        folderName: string;
+        numericPrefix: string;
+        newFolderName: string;
+    }> = [];
+
+    // First pass: collect all changes without DOM manipulation
     folderTitleElements.forEach((el: HTMLElement) => {
         const existingPrefixSpan = el.querySelector(
             'span.indexable-folder-prefix'
@@ -89,19 +99,45 @@ export function prefixNumericFolders(
             const numericPrefix = match[1];
             const newFolderName = folderName.substring(match[0].length);
 
-            // Clear the original text content before adding new elements.
-            el.textContent = '';
-
-            const label = el.createEl('span');
-            label.setText(numericPrefix);
-            label.addClass('indexable-folder-prefix');
-            // Store original name to revert for rename
-            label.setAttribute('data-original-name', folderName);
-
-            el.appendChild(label);
-            el.appendChild(document.createTextNode(newFolderName));
+            updates.push({
+                element: el,
+                folderName,
+                numericPrefix,
+                newFolderName,
+            });
         }
     });
+
+    // Second pass: apply all DOM updates in a single batch
+    if (updates.length > 0) {
+        // Use DocumentFragment for efficient DOM manipulation
+        updates.forEach(
+            ({ element, folderName, numericPrefix, newFolderName }) => {
+                // Clear the original text content before adding new elements.
+                element.textContent = '';
+
+                // Create elements in memory first
+                const fragment = document.createDocumentFragment();
+
+                const label = document.createElement('span');
+                label.setText(numericPrefix);
+                label.addClass('indexable-folder-prefix');
+                // Store original name to revert for rename
+                label.setAttribute('data-original-name', folderName);
+
+                fragment.appendChild(label);
+                fragment.appendChild(document.createTextNode(newFolderName));
+
+                // Single DOM operation per element
+                element.appendChild(fragment);
+            }
+        );
+
+        log(
+            plugin.settings.debugEnabled,
+            `Batch updated ${updates.length} folder prefixes`
+        );
+    }
 }
 
 export function revertFolderName(

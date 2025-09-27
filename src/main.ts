@@ -164,6 +164,28 @@ export default class IndexableFoldersPlugin extends Plugin {
         }, this._mutationDebounceDelay);
     }
 
+    /**
+     * Executes DOM operations in a batch to minimize layout thrashing
+     * @param operations Array of functions that perform DOM operations
+     */
+    public batchDOMUpdates(operations: Array<() => void>): void {
+        if (operations.length === 0) {
+            return;
+        }
+
+        // Use requestAnimationFrame to batch DOM updates in the next frame
+        requestAnimationFrame(() => {
+            // Execute all DOM operations in sequence during the same frame
+            operations.forEach((operation) => {
+                try {
+                    operation();
+                } catch (error) {
+                    console.error('Error in batched DOM operation:', error);
+                }
+            });
+        });
+    }
+
     private getEscapedSeparator(): string {
         return this.settings.separator.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
     }
