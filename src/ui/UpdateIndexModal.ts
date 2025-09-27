@@ -171,29 +171,13 @@ export class UpdateIndexModal extends Modal {
         });
 
         const form = contentEl.createEl('form');
-        form.onsubmit = async (e) => {
-            e.preventDefault();
-            const input = form.querySelector('input')!;
-            const inputValue = input.value;
-
-            const validationError = this.validateInput(
-                inputValue,
-                prefixLength
-            );
-            if (validationError) {
-                new Notice(validationError);
-                return;
-            }
-
-            const newIndex = parseInt(inputValue, 10);
-            this.close();
-            await this.onSubmit(newIndex);
-        };
+        let inputElement: HTMLInputElement;
 
         new Setting(form)
             .setName(`New index (must be ${prefixLength} digits)`)
             .setDesc(`Enter exactly ${prefixLength} digits (e.g., ${prefix})`)
             .addText((text) => {
+                inputElement = text.inputEl;
                 text.inputEl.type = 'text';
                 text.inputEl.pattern = `\\d{${prefixLength}}`;
                 text.setPlaceholder(
@@ -251,13 +235,30 @@ export class UpdateIndexModal extends Modal {
 
                 // Prevent non-digit characters on keypress
                 text.inputEl.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        // Trigger the same logic as the button click
+                        const inputValue = inputElement.value;
+                        const validationError = this.validateInput(
+                            inputValue,
+                            prefixLength
+                        );
+                        if (validationError) {
+                            new Notice(validationError);
+                            return;
+                        }
+                        const newIndex = parseInt(inputValue, 10);
+                        this.close();
+                        this.onSubmit(newIndex);
+                        return;
+                    }
+
                     if (
                         !/\d/.test(e.key) &&
                         ![
                             'Backspace',
                             'Delete',
                             'Tab',
-                            'Enter',
                             'ArrowLeft',
                             'ArrowRight',
                         ].includes(e.key)
@@ -306,8 +307,21 @@ export class UpdateIndexModal extends Modal {
             button
                 .setButtonText('Update')
                 .setCta()
-                .onClick(() => {
-                    form.requestSubmit();
+                .onClick(async () => {
+                    const inputValue = inputElement.value;
+
+                    const validationError = this.validateInput(
+                        inputValue,
+                        prefixLength
+                    );
+                    if (validationError) {
+                        new Notice(validationError);
+                        return;
+                    }
+
+                    const newIndex = parseInt(inputValue, 10);
+                    this.close();
+                    await this.onSubmit(newIndex);
                 })
         );
     }
