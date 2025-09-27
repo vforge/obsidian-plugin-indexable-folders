@@ -6,7 +6,44 @@
 
 This document outlines all identified issues, improvements, and considerations that should be addressed before releasing version 1.0.0 of the Obsidian Indexable Folders plugin.
 
-## 🚨 Critical Issues (Release Blockers)
+## � Issues Index
+
+| Issue | Title | Severity | Category | Status | Priority |
+|-------|-------|----------|----------|--------|----------|
+| [ISSUE-001](#issue-001-missing-error-handling-in-file-operations) | Missing Error Handling in File Operations | Critical | Robustness | ❌ Open | P0 |
+| [ISSUE-002](#issue-002-no-test-coverage-for-core-functionality) | No Test Coverage for Core Functionality | Critical | Quality Assurance | ❌ Open | P0 |
+| [ISSUE-003](#-issue-003-version-mapping-inconsistency---completed) | Version Mapping Inconsistency | Critical | Release Management | ✅ Completed | ~~P0~~ |
+| [ISSUE-004](#-issue-004-input-validation-vulnerabilities---completed) | Input Validation Vulnerabilities | High | Security | ✅ Completed | ~~P1~~ |
+| [ISSUE-005](#issue-005-race-condition-vulnerabilities) | Race Condition Vulnerabilities | High | Concurrency | ❌ Open | P1 |
+| [ISSUE-006](#-issue-006-memory-management-and-performance-issues---completed) | Memory Management and Performance Issues | High | Performance | ✅ Completed | ~~P1~~ |
+| [ISSUE-007](#issue-007-edge-case-handling-gaps) | Edge Case Handling Gaps | Medium | Robustness | ❌ Open | P2 |
+| [ISSUE-008](#issue-008-missing-undoredo-functionality) | Missing Undo/Redo Functionality | Medium | User Experience | ❌ Open | P2 |
+| [ISSUE-009](#issue-009-inadequate-error-messages) | Inadequate Error Messages | Medium | User Experience | ❌ Open | P2 |
+| [ISSUE-010](#issue-010-missing-first-time-user-experience) | Missing First-Time User Experience | Medium | User Experience | ❌ Open | P2 |
+| [ISSUE-011](#issue-011-incomplete-performance-documentation) | Incomplete Performance Documentation | Low | Documentation | ❌ Open | P3 |
+| [ISSUE-012](#issue-012-drag-and-drop-reordering-planned-feature) | Drag-and-Drop Reordering (Planned Feature) | Medium | Feature Completeness | ❌ Deferred | P3 |
+| [ISSUE-013](#issue-013-mobile-compatibility-assessment) | Mobile Compatibility Assessment | Low | Platform Support | ❌ Open | P3 |
+| [ISSUE-014](#issue-014-path-traversal-vulnerability-assessment) | Path Traversal Vulnerability Assessment | Medium | Security | ❌ Open | P1 |
+| [ISSUE-015](#issue-015-github-release-workflow-verification) | GitHub Release Workflow Verification | Medium | Release Management | ❌ Open | P1 |
+| [ISSUE-016](#issue-016-community-plugin-submission-readiness) | Community Plugin Submission Readiness | Medium | Release Management | ❌ Open | P1 |
+
+### 📊 Status Summary
+
+- **Total Issues:** 16
+- **Completed:** 3 (18.75%) - Issues 003, 004, 006
+- **Open:** 12 (75%)
+- **Deferred:** 1 (6.25%) - Issue 012
+
+### 🎯 Priority Breakdown
+
+- **P0 (Critical - Release Blockers):** 2 remaining (001, 002)
+- **P1 (High Priority):** 3 remaining (005, 014, 015, 016)
+- **P2 (Medium Priority):** 4 remaining (007, 008, 009, 010)
+- **P3 (Low Priority / Post-1.0.0):** 3 remaining (011, 013) + 1 deferred (012)
+
+---
+
+## �🚨 Critical Issues (Release Blockers)
 
 ### ISSUE-001: Missing Error Handling in File Operations
 
@@ -768,6 +805,6 @@ Plugin submission to Obsidian community store requirements:
 
 ---
 
-**Document Version:** 1.3  
-**Last Updated:** September 27, 2025 - Corrected ISSUE-006 status to fully completed  
+**Document Version:** 1.4  
+**Last Updated:** September 27, 2025 - Added comprehensive issues index table  
 **Next Review:** After Phase 1 completion
