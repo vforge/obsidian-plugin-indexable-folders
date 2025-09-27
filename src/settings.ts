@@ -3,6 +3,8 @@ export interface IndexableFoldersSettings {
     statusBarSeparator: string;
     separator: string;
     debugEnabled: boolean;
+    labelBackgroundColor: string;
+    labelTextColor: string;
 }
 
 export const DEFAULT_SETTINGS: IndexableFoldersSettings = {
@@ -10,4 +12,6 @@ export const DEFAULT_SETTINGS: IndexableFoldersSettings = {
     statusBarSeparator: '→',
     separator: '_',
     debugEnabled: false,
+    labelBackgroundColor: 'var(--interactive-accent)',
+    labelTextColor: 'var(--text-on-accent)',
 };

@@ -10,6 +10,18 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
         this.plugin = plugin;
     }
 
+    updateLabelStyles(): void {
+        // Update CSS custom properties for label colors
+        document.documentElement.style.setProperty(
+            '--indexable-folder-label-bg',
+            this.plugin.settings.labelBackgroundColor
+        );
+        document.documentElement.style.setProperty(
+            '--indexable-folder-label-text',
+            this.plugin.settings.labelTextColor
+        );
+    }
+
     display(): void {
         const { containerEl } = this;
 
@@ -95,6 +107,45 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     .onChange(async (value) => {
                         this.plugin.settings.debugEnabled = value;
                         await this.plugin.saveSettings();
+                    })
+            );
+
+        // Theming section
+        containerEl.createEl('h3', { text: 'Theming' });
+
+        new Setting(containerEl)
+            .setName('Label background color')
+            .setDesc(
+                'The background color for the index labels (numeric prefixes). Use any valid CSS color value.'
+            )
+            .addText((text) =>
+                text
+                    .setPlaceholder(
+                        'e.g., #007ACC, rgb(0, 122, 204), var(--interactive-accent)'
+                    )
+                    .setValue(this.plugin.settings.labelBackgroundColor)
+                    .onChange(async (value) => {
+                        this.plugin.settings.labelBackgroundColor = value;
+                        await this.plugin.saveSettings();
+                        this.updateLabelStyles();
+                    })
+            );
+
+        new Setting(containerEl)
+            .setName('Label text color')
+            .setDesc(
+                'The text color for the index labels (numeric prefixes). Use any valid CSS color value.'
+            )
+            .addText((text) =>
+                text
+                    .setPlaceholder(
+                        'e.g., #FFFFFF, rgb(255, 255, 255), var(--text-on-accent)'
+                    )
+                    .setValue(this.plugin.settings.labelTextColor)
+                    .onChange(async (value) => {
+                        this.plugin.settings.labelTextColor = value;
+                        await this.plugin.saveSettings();
+                        this.updateLabelStyles();
                     })
             );
     }

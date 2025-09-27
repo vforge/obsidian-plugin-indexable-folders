@@ -17,18 +17,49 @@ This plugin for Obsidian enhances folder organization by allowing you to prefix 
 ## Features
 
 - **Visual Folder Indexing**: Automatically styles folders named with a `number_` prefix (e.g., `01_Projects`) by displaying the number as a styled "pill" and hiding the prefix from the folder name.
-- **Custom Prefixes**: A settings option allows you to define a list of non-numeric, case-insensitive prefixes (e.g., `zz`, `archive`) that receive the same styling treatment.
+- **Custom Prefixes**: Define non-numeric, case-insensitive prefixes (e.g., `zz`, `archive`) that receive the same styling treatment.
 - **Context Menu Actions**: Right-clicking on an indexed folder provides powerful reordering options:
   - **Move up/down**: Shifts the folder's index by one, automatically cascading the change to other folders to maintain a unique sequence.
   - **Update index...**: Opens a dialog to set a specific index, intelligently shifting other folders to accommodate the new position.
 - **Indexed Status Bar Path**: The status bar displays the full, styled path of the active file's parent folders, including the index pills, providing clear context for nested notes.
-- **Customizable Separators**: Both the separator used in the status bar path (defaults to "→") and the prefix separator used in folder names (defaults to "_") can be customized in the settings.
+- **Fully Customizable**: Customize separators, colors, and appearance to match your workflow and theme preferences.
 
 ## Example
 
 Here's what the plugin looks like in action:
 
 ![Plugin Example](example.png)
+
+## Customization
+
+The plugin offers extensive customization options through the settings panel:
+
+### Basic Settings
+
+- **Special Prefixes**: Define non-numeric prefixes (e.g., `zz`, `archive`) that receive the same styling treatment
+- **Status Bar Separator**: Customize the character used between folder paths in the status bar (default: "→")
+- **Prefix Separator**: Change the character that separates numeric prefixes from folder names (default: "_")
+
+### Theme Customization
+
+Personalize the appearance of your index labels with custom colors:
+
+- **Label Background Color**: Customize the background color of index pills
+- **Label Text Color**: Customize the text color inside index pills
+
+**Supported Color Formats:**
+
+- Hex codes: `#007ACC`, `#FF5733`
+- RGB values: `rgb(0, 122, 204)`, `rgba(255, 87, 51, 0.8)`
+- HSL values: `hsl(210, 100%, 40%)`
+- CSS variables: `var(--interactive-accent)`, `var(--text-on-accent)`
+- Named colors: `blue`, `red`, `transparent`
+
+**Tips:**
+
+- Use CSS variables (like `var(--interactive-accent)`) to maintain consistency with your current Obsidian theme
+- Changes are applied instantly without requiring a restart
+- The default colors automatically adapt to your theme's accent colors
 
 ## Support
 

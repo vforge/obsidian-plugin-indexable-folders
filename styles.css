@@ -3,8 +3,8 @@
  * in the file explorer and the status bar.
  */
 .indexable-folder-prefix {
-    background-color: var(--interactive-accent);
-    color: var(--text-on-accent);
+    background-color: var(--indexable-folder-label-bg, var(--interactive-accent));
+    color: var(--indexable-folder-label-text, var(--text-on-accent));
     padding: 1px 6px;
     border-radius: 4px;
     margin-right: 6px;

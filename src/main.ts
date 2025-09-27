@@ -22,6 +22,9 @@ export default class IndexableFoldersPlugin extends Plugin {
     async onload() {
         await this.loadSettings();
 
+        // Initialize theme styles
+        this.updateLabelStyles();
+
         this.statusBarItemEl = this.addStatusBarItem();
         this.addSettingTab(new IndexableFoldersSettingTab(this.app, this));
 
@@ -32,6 +35,14 @@ export default class IndexableFoldersPlugin extends Plugin {
         if (this.folderObserver) {
             this.folderObserver.disconnect();
         }
+
+        // Clean up custom CSS properties
+        document.documentElement.style.removeProperty(
+            '--indexable-folder-label-bg'
+        );
+        document.documentElement.style.removeProperty(
+            '--indexable-folder-label-text'
+        );
     }
 
     async loadSettings() {
@@ -66,5 +77,17 @@ export default class IndexableFoldersPlugin extends Plugin {
         const escapedSeparator = this.getEscapedSeparator();
         const pattern = `^(\\d+)${escapedSeparator}`;
         return new RegExp(pattern);
+    }
+
+    updateLabelStyles(): void {
+        // Update CSS custom properties for label colors
+        document.documentElement.style.setProperty(
+            '--indexable-folder-label-bg',
+            this.settings.labelBackgroundColor
+        );
+        document.documentElement.style.setProperty(
+            '--indexable-folder-label-text',
+            this.settings.labelTextColor
+        );
     }
 }
