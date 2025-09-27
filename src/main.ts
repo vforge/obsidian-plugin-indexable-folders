@@ -12,6 +12,11 @@ export default class IndexableFoldersPlugin extends Plugin {
     statusBarItemEl: HTMLElement;
     ignoreMutationsWhileMenuOpen = false;
 
+    // Cached regex patterns for performance
+    private _prefixRegexCache: RegExp | null = null;
+    private _numericPrefixRegexCache: RegExp | null = null;
+    private _lastCachedSettings: string | null = null;
+
     // Expose methods for modules
     public prefixNumericFolders: (forceRefresh?: boolean) => void = (
         forceRefresh = false
@@ -53,6 +58,9 @@ export default class IndexableFoldersPlugin extends Plugin {
             await this.loadData()
         );
 
+        // Invalidate regex cache since settings may have changed
+        this.invalidateRegexCache();
+
         // Sanitize color values on load to prevent any stored malicious values
         const sanitizedBgColor = sanitizeCSSColor(
             this.settings.labelBackgroundColor
@@ -81,6 +89,33 @@ export default class IndexableFoldersPlugin extends Plugin {
 
     async saveSettings() {
         await this.saveData(this.settings);
+        // Invalidate regex caches when settings change
+        this.invalidateRegexCache();
+    }
+
+    /**
+     * Invalidates the regex cache when settings change
+     */
+    private invalidateRegexCache(): void {
+        this._prefixRegexCache = null;
+        this._numericPrefixRegexCache = null;
+        this._lastCachedSettings = null;
+    }
+
+    /**
+     * Checks if the regex cache needs to be invalidated based on settings changes
+     */
+    private shouldInvalidateCache(): boolean {
+        const currentSettings = JSON.stringify({
+            separator: this.settings.separator,
+            specialPrefixes: this.settings.specialPrefixes,
+        });
+
+        if (this._lastCachedSettings !== currentSettings) {
+            this._lastCachedSettings = currentSettings;
+            return true;
+        }
+        return false;
     }
 
     private getEscapedSeparator(): string {
@@ -88,21 +123,31 @@ export default class IndexableFoldersPlugin extends Plugin {
     }
 
     getPrefixRegex(): RegExp {
-        const special = this.settings.specialPrefixes
-            .split(',')
-            .map((p) => p.trim())
-            .filter(Boolean)
-            .map((p) => p.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&'));
+        // Check if cache needs invalidation or doesn't exist
+        if (this.shouldInvalidateCache() || !this._prefixRegexCache) {
+            const special = this.settings.specialPrefixes
+                .split(',')
+                .map((p) => p.trim())
+                .filter(Boolean)
+                .map((p) => p.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&'));
 
-        const escapedSeparator = this.getEscapedSeparator();
-        const pattern = `^((?:\\d+)|(?:${special.join('|')}))${escapedSeparator}`;
-        return new RegExp(pattern, 'i');
+            const escapedSeparator = this.getEscapedSeparator();
+            const pattern = `^((?:\\d+)|(?:${special.join('|')}))${escapedSeparator}`;
+            this._prefixRegexCache = new RegExp(pattern, 'i');
+        }
+
+        return this._prefixRegexCache;
     }
 
     getNumericPrefixRegex(): RegExp {
-        const escapedSeparator = this.getEscapedSeparator();
-        const pattern = `^(\\d+)${escapedSeparator}`;
-        return new RegExp(pattern);
+        // Check if cache needs invalidation or doesn't exist
+        if (this.shouldInvalidateCache() || !this._numericPrefixRegexCache) {
+            const escapedSeparator = this.getEscapedSeparator();
+            const pattern = `^(\\d+)${escapedSeparator}`;
+            this._numericPrefixRegexCache = new RegExp(pattern);
+        }
+
+        return this._numericPrefixRegexCache;
     }
 
     updateLabelStyles(): void {
