@@ -30,7 +30,7 @@ export function startFolderObserver(plugin: IndexableFoldersPlugin) {
             return;
         }
         log(plugin.settings.debugEnabled, 'mutation observed', mutations);
-        plugin.prefixNumericFolders();
+        plugin.handleMutations(mutations);
     });
 
     plugin.folderObserver.observe(fileExplorer, {

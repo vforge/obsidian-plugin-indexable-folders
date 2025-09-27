@@ -17,6 +17,11 @@ export default class IndexableFoldersPlugin extends Plugin {
     private _numericPrefixRegexCache: RegExp | null = null;
     private _lastCachedSettings: string | null = null;
 
+    // MutationObserver debouncing for performance
+    private _mutationDebounceTimeout: NodeJS.Timeout | null = null;
+    private _pendingMutations: MutationRecord[] = [];
+    private _mutationDebounceDelay = 150; // 150ms debounce delay
+
     // Expose methods for modules
     public prefixNumericFolders: (forceRefresh?: boolean) => void = (
         forceRefresh = false
@@ -41,6 +46,13 @@ export default class IndexableFoldersPlugin extends Plugin {
         if (this.folderObserver) {
             this.folderObserver.disconnect();
         }
+
+        // Clean up debouncing timeout to prevent memory leaks
+        if (this._mutationDebounceTimeout) {
+            clearTimeout(this._mutationDebounceTimeout);
+            this._mutationDebounceTimeout = null;
+        }
+        this._pendingMutations = [];
 
         // Clean up custom CSS properties
         document.documentElement.style.removeProperty(
@@ -116,6 +128,40 @@ export default class IndexableFoldersPlugin extends Plugin {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Processes accumulated mutations with debouncing to prevent performance issues
+     */
+    private processMutations(): void {
+        if (this._pendingMutations.length === 0) {
+            return;
+        }
+
+        // Clear the pending mutations
+        this._pendingMutations = [];
+
+        // Process the folder prefixing
+        this.prefixNumericFolders();
+    }
+
+    /**
+     * Handles mutation observer events with debouncing
+     */
+    public handleMutations(mutations: MutationRecord[]): void {
+        // Add mutations to pending list
+        this._pendingMutations.push(...mutations);
+
+        // Clear existing timeout
+        if (this._mutationDebounceTimeout) {
+            clearTimeout(this._mutationDebounceTimeout);
+        }
+
+        // Set new debounced timeout
+        this._mutationDebounceTimeout = setTimeout(() => {
+            this.processMutations();
+            this._mutationDebounceTimeout = null;
+        }, this._mutationDebounceDelay);
     }
 
     private getEscapedSeparator(): string {
