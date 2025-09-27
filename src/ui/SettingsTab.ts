@@ -1,9 +1,15 @@
-import { App, PluginSettingTab, Setting } from 'obsidian';
+import { App, PluginSettingTab, Setting, Notice } from 'obsidian';
 import IndexableFoldersPlugin from '../main';
 import { log } from '../utils/logger';
+import {
+    isValidCSSColor,
+    sanitizeCSSColor,
+    getCSSColorErrorMessage,
+} from '../utils/cssValidation';
 
 export class IndexableFoldersSettingTab extends PluginSettingTab {
     plugin: IndexableFoldersPlugin;
+    private validationTimeouts: Map<string, NodeJS.Timeout> = new Map();
 
     constructor(app: App, plugin: IndexableFoldersPlugin) {
         super(app, plugin);
@@ -11,21 +17,71 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
     }
 
     updateLabelStyles(): void {
+        // Validate and sanitize color values before applying
+        const bgColor = sanitizeCSSColor(
+            this.plugin.settings.labelBackgroundColor
+        );
+        const textColor = sanitizeCSSColor(this.plugin.settings.labelTextColor);
+
         // Update CSS custom properties for label colors
         document.documentElement.style.setProperty(
             '--indexable-folder-label-bg',
-            this.plugin.settings.labelBackgroundColor
+            bgColor || 'var(--interactive-accent)' // fallback to default
         );
         document.documentElement.style.setProperty(
             '--indexable-folder-label-text',
-            this.plugin.settings.labelTextColor
+            textColor || 'var(--text-on-accent)' // fallback to default
         );
+    }
+
+    /**
+     * Debounced validation to prevent spam notifications while typing
+     */
+    private debouncedValidation(
+        key: string,
+        value: string,
+        callback: () => Promise<void>,
+        errorPrefix: string
+    ): void {
+        // Clear existing timeout for this key
+        const existingTimeout = this.validationTimeouts.get(key);
+        if (existingTimeout) {
+            clearTimeout(existingTimeout);
+        }
+
+        // Set new timeout
+        const timeout = setTimeout(async () => {
+            // Only show error if the value is not empty and is invalid
+            if (value.trim() !== '' && !isValidCSSColor(value)) {
+                const errorMessage = getCSSColorErrorMessage(value);
+                new Notice(`${errorPrefix}: ${errorMessage}`, 4000);
+                return;
+            }
+
+            // If validation passes or value is empty, execute callback
+            await callback();
+        }, 800); // 800ms delay to allow user to finish typing
+
+        this.validationTimeouts.set(key, timeout);
+    }
+
+    /**
+     * Clear all validation timeouts to prevent memory leaks
+     */
+    private clearValidationTimeouts(): void {
+        this.validationTimeouts.forEach((timeout) => {
+            clearTimeout(timeout);
+        });
+        this.validationTimeouts.clear();
     }
 
     display(): void {
         const { containerEl } = this;
 
         containerEl.empty();
+
+        // Clear any existing timeouts when re-displaying settings
+        this.clearValidationTimeouts();
 
         new Setting(containerEl)
             .setName('Special prefixes')
@@ -125,9 +181,30 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     )
                     .setValue(this.plugin.settings.labelBackgroundColor)
                     .onChange(async (value) => {
-                        this.plugin.settings.labelBackgroundColor = value;
-                        await this.plugin.saveSettings();
-                        this.updateLabelStyles();
+                        // Immediately save and apply valid colors (or empty values) for instant feedback
+                        if (value.trim() === '' || isValidCSSColor(value)) {
+                            this.plugin.settings.labelBackgroundColor = value;
+                            await this.plugin.saveSettings();
+                            this.updateLabelStyles();
+
+                            // Clear any pending validation timeout since value is valid
+                            const existingTimeout =
+                                this.validationTimeouts.get('bgColor');
+                            if (existingTimeout) {
+                                clearTimeout(existingTimeout);
+                                this.validationTimeouts.delete('bgColor');
+                            }
+                        } else {
+                            // Use debounced validation only for invalid values to prevent spam
+                            this.debouncedValidation(
+                                'bgColor',
+                                value,
+                                async () => {
+                                    // This won't be called for invalid values, just satisfies the interface
+                                },
+                                'Invalid background color'
+                            );
+                        }
                     })
             );
 
@@ -143,9 +220,30 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     )
                     .setValue(this.plugin.settings.labelTextColor)
                     .onChange(async (value) => {
-                        this.plugin.settings.labelTextColor = value;
-                        await this.plugin.saveSettings();
-                        this.updateLabelStyles();
+                        // Immediately save and apply valid colors (or empty values) for instant feedback
+                        if (value.trim() === '' || isValidCSSColor(value)) {
+                            this.plugin.settings.labelTextColor = value;
+                            await this.plugin.saveSettings();
+                            this.updateLabelStyles();
+
+                            // Clear any pending validation timeout since value is valid
+                            const existingTimeout =
+                                this.validationTimeouts.get('textColor');
+                            if (existingTimeout) {
+                                clearTimeout(existingTimeout);
+                                this.validationTimeouts.delete('textColor');
+                            }
+                        } else {
+                            // Use debounced validation only for invalid values to prevent spam
+                            this.debouncedValidation(
+                                'textColor',
+                                value,
+                                async () => {
+                                    // This won't be called for invalid values, just satisfies the interface
+                                },
+                                'Invalid text color'
+                            );
+                        }
                     })
             );
     }

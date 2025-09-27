@@ -4,6 +4,7 @@ import { IndexableFoldersSettingTab } from './ui/SettingsTab';
 import { registerEvents } from './events';
 import { prefixNumericFolders, revertFolderName } from './logic/fileExplorer';
 import { updateStatusBar } from './logic/statusBar';
+import { sanitizeCSSColor } from './utils/cssValidation';
 
 export default class IndexableFoldersPlugin extends Plugin {
     settings: IndexableFoldersSettings;
@@ -51,6 +52,31 @@ export default class IndexableFoldersPlugin extends Plugin {
             DEFAULT_SETTINGS,
             await this.loadData()
         );
+
+        // Sanitize color values on load to prevent any stored malicious values
+        const sanitizedBgColor = sanitizeCSSColor(
+            this.settings.labelBackgroundColor
+        );
+        const sanitizedTextColor = sanitizeCSSColor(
+            this.settings.labelTextColor
+        );
+
+        // If sanitization changed the values, update and save the settings
+        let needsUpdate = false;
+        if (sanitizedBgColor !== this.settings.labelBackgroundColor) {
+            this.settings.labelBackgroundColor =
+                sanitizedBgColor || DEFAULT_SETTINGS.labelBackgroundColor;
+            needsUpdate = true;
+        }
+        if (sanitizedTextColor !== this.settings.labelTextColor) {
+            this.settings.labelTextColor =
+                sanitizedTextColor || DEFAULT_SETTINGS.labelTextColor;
+            needsUpdate = true;
+        }
+
+        if (needsUpdate) {
+            await this.saveSettings();
+        }
     }
 
     async saveSettings() {
@@ -80,14 +106,18 @@ export default class IndexableFoldersPlugin extends Plugin {
     }
 
     updateLabelStyles(): void {
+        // Validate and sanitize color values before applying
+        const bgColor = sanitizeCSSColor(this.settings.labelBackgroundColor);
+        const textColor = sanitizeCSSColor(this.settings.labelTextColor);
+
         // Update CSS custom properties for label colors
         document.documentElement.style.setProperty(
             '--indexable-folder-label-bg',
-            this.settings.labelBackgroundColor
+            bgColor || 'var(--interactive-accent)' // fallback to default
         );
         document.documentElement.style.setProperty(
             '--indexable-folder-label-text',
-            this.settings.labelTextColor
+            textColor || 'var(--text-on-accent)' // fallback to default
         );
     }
 }
