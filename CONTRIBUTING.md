@@ -11,8 +11,33 @@ To work on this plugin locally:
 
 1. Clone this repository.
 2. Make sure your NodeJS is at least v22.19.0 (`node --version`).
+   - **Using nvm (recommended)**: Run `nvm use` to automatically use the version specified in `.nvmrc`
+   - **VS Code users**: The workspace is configured to use the correct Node.js version automatically
 3. Run `pnpm install` to install dependencies.
 4. Run `pnpm dev` to start compilation in watch mode.
+
+### VS Code Setup
+
+This project includes comprehensive VS Code configuration files in `.vscode/`:
+
+- **`settings.json`**: Workspace settings with Node.js paths and formatting rules
+- **`tasks.json`**: Build, test, and development tasks
+- **`launch.json`**: Debug configurations for running tests
+- **`extensions.json`**: Recommended extensions for development
+- **`setup-node.sh`**: Script to ensure correct Node.js version
+
+Key features:
+
+- **Automatic Node.js version**: Uses the version specified in `.nvmrc` (v22.19.0)
+- **Build tasks**: Press `Cmd+Shift+P` → "Tasks: Run Task" → "Build Project"  
+- **Test tasks**: Press `Cmd+Shift+P` → "Tasks: Run Task" → "Run Tests"
+- **Environment setup**: Run the "Setup Node.js Environment" task if needed
+
+If you encounter Node.js version issues in VS Code:
+
+1. Close VS Code completely
+2. Run `nvm use` in the terminal
+3. Reopen VS Code from that terminal: `code .`
 
 ### Development Workflow
 
@@ -83,7 +108,7 @@ pnpm test:coverage
 
 Tests are organized as follows:
 
-```
+```text
 tests/
 ├── README.md                 # Testing documentation
 ├── hello-world.test.ts       # Infrastructure verification

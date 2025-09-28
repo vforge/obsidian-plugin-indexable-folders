@@ -1,6 +1,4 @@
-# vscode user-specific settings (allow workspace settings)
-.vscode/launch.json
-.vscode/tasks.json
+# vscode user-specific settings (allow project-specific workspace settings)
 .vscode/*.code-workspace
 
 # Intellij

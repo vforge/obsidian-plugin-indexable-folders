@@ -37,5 +37,20 @@
     "git.ignoreLimitWarning": true,
     "files.associations": {
         "*.md": "markdown"
+    },
+    "terminal.integrated.env.osx": {
+        "PATH": "${env:HOME}/.nvm/versions/node/v22.19.0/bin:${env:PATH}"
+    },
+    "terminal.integrated.env.linux": {
+        "PATH": "${env:HOME}/.nvm/versions/node/v22.19.0/bin:${env:PATH}"
+    },
+    "nodejs.npmPath": "${env:HOME}/.nvm/versions/node/v22.19.0/bin/npm",
+    "typescript.preferences.npmLocation": "${env:HOME}/.nvm/versions/node/v22.19.0/bin/npm",
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.profiles.osx": {
+        "zsh": {
+            "path": "zsh",
+            "args": ["-l", "-i"]
+        }
     }
 }
