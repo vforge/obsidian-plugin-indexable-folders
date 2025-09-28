@@ -1,15 +1,15 @@
 import { Plugin, TFolder } from 'obsidian';
-import { IndexableFoldersSettings, DEFAULT_SETTINGS } from './settings';
-import { IndexableFoldersSettingTab } from './ui/SettingsTab';
 import { registerEvents } from './events';
-import { prefixNumericFolders, revertFolderName } from './logic/fileExplorer';
-import { updateStatusBar } from './logic/statusBar';
-import { sanitizeCSSColor } from './utils/cssValidation';
 import {
-    generatePrefixRegex,
     generateNumericPrefixRegex,
+    generatePrefixRegex,
     type RegexSettings,
 } from './helpers/regexHelpers';
+import { prefixNumericFolders, revertFolderName } from './logic/fileExplorer';
+import { updateStatusBar } from './logic/statusBar';
+import { DEFAULT_SETTINGS, IndexableFoldersSettings } from './settings';
+import { IndexableFoldersSettingTab } from './ui/SettingsTab';
+import { sanitizeCSSColor } from './utils/cssValidation';
 
 export default class IndexableFoldersPlugin extends Plugin {
     settings: IndexableFoldersSettings;

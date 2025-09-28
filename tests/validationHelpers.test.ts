@@ -1,12 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
-    ValidationResult,
     ValidationContext,
-    validateIndexMove,
-    validateFolderName,
-    validatePathSecurity,
-    validateIndexFormat,
+    ValidationResult,
     combineValidationResults,
+    validateFolderName,
+    validateIndexFormat,
+    validateIndexMove,
+    validatePathSecurity,
 } from '../src/helpers/validationHelpers';
 
 describe('validationHelpers', () => {

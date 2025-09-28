@@ -1,14 +1,14 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
+    calculateSwapOperations,
+    detectIndexConflict,
+    extractNameParts,
     FolderInfo,
+    formatIndex,
+    generateFolderName,
+    generateReindexPlan,
     isSpecialIndex,
     parseFolderIndex,
-    formatIndex,
-    extractNameParts,
-    generateFolderName,
-    detectIndexConflict,
-    calculateSwapOperations,
-    generateReindexPlan,
 } from '../src/helpers/indexingHelpers';
 
 describe('indexingHelpers', () => {
@@ -413,7 +413,7 @@ describe('indexingHelpers', () => {
                 true
             );
 
-            expect(plan[0].toName).toBe('002. Fifth'); // Maintains 2-digit prefix
+            expect(plan[0].toName).toBe('02. Fifth'); // Maintains original 2-digit prefix
         });
     });
 

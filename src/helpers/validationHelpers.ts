@@ -144,7 +144,11 @@ export function validatePathSecurity(pathComponent: string): ValidationResult {
     }
 
     // Check for absolute paths
-    if (pathComponent.startsWith('/') || /^[A-Za-z]:/.test(pathComponent)) {
+    if (
+        pathComponent.startsWith('/') ||
+        /^[A-Za-z]:[\\//]/.test(pathComponent) ||
+        pathComponent.startsWith('\\\\')
+    ) {
         return {
             isValid: false,
             errorMessage: 'Absolute paths are not allowed in folder names',

@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
     RegexSettings,
     escapeRegexChars,
-    generatePrefixRegex,
-    generateNumericPrefixRegex,
     extractPrefix,
+    generateNumericPrefixRegex,
+    generatePrefixRegex,
     hasPrefix,
 } from '../src/helpers/regexHelpers';
 

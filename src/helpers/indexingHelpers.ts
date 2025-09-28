@@ -93,14 +93,20 @@ export function extractNameParts(
     const indexEnd = indexStr.length;
     const remainingPart = folderName.substring(indexEnd);
 
-    // Find the first non-numeric character as separator
-    const separatorMatch = remainingPart.match(/^(\D+)/);
-    if (!separatorMatch) {
-        throw new Error(`No separator found in folder name "${folderName}"`);
+    // Find the separator - everything before the first alphanumeric character
+    const nameStartMatch = remainingPart.match(/[a-zA-Z0-9]/);
+    if (!nameStartMatch) {
+        // No alphanumeric character found, treat everything as separator with empty name
+        return { separator: remainingPart, namePart: '' };
     }
 
-    const separator = separatorMatch[1];
-    const namePart = remainingPart.substring(separator.length);
+    const nameStartIndex = nameStartMatch.index!;
+    const separator = remainingPart.substring(0, nameStartIndex);
+    const namePart = remainingPart.substring(nameStartIndex);
+
+    if (separator.length === 0) {
+        throw new Error(`No separator found in folder name "${folderName}"`);
+    }
 
     return { separator, namePart };
 }

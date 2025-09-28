@@ -74,7 +74,7 @@ export function analyzeElements(
             textContent,
             hasPrefix: prefixMatch !== null,
             prefixValue: prefixMatch?.prefixValue,
-            originalName: textContent || undefined,
+            originalName: textContent ?? '',
         };
     });
 }
