@@ -1,0 +1,41 @@
+{
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "prettier.configPath": "./package.json",
+    "eslint.workingDirectories": ["./"],
+    "eslint.validate": ["typescript", "javascript"],
+    "files.exclude": {
+        "**/node_modules": true,
+        "**/coverage": true,
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "main.js": true,
+        "**/*.map": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/coverage": true,
+        "**/.git": true,
+        "main.js": true,
+        "**/*.map": true
+    },
+    "typescript.preferences.includePackageJsonAutoImports": "off",
+    "git.ignoreLimitWarning": true,
+    "files.associations": {
+        "*.md": "markdown"
+    }
+}

@@ -11,7 +11,7 @@
  * - domHelpers: DOM manipulation patterns and analysis
  */
 
-export * from './regexHelpers';
-export * from './indexingHelpers';
-export * from './validationHelpers';
 export * from './domHelpers';
+export * from './indexingHelpers';
+export * from './regexHelpers';
+export * from './validationHelpers';
