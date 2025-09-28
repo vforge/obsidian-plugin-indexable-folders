@@ -81,6 +81,21 @@ If you find this plugin useful, you can support my work by buying me a coffee.
 Copy `main.js`, `styles.css`, and `manifest.json` to your vault's plugin folder:
 `VaultFolder/.obsidian/plugins/obsidian-plugin-indexable-folders/`
 
-## Contributing
+## Development & Testing
 
-Interested in contributing to this plugin? Please see [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, code quality guidelines, and release processes.
+This plugin includes unit testing for core functionality where practical and beneficial.
+
+### For Contributors
+
+Interested in contributing to this plugin? Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
+
+- Development setup and workflow
+- Testing infrastructure and best practices  
+- Code quality guidelines and standards
+- Build processes and release procedures
+
+### Testing
+
+The plugin includes unit tests focusing on testable components and critical functionality.
+
+Run tests with `pnpm test` or see [tests/README.md](tests/README.md) for detailed testing documentation.

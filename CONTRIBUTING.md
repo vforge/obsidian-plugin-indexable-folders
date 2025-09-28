@@ -18,18 +18,18 @@ To work on this plugin locally:
 
 **Recommended approach for new features:**
 
-1. **Write tests first** (Test-Driven Development)
-   - Define expected behavior in tests
-   - Run tests to see them fail initially
-2. **Implement functionality** to make tests pass
-3. **Refactor** while keeping tests green
+1. **Plan and implement functionality**
+2. **Add tests where practical and beneficial**
+   - Focus on testable components (pure functions)
+   - Cover critical business logic and edge cases
+3. **Refactor** while keeping existing tests passing
 4. **Update documentation** as needed
 
 **For bug fixes:**
 
-1. **Write a test** that reproduces the bug
-2. **Fix the bug** until the test passes
-3. **Verify** no other tests are broken
+1. **Write a test** that reproduces the bug (if feasible)
+2. **Fix the bug** and ensure tests pass
+3. **Verify** no other functionality is broken
 4. **Run full test suite** before committing
 
 **Standard workflow:**
@@ -130,9 +130,9 @@ describe('YourModule', () => {
 
 ### Coverage Goals
 
-- **Target**: >70% code coverage for release
+- **Target**: Comprehensive coverage for core functionality
 - **Focus areas**: Helper functions in `src/helpers/`
-- **Current baseline**: 0% coverage for helper functions
+- **Architecture**: Pure function testing approach
 - **Exclusions**: `main.ts`, build files, and type definitions
 
 ### Test Environment
