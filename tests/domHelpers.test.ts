@@ -146,6 +146,22 @@ describe('domHelpers', () => {
             const results = analyzeElements([], numericRegex);
             expect(results).toHaveLength(0);
         });
+
+        it('should handle elements with undefined textContent through mocking', () => {
+            const element = document.createElement('div');
+            // Mock the textContent property to return undefined to test the nullish coalescing
+            Object.defineProperty(element, 'textContent', {
+                get: () => undefined,
+                configurable: true,
+            });
+
+            const results = analyzeElements([element], numericRegex);
+
+            expect(results).toHaveLength(1);
+            expect(results[0].textContent).toBeUndefined();
+            expect(results[0].hasPrefix).toBe(false);
+            expect(results[0].originalName).toBe(''); // Should use the fallback from ?? ''
+        });
     });
 
     describe('groupElementsForProcessing', () => {
@@ -260,6 +276,26 @@ describe('domHelpers', () => {
                 expect(typeof operation).toBe('function');
             });
         });
+
+        it('should skip elements where prefix regex does not match', () => {
+            // Create an element that will be analyzed as having a prefix with one regex
+            // but won't match with a different regex in calculateDOMUpdates
+            const element = createMockElement('01- Invalid Separator');
+
+            // Analyze with a permissive regex that matches "-"
+            const permissiveRegex = /^(\d+)[-._]/;
+            const analyzed = analyzeElements([element], permissiveRegex);
+
+            // Verify it was detected as having a prefix
+            expect(analyzed[0].hasPrefix).toBe(true);
+
+            // Now try to calculate DOM updates with a strict regex that only matches "."
+            const strictRegex = /^(\d+)\. /;
+            const updates = calculateDOMUpdates(analyzed, strictRegex);
+
+            // Should skip the element since the strict regex doesn't match
+            expect(updates).toHaveLength(0);
+        });
     });
 
     describe('executeBatchUpdates', () => {
@@ -346,6 +382,40 @@ describe('domHelpers', () => {
         it('should handle empty batch updates', () => {
             const successCount = executeBatchUpdates([]);
             expect(successCount).toBe(0);
+        });
+
+        it('should handle falsy textContent in DOM operation using getter', () => {
+            const element = document.createElement('div');
+            element.textContent = '01 test';
+
+            let returnNull = false;
+
+            // Create element info that initially has valid textContent
+            const info = {
+                element,
+                get textContent() {
+                    return returnNull ? null : '01 test';
+                },
+                hasPrefix: true,
+                prefixValue: '01',
+                originalName: '01 test',
+            };
+
+            const updates = calculateDOMUpdates([info], /^\d+/);
+            expect(updates).toHaveLength(1);
+
+            // Switch to null textContent before execution to test the || '' fallback
+            returnNull = true;
+
+            const successCount = executeBatchUpdates(updates);
+            expect(successCount).toBe(1);
+
+            // Check that the data-original-name attribute was set correctly (using the || '' fallback)
+            const prefixSpan = element.querySelector(
+                '.indexable-folder-prefix'
+            );
+            expect(prefixSpan).toBeTruthy();
+            expect(prefixSpan?.getAttribute('data-original-name')).toBe('');
         });
     });
 
