@@ -14,6 +14,35 @@ To work on this plugin locally:
 3. Run `pnpm install` to install dependencies.
 4. Run `pnpm dev` to start compilation in watch mode.
 
+### Development Workflow
+
+**Recommended approach for new features:**
+
+1. **Write tests first** (Test-Driven Development)
+   - Define expected behavior in tests
+   - Run tests to see them fail initially
+2. **Implement functionality** to make tests pass
+3. **Refactor** while keeping tests green
+4. **Update documentation** as needed
+
+**For bug fixes:**
+
+1. **Write a test** that reproduces the bug
+2. **Fix the bug** until the test passes
+3. **Verify** no other tests are broken
+4. **Run full test suite** before committing
+
+**Standard workflow:**
+
+1. **Make changes** to source code in `src/`
+2. **Write/update tests** for new functionality (see Testing section)
+3. **Run tests** to verify your changes: `pnpm test:run`
+4. **Check code quality**: `pnpm lint`
+5. **Build the plugin**: `pnpm build`
+6. **Test manually** in Obsidian (see Manually installing section)
+
+### Production Build
+
 To create a production build of the plugin, run the following command:
 
 ```bash
@@ -28,7 +57,119 @@ This project uses Prettier for code formatting and ESLint for linting. To format
 pnpm lint
 ```
 
-This command will automatically format the code with Prettier and then run ESLint to check for issues and apply fixes.
+This command will automatically format and lint both source code (`src/`) and test files (`tests/`) with Prettier formatting followed by ESLint checks and automatic fixes.
+
+## Testing
+
+This project uses **Vitest** for comprehensive unit testing with coverage reporting.
+
+### Running Tests
+
+```bash
+# Run tests in watch mode (interactive)
+pnpm test
+
+# Run tests once and exit
+pnpm test:run
+
+# Open interactive testing UI
+pnpm test:ui
+
+# Run tests with coverage report
+pnpm test:coverage
+```
+
+### Test Structure
+
+Tests are organized as follows:
+
+```
+tests/
+├── README.md                 # Testing documentation
+├── hello-world.test.ts       # Infrastructure verification
+└── helpers/                  # Helper function tests (future)
+    ├── regexHelpers.test.ts
+    ├── indexingHelpers.test.ts
+    ├── validationHelpers.test.ts
+    └── domHelpers.test.ts
+```
+
+### Writing Tests
+
+- Test files should end with `.test.ts` or `.spec.ts`
+- Place tests in the `tests/` directory or alongside source files
+- Use descriptive test names that explain the behavior being tested
+- Follow the Arrange-Act-Assert pattern
+
+Example test structure:
+
+```typescript
+import { describe, test, expect } from 'vitest';
+import { functionToTest } from '../src/helpers/yourModule';
+
+describe('YourModule', () => {
+  describe('functionToTest', () => {
+    test('should handle normal case correctly', () => {
+      // Arrange
+      const input = 'test input';
+      
+      // Act
+      const result = functionToTest(input);
+      
+      // Assert
+      expect(result).toBe('expected output');
+    });
+
+    test('should handle edge case', () => {
+      // Test edge cases and error conditions
+      expect(() => functionToTest('')).toThrow();
+    });
+  });
+});
+```
+
+### Coverage Goals
+
+- **Target**: >70% code coverage for release
+- **Focus areas**: Helper functions in `src/helpers/`
+- **Current baseline**: 0% coverage for helper functions
+- **Exclusions**: `main.ts`, build files, and type definitions
+
+### Test Environment
+
+- **Framework**: Vitest with jsdom environment
+- **Features**: Watch mode, UI interface, coverage reporting
+- **DOM testing**: Available via jsdom for UI component tests
+- **TypeScript**: Full TypeScript support with proper type checking
+
+### Helper Functions Architecture
+
+The plugin uses a **testable architecture** with pure helper functions extracted from the main plugin logic:
+
+- **`src/helpers/regexHelpers.ts`** - Pattern generation and matching logic
+- **`src/helpers/indexingHelpers.ts`** - Folder indexing algorithms and operations  
+- **`src/helpers/validationHelpers.ts`** - Input validation and security checks
+- **`src/helpers/domHelpers.ts`** - DOM manipulation patterns and analysis
+
+These helpers are **pure functions** with:
+
+- No Obsidian API dependencies
+- Predictable inputs and outputs
+- Clear separation of concerns
+- Full TypeScript interfaces
+
+This architecture enables comprehensive unit testing without requiring an Obsidian environment.
+
+### Continuous Integration
+
+Future plans include adding automated testing to the CI/CD pipeline:
+
+- Run tests on pull requests
+- Enforce coverage thresholds
+- Prevent merging without passing tests
+- Generate coverage reports for review
+
+Currently, the release workflow focuses on building and publishing, but test integration is planned for enhanced code quality assurance.
 
 ## Releasing New Releases
 
