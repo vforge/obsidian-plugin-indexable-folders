@@ -108,7 +108,7 @@ The helpers are already integrated into the main plugin:
 
 ```typescript
 // main.ts - Using regex helpers
-import { generatePrefixRegex, type RegexSettings } from './helpers';
+import { generatePrefixRegex, type RegexSettings } from './helpers/regexHelpers';
 
 getPrefixRegex(): RegExp {
     if (this.shouldInvalidateCache() || !this._prefixRegexCache) {

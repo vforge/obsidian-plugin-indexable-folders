@@ -9,7 +9,7 @@ import {
     generatePrefixRegex,
     generateNumericPrefixRegex,
     type RegexSettings,
-} from './helpers';
+} from './helpers/regexHelpers';
 
 export default class IndexableFoldersPlugin extends Plugin {
     settings: IndexableFoldersSettings;
