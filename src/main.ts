@@ -5,6 +5,11 @@ import { registerEvents } from './events';
 import { prefixNumericFolders, revertFolderName } from './logic/fileExplorer';
 import { updateStatusBar } from './logic/statusBar';
 import { sanitizeCSSColor } from './utils/cssValidation';
+import {
+    generatePrefixRegex,
+    generateNumericPrefixRegex,
+    type RegexSettings,
+} from './helpers';
 
 export default class IndexableFoldersPlugin extends Plugin {
     settings: IndexableFoldersSettings;
@@ -186,22 +191,14 @@ export default class IndexableFoldersPlugin extends Plugin {
         });
     }
 
-    private getEscapedSeparator(): string {
-        return this.settings.separator.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
-    }
-
     getPrefixRegex(): RegExp {
         // Check if cache needs invalidation or doesn't exist
         if (this.shouldInvalidateCache() || !this._prefixRegexCache) {
-            const special = this.settings.specialPrefixes
-                .split(',')
-                .map((p) => p.trim())
-                .filter(Boolean)
-                .map((p) => p.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&'));
-
-            const escapedSeparator = this.getEscapedSeparator();
-            const pattern = `^((?:\\d+)|(?:${special.join('|')}))${escapedSeparator}`;
-            this._prefixRegexCache = new RegExp(pattern, 'i');
+            const regexSettings: RegexSettings = {
+                separator: this.settings.separator,
+                specialPrefixes: this.settings.specialPrefixes,
+            };
+            this._prefixRegexCache = generatePrefixRegex(regexSettings);
         }
 
         return this._prefixRegexCache;
@@ -210,9 +207,12 @@ export default class IndexableFoldersPlugin extends Plugin {
     getNumericPrefixRegex(): RegExp {
         // Check if cache needs invalidation or doesn't exist
         if (this.shouldInvalidateCache() || !this._numericPrefixRegexCache) {
-            const escapedSeparator = this.getEscapedSeparator();
-            const pattern = `^(\\d+)${escapedSeparator}`;
-            this._numericPrefixRegexCache = new RegExp(pattern);
+            const regexSettings: RegexSettings = {
+                separator: this.settings.separator,
+                specialPrefixes: this.settings.specialPrefixes,
+            };
+            this._numericPrefixRegexCache =
+                generateNumericPrefixRegex(regexSettings);
         }
 
         return this._numericPrefixRegexCache;
