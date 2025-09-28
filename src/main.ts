@@ -10,6 +10,7 @@ import { updateStatusBar } from './logic/statusBar';
 import { DEFAULT_SETTINGS, IndexableFoldersSettings } from './settings';
 import { IndexableFoldersSettingTab } from './ui/SettingsTab';
 import { sanitizeCSSColor } from './utils/cssValidation';
+import { log } from './utils/logger';
 
 export default class IndexableFoldersPlugin extends Plugin {
     settings: IndexableFoldersSettings;
@@ -154,6 +155,15 @@ export default class IndexableFoldersPlugin extends Plugin {
      * Handles mutation observer events with debouncing
      */
     public handleMutations(mutations: MutationRecord[]): void {
+        if (this.ignoreMutationsWhileMenuOpen) {
+            log(
+                this.settings.debugEnabled,
+                'mutation ignored due to context menu'
+            );
+            return;
+        }
+        log(this.settings.debugEnabled, 'mutation observed', mutations);
+
         // Add mutations to pending list
         this._pendingMutations.push(...mutations);
 
