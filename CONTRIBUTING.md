@@ -20,8 +20,8 @@ To work on this plugin locally:
 
 1. **Plan and implement functionality**
 2. **Add tests where practical and beneficial**
-   - Focus on testable components (pure functions)
-   - Cover critical business logic and edge cases
+    - Focus on testable components (pure functions)
+    - Cover critical business logic and edge cases
 3. **Refactor** while keeping existing tests passing
 4. **Update documentation** as needed
 
@@ -104,27 +104,27 @@ tests/
 Example test structure:
 
 ```typescript
-import { describe, test, expect } from 'vitest';
-import { functionToTest } from '../src/helpers/yourModule';
+import { describe, test, expect } from "vitest";
+import { functionToTest } from "../src/helpers/yourModule";
 
-describe('YourModule', () => {
-  describe('functionToTest', () => {
-    test('should handle normal case correctly', () => {
-      // Arrange
-      const input = 'test input';
-      
-      // Act
-      const result = functionToTest(input);
-      
-      // Assert
-      expect(result).toBe('expected output');
-    });
+describe("YourModule", () => {
+    describe("functionToTest", () => {
+        test("should handle normal case correctly", () => {
+            // Arrange
+            const input = "test input";
 
-    test('should handle edge case', () => {
-      // Test edge cases and error conditions
-      expect(() => functionToTest('')).toThrow();
+            // Act
+            const result = functionToTest(input);
+
+            // Assert
+            expect(result).toBe("expected output");
+        });
+
+        test("should handle edge case", () => {
+            // Test edge cases and error conditions
+            expect(() => functionToTest("")).toThrow();
+        });
     });
-  });
 });
 ```
 
@@ -147,7 +147,7 @@ describe('YourModule', () => {
 The plugin uses a **testable architecture** with pure helper functions extracted from the main plugin logic:
 
 - **`src/helpers/regexHelpers.ts`** - Pattern generation and matching logic
-- **`src/helpers/indexingHelpers.ts`** - Folder indexing algorithms and operations  
+- **`src/helpers/indexingHelpers.ts`** - Folder indexing algorithms and operations
 - **`src/helpers/validationHelpers.ts`** - Input validation and security checks
 - **`src/helpers/domHelpers.ts`** - DOM manipulation patterns and analysis
 
