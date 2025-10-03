@@ -9,7 +9,7 @@ const PREFIX_COLOR = '#4CAF50'; // Green color
 /**
  * Log a message with colored prefix (only if debugging is enabled)
  */
-export function log(debugEnabled: boolean, ...args: any[]) {
+export function log(debugEnabled: boolean, ...args: unknown[]) {
     if (!debugEnabled) {
         return;
     }

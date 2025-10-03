@@ -115,7 +115,7 @@ function testCSSColorValue(colorValue: string): boolean {
         const isRecognizedFormat = isRecognizedColorFormat(colorValue);
 
         return wasSet && isRecognizedFormat;
-    } catch (error) {
+    } catch {
         // If any error occurs during testing, consider it invalid
         return false;
     }

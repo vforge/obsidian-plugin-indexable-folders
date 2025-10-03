@@ -3,11 +3,12 @@
 	"version": "0.0.5",
 	"description": "An Obsidian plugin that enhances folder organization by styling numeric prefixes and providing context menu actions for reordering indexed folders.",
 	"main": "main.js",
+	"type": "module",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
-		"lint": "prettier --write ./src && eslint ./src/ --ext .ts --quiet --fix",
+		"lint": "prettier --write ./src && eslint ./src/ --quiet --fix",
 		"prepare": "husky"
 	},
 	"keywords": [
@@ -30,21 +31,22 @@
 		"url": "https://github.com/vforge/obsidian-plugin-indexable-folders/issues"
 	},
 	"devDependencies": {
-		"@types/node": "^16.11.6",
-		"@typescript-eslint/eslint-plugin": "5.29.0",
-		"@typescript-eslint/parser": "5.29.0",
-		"builtin-modules": "3.3.0",
-		"esbuild": "0.17.3",
-		"obsidian": "latest",
-		"tslib": "2.4.0",
-		"typescript": "4.7.4",
-		"eslint": "^8.57.1",
+		"@eslint/js": "^9.12.0",
+		"@types/node": "^22.0.0",
+		"@typescript-eslint/eslint-plugin": "^8.10.0",
+		"@typescript-eslint/parser": "^8.10.0",
+		"builtin-modules": "^4.0.0",
+		"esbuild": "^0.24.0",
+		"eslint": "^9.12.0",
 		"eslint-config-prettier": "^9.1.0",
-		"prettier": "^3.3.2",
 		"husky": "^9.0.11",
-		"lint-staged": "^15.2.7"
+		"lint-staged": "^15.2.7",
+		"obsidian": "latest",
+		"prettier": "^3.3.2",
+		"tslib": "^2.7.0",
+		"typescript": "^5.6.0",
+		"typescript-eslint": "^8.10.0"
 	},
-	"dependencies": {},
 	"lint-staged": {
 		"{src,tests}/**/*.ts": [
 			"prettier --write",

@@ -22,13 +22,21 @@ pnpm build
 
 ## Code Quality
 
-This project uses Prettier for code formatting and ESLint for linting. To format and lint the code, use the command:
+This project uses Prettier for code formatting and ESLint 9 (flat config) for linting. To format and lint the code, use the command:
 
 ```bash
 pnpm lint
 ```
 
 This command will automatically format the code with Prettier and then run ESLint to check for issues and apply fixes.
+
+### ESLint Configuration
+
+The project uses the new ESLint flat configuration format (`eslint.config.js`) introduced in ESLint 9. The configuration includes:
+
+- TypeScript support with `@typescript-eslint/parser` and `@typescript-eslint/eslint-plugin`
+- Prettier integration via `eslint-config-prettier`
+- Custom rules for TypeScript development
 
 ## Releasing New Releases
 
