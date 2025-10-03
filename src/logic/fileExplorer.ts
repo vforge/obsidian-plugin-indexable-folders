@@ -2,6 +2,78 @@ import { TFolder } from 'obsidian';
 import IndexableFoldersPlugin from '../main';
 import { log } from '../utils/logger';
 
+/**
+ * Handles rename state changes for folder elements
+ */
+function handleRenameStateChanges(
+    plugin: IndexableFoldersPlugin,
+    mutations: MutationRecord[]
+) {
+    mutations.forEach((mutation) => {
+        if (
+            mutation.type === 'attributes' &&
+            mutation.attributeName === 'class'
+        ) {
+            const target = mutation.target as HTMLElement;
+
+            // Check if this is a nav-folder-title element
+            if (!target.classList.contains('nav-folder-title')) {
+                return;
+            }
+
+            // Get the folder path from the closest folder container
+            const folderContainer = target.closest('[data-path]');
+            if (!folderContainer) {
+                return;
+            }
+
+            const dataPath = folderContainer.getAttribute('data-path');
+            if (!dataPath) {
+                return;
+            }
+
+            const isBeingRenamed =
+                target.classList.contains('is-being-renamed');
+            const wasBeingRenamed = (mutation.oldValue || '').includes(
+                'is-being-renamed'
+            );
+
+            log(
+                plugin.settings.debugEnabled,
+                `Rename state change for ${dataPath}: isBeingRenamed=${isBeingRenamed}, wasBeingRenamed=${wasBeingRenamed}`
+            );
+
+            if (isBeingRenamed && !wasBeingRenamed) {
+                // Folder entered rename mode - revert to original name
+                log(
+                    plugin.settings.debugEnabled,
+                    `Folder ${dataPath} entered rename mode`
+                );
+
+                const folder = plugin.app.vault.getAbstractFileByPath(dataPath);
+                if (folder instanceof TFolder) {
+                    // Only revert if this folder has a numeric prefix
+                    const numericPrefixRegex = plugin.getNumericPrefixRegex();
+                    if (folder.name.match(numericPrefixRegex)) {
+                        revertFolderName(plugin, folder);
+                    }
+                }
+            } else if (!isBeingRenamed && wasBeingRenamed) {
+                // Folder exited rename mode - re-apply styling
+                log(
+                    plugin.settings.debugEnabled,
+                    `Folder ${dataPath} exited rename mode`
+                );
+
+                // Use a small delay to ensure the rename operation is complete
+                setTimeout(() => {
+                    plugin.prefixNumericFolders(true);
+                }, 100);
+            }
+        }
+    });
+}
+
 export function startFolderObserver(plugin: IndexableFoldersPlugin) {
     log(plugin.settings.debugEnabled, 'starting folder observer');
     const fileExplorer = plugin.app.workspace.containerEl.querySelector(
@@ -22,6 +94,9 @@ export function startFolderObserver(plugin: IndexableFoldersPlugin) {
     );
 
     plugin.folderObserver = new MutationObserver((mutations) => {
+        // Handle rename state changes first
+        handleRenameStateChanges(plugin, mutations);
+
         if (plugin.ignoreMutationsWhileMenuOpen) {
             log(
                 plugin.settings.debugEnabled,
@@ -30,12 +105,17 @@ export function startFolderObserver(plugin: IndexableFoldersPlugin) {
             return;
         }
         log(plugin.settings.debugEnabled, 'mutation observed', mutations);
+
+        // Then handle regular mutations
         plugin.handleMutations(mutations);
     });
 
     plugin.folderObserver.observe(fileExplorer, {
         childList: true,
         subtree: true,
+        attributes: true,
+        attributeFilter: ['class'],
+        attributeOldValue: true,
     });
 
     // Initial run

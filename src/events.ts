@@ -1,6 +1,6 @@
 import { Menu, TFolder } from 'obsidian';
 import IndexableFoldersPlugin from './main';
-import { revertFolderName, startFolderObserver } from './logic/fileExplorer';
+import { startFolderObserver } from './logic/fileExplorer';
 import { updateStatusBar } from './logic/statusBar';
 import { UpdateIndexModal } from './ui/UpdateIndexModal';
 import { updateFolderIndex, isSpecialIndex } from './logic/folderActions';
@@ -37,6 +37,8 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
             // Ignore mutations while context menu is open
             plugin.ignoreMutationsWhileMenuOpen = true;
 
+            // TODO: Do we even need it?
+            /*
             // Find folder DOM element
             const fileExplorer = plugin.app.workspace.containerEl.querySelector(
                 '.nav-files-container'
@@ -78,6 +80,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
 
             // Revert folder name to show original name in context menu
             revertFolderName(plugin, file);
+            */
 
             const numericPrefixRegex = plugin.getNumericPrefixRegex();
             const match = file.name.match(numericPrefixRegex);
