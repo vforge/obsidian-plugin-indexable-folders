@@ -64,11 +64,9 @@ export default class IndexableFoldersPlugin extends Plugin {
     }
 
     async loadSettings() {
-        this.settings = Object.assign(
-            {},
-            DEFAULT_SETTINGS,
-            await this.loadData()
-        );
+        const savedData =
+            (await this.loadData()) as Partial<IndexableFoldersSettings> | null;
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, savedData || {});
 
         // Invalidate regex cache since settings may have changed
         this.invalidateRegexCache();

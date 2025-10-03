@@ -249,7 +249,7 @@ export class UpdateIndexModal extends Modal {
                         }
                         const newIndex = parseInt(inputValue, 10);
                         this.close();
-                        this.onSubmit(newIndex);
+                        void this.onSubmit(newIndex);
                         return;
                     }
 

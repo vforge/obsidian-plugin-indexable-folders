@@ -5,12 +5,14 @@ import prettier from 'eslint-config-prettier';
 export default [
     { ignores: ['main.js', 'coverage/**', 'node_modules/**', '*.d.ts'] },
     eslint.configs.recommended,
-    ...tseslint.configs.recommended,
+    ...tseslint.configs.recommendedTypeChecked,
     prettier,
     {
         languageOptions: {
             parser: tseslint.parser,
             parserOptions: {
+                project: './tsconfig.json',
+                tsconfigRootDir: import.meta.dirname,
                 sourceType: 'module',
                 ecmaVersion: 'latest'
             },

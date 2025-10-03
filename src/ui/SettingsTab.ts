@@ -50,16 +50,18 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
         }
 
         // Set new timeout
-        const timeout = setTimeout(async () => {
-            // Only show error if the value is not empty and is invalid
-            if (value.trim() !== '' && !isValidCSSColor(value)) {
-                const errorMessage = getCSSColorErrorMessage(value);
-                new Notice(`${errorPrefix}: ${errorMessage}`, 4000);
-                return;
-            }
+        const timeout = setTimeout(() => {
+            void (async () => {
+                // Only show error if the value is not empty and is invalid
+                if (value.trim() !== '' && !isValidCSSColor(value)) {
+                    const errorMessage = getCSSColorErrorMessage(value);
+                    new Notice(`${errorPrefix}: ${errorMessage}`, 4000);
+                    return;
+                }
 
-            // If validation passes or value is empty, execute callback
-            await callback();
+                // If validation passes or value is empty, execute callback
+                await callback();
+            })();
         }, 800); // 800ms delay to allow user to finish typing
 
         this.validationTimeouts.set(key, timeout);
