@@ -48,13 +48,19 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                 );
             }
 
-            // Handler to re-enable mutations
+            // Handler to re-enable mutations and re-apply styling
             const reenableMutations = () => {
                 plugin.ignoreMutationsWhileMenuOpen = false;
                 log(
                     plugin.settings.debugEnabled,
                     'ignoreMutationsWhileMenuOpen = false (focusout or menu hide)'
                 );
+
+                // Re-apply styling when menu is dismissed
+                // Use setTimeout to ensure menu is fully closed before re-styling
+                setTimeout(() => {
+                    plugin.prefixNumericFolders(true);
+                }, 50);
             };
 
             // Listen for folder losing focus
@@ -70,6 +76,7 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
                 }
             });
 
+            // Revert folder name to show original name in context menu
             revertFolderName(plugin, file);
 
             const numericPrefixRegex = plugin.getNumericPrefixRegex();
