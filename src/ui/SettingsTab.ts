@@ -169,7 +169,7 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
             );
 
         // Theming section
-        containerEl.createEl('h3', { text: 'Theming' });
+        new Setting(containerEl).setName('Theming').setHeading();
 
         new Setting(containerEl)
             .setName('Label background color')

@@ -78,10 +78,12 @@ export class UpdateIndexModal extends Modal {
         this.conflictEl.empty();
 
         if (conflicts.length === 0) {
+            // eslint-disable-next-line obsidianmd/no-static-styles-assignment
             this.conflictEl.style.display = 'none';
             return;
         }
 
+        // eslint-disable-next-line obsidianmd/no-static-styles-assignment
         this.conflictEl.style.display = 'block';
         this.conflictEl.createEl('div', {
             text: 'Files with this index:',
@@ -104,10 +106,12 @@ export class UpdateIndexModal extends Modal {
         this.errorEl.empty();
 
         if (!errorMessage) {
+            // eslint-disable-next-line obsidianmd/no-static-styles-assignment
             this.errorEl.style.display = 'none';
             return;
         }
 
+        // eslint-disable-next-line obsidianmd/no-static-styles-assignment
         this.errorEl.style.display = 'block';
         this.errorEl.createEl('div', {
             text: 'Error:',
@@ -128,10 +132,12 @@ export class UpdateIndexModal extends Modal {
         this.successEl.empty();
 
         if (!isValid || hasConflicts) {
+            // eslint-disable-next-line obsidianmd/no-static-styles-assignment
             this.successEl.style.display = 'none';
             return;
         }
 
+        // eslint-disable-next-line obsidianmd/no-static-styles-assignment
         this.successEl.style.display = 'block';
         this.successEl.createEl('div', {
             text: 'Ready to update:',

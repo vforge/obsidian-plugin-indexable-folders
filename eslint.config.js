@@ -1,9 +1,11 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
+import obsidianmd from "eslint-plugin-obsidianmd";
 
 export default [
     { ignores: ['main.js', 'coverage/**', 'node_modules/**', '*.d.ts'] },
+  ...obsidianmd.configs.recommended,
     eslint.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
     prettier,

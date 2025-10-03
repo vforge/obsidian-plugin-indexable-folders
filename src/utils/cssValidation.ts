@@ -100,6 +100,7 @@ function testCSSColorValue(colorValue: string): boolean {
     try {
         // Create a temporary element to test the color
         const testElement = document.createElement('div');
+        // eslint-disable-next-line obsidianmd/no-static-styles-assignment
         testElement.style.display = 'none';
 
         // Store original color
