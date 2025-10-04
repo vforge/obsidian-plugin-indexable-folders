@@ -102,6 +102,37 @@ The project uses the new ESLint flat configuration format (`eslint.config.js`) i
 
 > You can simplify the version bump process by running `pnpm version patch`, `pnpm version minor` or `pnpm version major` after updating `minAppVersion` manually in `manifest.json`. The command will bump the version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`.
 
+### Using the release helper script
+
+This repository includes a small helper script to automate the most common release steps: `scripts/release.sh`.
+
+- The script performs the following steps by default:
+    1. Runs `pnpm lint`
+    2. Runs `pnpm build` to produce `main.js`
+    3. Runs `pnpm version <patch|minor|major>` to bump the package version and update `manifest.json` / `versions.json` (via `version-bump.mjs`)
+    4. Pushes the commit and created tag to `origin`
+
+- Important: This script no longer creates a GitHub Release; pushing the tag is sufficient because a GitHub Action in this repository will create the release automatically.
+
+Usage examples:
+
+```bash
+# Dry run (no git actions, useful to verify build/lint)
+./scripts/release.sh --dry-run
+
+# Real release (patch by default)
+./scripts/release.sh
+
+# Bump minor version
+./scripts/release.sh minor
+```
+
+Notes:
+
+- Ensure your working tree is clean and tests/lint pass before running the script.
+- If you need to change `minAppVersion`, edit `manifest.json` and commit that change before running the script so `version-bump.mjs` captures the correct `minAppVersion`.
+- The script will call `pnpm version` which creates a commit and tag; pushing tags will trigger your repository's CI (GitHub Actions) to produce the final release assets.
+
 ## Adding your plugin to the community plugin list
 
 - Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
