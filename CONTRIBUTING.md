@@ -11,8 +11,62 @@ To work on this plugin locally:
 
 1. Clone this repository.
 2. Make sure your NodeJS is at least v22.19.0 (`node --version`).
+   - **Using nvm (recommended)**: Run `nvm use` to automatically use the version specified in `.nvmrc`
+   - **VS Code users**: The workspace is configured to use the correct Node.js version automatically
 3. Run `pnpm install` to install dependencies.
 4. Run `pnpm dev` to start compilation in watch mode.
+
+### VS Code Setup
+
+This project includes comprehensive VS Code configuration files in `.vscode/`:
+
+- **`settings.json`**: Workspace settings with Node.js paths and formatting rules
+- **`tasks.json`**: Build, test, and development tasks
+- **`launch.json`**: Debug configurations for running tests
+- **`extensions.json`**: Recommended extensions for development
+- **`setup-node.sh`**: Script to ensure correct Node.js version
+
+Key features:
+
+- **Automatic Node.js version**: Uses the version specified in `.nvmrc` (v22.19.0)
+- **Build tasks**: Press `Cmd+Shift+P` → "Tasks: Run Task" → "Build Project"
+- **Test tasks**: Press `Cmd+Shift+P` → "Tasks: Run Task" → "Run Tests"
+- **Environment setup**: Run the "Setup Node.js Environment" task if needed
+
+If you encounter Node.js version issues in VS Code:
+
+1. Close VS Code completely
+2. Run `nvm use` in the terminal
+3. Reopen VS Code from that terminal: `code .`
+
+### Development Workflow
+
+**Recommended approach for new features:**
+
+1. **Plan and implement functionality**
+2. **Add tests where practical and beneficial**
+    - Focus on testable components (pure functions)
+    - Cover critical business logic and edge cases
+3. **Refactor** while keeping existing tests passing
+4. **Update documentation** as needed
+
+**For bug fixes:**
+
+1. **Write a test** that reproduces the bug (if feasible)
+2. **Fix the bug** and ensure tests pass
+3. **Verify** no other functionality is broken
+4. **Run full test suite** before committing
+
+**Standard workflow:**
+
+1. **Make changes** to source code in `src/`
+2. **Write/update tests** for new functionality (see Testing section)
+3. **Run tests** to verify your changes: `pnpm test:run`
+4. **Check code quality**: `pnpm lint`
+5. **Build the plugin**: `pnpm build`
+6. **Test manually** in Obsidian (see Manually installing section)
+
+### Production Build
 
 To create a production build of the plugin, run the following command:
 
