@@ -1,8 +1,8 @@
 {
     "recommendations": [
-        "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint",
-        "ms-vscode.vscode-typescript-next",
-        "vitest.explorer"
+        "esbenp.prettier-vscode", // Prettier
+        "dbaeumer.vscode-eslint", // ESLint integration
+        "maattdd.gitless", // Helpful Git lens FORK
+        "streetsidesoftware.code-spell-checker" // Optional: catch simple typos in docs
     ]
 }

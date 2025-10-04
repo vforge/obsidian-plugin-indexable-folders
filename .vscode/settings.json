@@ -1,22 +1,49 @@
 {
     "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "modificationsIfAvailable",
     "editor.codeActionsOnSave": {
         "source.fixAll": "always",
         "source.fixAll.eslint": "always"
     },
     "prettier.requireConfig": true,
-    "prettier.enableDebugLogs": false,
-    "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+    // TypeScript: use workspace version to match project TS
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+
+    // ESLint: enable validation and auto-fix on save is handled above
+    "eslint.validate": ["typescript", "typescriptreact", "javascript"],
+
+    // Editor hygiene
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "editor.formatOnPaste": false,
+    "editor.formatOnType": false,
+
+    // Performance: avoid indexing big folders (tune patterns for your vault layout)
+    "files.watcherExclude": {
+        "**/node_modules/**": true,
+        "**/.git/**": true,
+        "**/.obsidian/**": true,
+        "**/dist/**": true
     },
-    "[typescript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/.git": true,
+        "**/.obsidian": true,
+        "**/dist": true
     },
-    "[typescriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "files.exclude": {
+        "**/.DS_Store": true,
+        "**/node_modules": true,
+        "**/dist": true
     },
-    "[json]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "editor.formatOnSaveTimeout": 5000
+
+    // Optional: smaller editor/TS memory footprint (tweak if you edit very large trees)
+    "typescript.preferences.quoteStyle": "single",
+
+    // Optional helpful UX
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.formatOnSaveTimeout": 2000
 }
