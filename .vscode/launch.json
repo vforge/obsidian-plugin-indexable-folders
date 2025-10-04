@@ -1,0 +1,95 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Tests",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/node_modules/.bin/vitest",
+            "args": ["run"],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "NODE_ENV": "test"
+            },
+            "console": "integratedTerminal",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "name": "Debug Tests",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/node_modules/.bin/vitest",
+            "args": ["run", "--reporter=verbose"],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "NODE_ENV": "test"
+            },
+            "console": "integratedTerminal",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        }
+    ]
+}
+ 56 changes: 56 additions & 0 deletions56
+.vscode/settings.json
+Original file line number	Diff line number	Diff line change
+@@ -0,0 +1,56 @@
+{
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "prettier.configPath": "./package.json",
+    "eslint.workingDirectories": ["./"],
+    "eslint.validate": ["typescript", "javascript"],
+    "files.exclude": {
+        "**/node_modules": true,
+        "**/coverage": true,
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "main.js": true,
+        "**/*.map": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/coverage": true,
+        "**/.git": true,
+        "main.js": true,
+        "**/*.map": true
+    },
+    "typescript.preferences.includePackageJsonAutoImports": "off",
+    "git.ignoreLimitWarning": true,
+    "files.associations": {
+        "*.md": "markdown"
+    },
+    "terminal.integrated.env.osx": {
+        "PATH": "${env:HOME}/.nvm/versions/node/v22.19.0/bin:${env:PATH}"
+    },
+    "terminal.integrated.env.linux": {
+        "PATH": "${env:HOME}/.nvm/versions/node/v22.19.0/bin:${env:PATH}"
+    },
+    "nodejs.npmPath": "${env:HOME}/.nvm/versions/node/v22.19.0/bin/npm",
+    "typescript.preferences.npmLocation": "${env:HOME}/.nvm/versions/node/v22.19.0/bin/npm",
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.profiles.osx": {
+        "zsh": {
+            "path": "zsh",
+            "args": ["-l", "-i"]
+        }
+    }
+}

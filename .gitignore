@@ -1,5 +1,5 @@
-# vscode
-.vscode 
+# vscode user-specific settings (allow project-specific workspace settings)
+.vscode/*.code-workspace
 
 # Intellij
 *.iml
