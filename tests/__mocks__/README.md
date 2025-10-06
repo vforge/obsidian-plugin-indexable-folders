@@ -43,4 +43,3 @@ This provides a mocked `log` function that can be spied on in tests.
 2. Export mocked functions/classes using `vi.fn()` or `vi.mock()`
 3. Import and use in test files with `vi.mock()` and dynamic import
 4. Update this README to document the new mock
-
