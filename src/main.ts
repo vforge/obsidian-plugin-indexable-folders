@@ -1,10 +1,11 @@
 import { Plugin, TFolder } from 'obsidian';
-import { IndexableFoldersSettings, DEFAULT_SETTINGS } from './settings';
-import { IndexableFoldersSettingTab } from './ui/SettingsTab';
-import { registerEvents } from './events';
-import { prefixNumericFolders, revertFolderName } from './logic/fileExplorer';
-import { updateStatusBar } from './logic/statusBar';
-import { sanitizeCSSColor } from './utils/cssValidation';
+import { IndexableFoldersSettings, DEFAULT_SETTINGS } from 'src/settings';
+import { IndexableFoldersSettingTab } from 'src/ui/SettingsTab';
+import { registerEvents } from 'src/events';
+import { prefixNumericFolders, revertFolderName } from 'src/logic/fileExplorer';
+import { updateStatusBar } from 'src/logic/statusBar';
+import { sanitizeCSSColor } from 'src/utils/cssValidation';
+import { log } from 'src/utils/logger';
 
 export default class IndexableFoldersPlugin extends Plugin {
     settings: IndexableFoldersSettings;
@@ -178,7 +179,7 @@ export default class IndexableFoldersPlugin extends Plugin {
                 try {
                     operation();
                 } catch (error) {
-                    console.error('Error in batched DOM operation:', error);
+                    log(true, 'Error in batched DOM operation:', error);
                 }
             });
         });

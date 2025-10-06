@@ -1,6 +1,6 @@
 import { TFolder, Notice } from 'obsidian';
-import IndexableFoldersPlugin from '../main';
-import { log } from '../utils/logger';
+import IndexableFoldersPlugin from 'src/main';
+import { log } from 'src/utils/logger';
 
 export function isSpecialIndex(indexStr: string): boolean {
     // Only multi-digit patterns with all same characters are considered special
@@ -256,7 +256,7 @@ async function performSmartSwap(
 
         return true;
     } catch (error) {
-        console.error('Smart swap failed:', error);
+        log(true, 'Smart swap failed:', error);
         return false;
     }
 }

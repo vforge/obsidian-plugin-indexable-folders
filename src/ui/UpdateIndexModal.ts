@@ -1,5 +1,5 @@
 import { App, Modal, Notice, Setting, TFolder } from 'obsidian';
-import IndexableFoldersPlugin from '../main';
+import IndexableFoldersPlugin from 'src/main';
 
 export class UpdateIndexModal extends Modal {
     folder: TFolder;

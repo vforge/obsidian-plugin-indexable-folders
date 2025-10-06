@@ -1,11 +1,11 @@
 import { App, PluginSettingTab, Setting, Notice } from 'obsidian';
-import IndexableFoldersPlugin from '../main';
-import { log } from '../utils/logger';
+import IndexableFoldersPlugin from 'src/main';
+import { log } from 'src/utils/logger';
 import {
     isValidCSSColor,
     sanitizeCSSColor,
     getCSSColorErrorMessage,
-} from '../utils/cssValidation';
+} from 'src/utils/cssValidation';
 
 export class IndexableFoldersSettingTab extends PluginSettingTab {
     plugin: IndexableFoldersPlugin;
