@@ -1,15 +1,9 @@
 import { TFolder } from 'obsidian';
 import IndexableFoldersPlugin from '../main';
-import { log } from '../utils/logger';
 
 export function updateStatusBar(plugin: IndexableFoldersPlugin): void {
     plugin.statusBarItemEl.empty();
     const activeFile = plugin.app.workspace.getActiveFile();
-    log(
-        plugin.settings.debugEnabled,
-        'updating status bar for file:',
-        activeFile?.path
-    );
 
     if (!activeFile || !activeFile.parent) {
         return;

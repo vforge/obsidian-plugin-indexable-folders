@@ -61,11 +61,18 @@ export class TFolder {
     name: string;
     path: string;
     children: any[];
+    parent: TFolder | null;
 
-    constructor(name: string, path: string) {
+    constructor(name: string = '', path: string = '') {
         this.name = name;
         this.path = path;
         this.children = [];
+        this.parent = null;
+    }
+
+    isRoot(): boolean {
+        // A folder is root if its path is '/' or if it's explicitly marked as root
+        return this.path === '/' || this.name === '';
     }
 }
 
@@ -73,11 +80,13 @@ export class TFile {
     name: string;
     path: string;
     extension: string;
+    parent: TFolder | null;
 
-    constructor(name: string, path: string) {
+    constructor(name: string = '', path: string = '') {
         this.name = name;
         this.path = path;
         this.extension = 'md';
+        this.parent = null;
     }
 }
 
@@ -197,7 +206,38 @@ declare global {
         addClass(...classNames: string[]): HTMLElement;
         removeClass(...classNames: string[]): HTMLElement;
         toggleClass(className: string, force?: boolean): HTMLElement;
+        empty(): HTMLElement;
+        createEl<K extends keyof HTMLElementTagNameMap>(
+            tag: K,
+            o?: string | DomElementInfo,
+            callback?: (el: HTMLElementTagNameMap[K]) => void
+        ): HTMLElementTagNameMap[K];
+        createDiv(
+            o?: string | DomElementInfo,
+            callback?: (el: HTMLDivElement) => void
+        ): HTMLDivElement;
+        createSpan(
+            o?: string | DomElementInfo,
+            callback?: (el: HTMLSpanElement) => void
+        ): HTMLSpanElement;
     }
+
+    interface DocumentFragment {
+        createEl<K extends keyof HTMLElementTagNameMap>(
+            tag: K,
+            o?: string | DomElementInfo,
+            callback?: (el: HTMLElementTagNameMap[K]) => void
+        ): HTMLElementTagNameMap[K];
+        append(...nodes: (Node | string)[]): void;
+    }
+}
+
+interface DomElementInfo {
+    text?: string;
+    cls?: string | string[];
+    attr?: Record<string, string>;
+    title?: string;
+    href?: string;
 }
 
 HTMLElement.prototype.setText = function (text: string): HTMLElement {
@@ -225,4 +265,98 @@ HTMLElement.prototype.toggleClass = function (
 ): HTMLElement {
     this.classList.toggle(className, force);
     return this;
+};
+
+HTMLElement.prototype.empty = function (): HTMLElement {
+    this.innerHTML = '';
+    return this;
+};
+
+HTMLElement.prototype.createEl = function <
+    K extends keyof HTMLElementTagNameMap,
+>(
+    tag: K,
+    o?: string | DomElementInfo,
+    callback?: (el: HTMLElementTagNameMap[K]) => void
+): HTMLElementTagNameMap[K] {
+    const el = document.createElement(tag);
+
+    if (o) {
+        if (typeof o === 'string') {
+            el.textContent = o;
+        } else {
+            if (o.text) el.textContent = o.text;
+            if (o.cls) {
+                const classes = Array.isArray(o.cls) ? o.cls : [o.cls];
+                el.classList.add(...classes);
+            }
+            if (o.attr) {
+                Object.entries(o.attr).forEach(([key, value]) => {
+                    el.setAttribute(key, value);
+                });
+            }
+            if (o.title) el.title = o.title;
+            if (o.href && el instanceof HTMLAnchorElement) el.href = o.href;
+        }
+    }
+
+    this.appendChild(el);
+
+    if (callback) {
+        callback(el);
+    }
+
+    return el;
+};
+
+HTMLElement.prototype.createDiv = function (
+    o?: string | DomElementInfo,
+    callback?: (el: HTMLDivElement) => void
+): HTMLDivElement {
+    return this.createEl('div', o, callback);
+};
+
+HTMLElement.prototype.createSpan = function (
+    o?: string | DomElementInfo,
+    callback?: (el: HTMLSpanElement) => void
+): HTMLSpanElement {
+    return this.createEl('span', o, callback);
+};
+
+// Add Obsidian helpers to DocumentFragment as well
+DocumentFragment.prototype.createEl = function <
+    K extends keyof HTMLElementTagNameMap,
+>(
+    tag: K,
+    o?: string | DomElementInfo,
+    callback?: (el: HTMLElementTagNameMap[K]) => void
+): HTMLElementTagNameMap[K] {
+    const el = document.createElement(tag);
+
+    if (o) {
+        if (typeof o === 'string') {
+            el.textContent = o;
+        } else {
+            if (o.text) el.textContent = o.text;
+            if (o.cls) {
+                const classes = Array.isArray(o.cls) ? o.cls : [o.cls];
+                el.classList.add(...classes);
+            }
+            if (o.attr) {
+                Object.entries(o.attr).forEach(([key, value]) => {
+                    el.setAttribute(key, value);
+                });
+            }
+            if (o.title) el.title = o.title;
+            if (o.href && el instanceof HTMLAnchorElement) el.href = o.href;
+        }
+    }
+
+    this.appendChild(el);
+
+    if (callback) {
+        callback(el);
+    }
+
+    return el;
 };
