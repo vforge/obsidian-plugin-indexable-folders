@@ -360,9 +360,15 @@ describe('IndexableFoldersSettingTab', () => {
 
             expect(settingsTab['validationTimeouts'].size).toBe(2);
 
+            // Spy on clearTimeout to verify it's called
+            const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+
             settingsTab['clearValidationTimeouts']();
 
             expect(settingsTab['validationTimeouts'].size).toBe(0);
+            expect(clearTimeoutSpy).toHaveBeenCalledTimes(2);
+            expect(clearTimeoutSpy).toHaveBeenCalledWith(timeout1);
+            expect(clearTimeoutSpy).toHaveBeenCalledWith(timeout2);
         });
 
         it('should clear the map after clearing timeouts', () => {
@@ -476,6 +482,248 @@ describe('IndexableFoldersSettingTab', () => {
             expect(() => {
                 settingsTab.updateLabelStyles();
             }).not.toThrow();
+        });
+    });
+
+    describe('Color Setting onChange Handlers', () => {
+        it('should handle valid background color change', async () => {
+            const { isValidCSSColor } = await import(
+                '../src/utils/cssValidation'
+            );
+            (isValidCSSColor as any).mockReturnValue(true);
+
+            settingsTab.display();
+
+            // Get the background color setting (6th child, after heading)
+            const bgColorSetting = (settingsTab.containerEl.children[5] as any)
+                ._setting;
+
+            // Trigger onChange with valid color
+            await bgColorSetting.triggerTextChange('#007ACC');
+
+            expect(mockPlugin.settings.labelBackgroundColor).toBe('#007ACC');
+            expect(mockPlugin.saveSettings).toHaveBeenCalled();
+            expect(
+                document.documentElement.style.setProperty
+            ).toHaveBeenCalledWith('--indexable-folder-label-bg', '#007ACC');
+        });
+
+        it('should handle empty background color change', async () => {
+            settingsTab.display();
+
+            const bgColorSetting = (settingsTab.containerEl.children[5] as any)
+                ._setting;
+
+            // Trigger onChange with empty string
+            await bgColorSetting.triggerTextChange('');
+
+            expect(mockPlugin.settings.labelBackgroundColor).toBe('');
+            expect(mockPlugin.saveSettings).toHaveBeenCalled();
+        });
+
+        it('should handle invalid background color with debounce', async () => {
+            const { isValidCSSColor } = await import(
+                '../src/utils/cssValidation'
+            );
+            (isValidCSSColor as any).mockReturnValue(false);
+
+            settingsTab.display();
+
+            const bgColorSetting = (settingsTab.containerEl.children[5] as any)
+                ._setting;
+
+            // Trigger onChange with invalid color
+            await bgColorSetting.triggerTextChange('not-a-color');
+
+            // Should NOT save invalid value immediately
+            expect(mockPlugin.settings.labelBackgroundColor).not.toBe(
+                'not-a-color'
+            );
+
+            // Should have set up debounced validation
+            expect(settingsTab['validationTimeouts'].has('bgColor')).toBe(true);
+        });
+
+        it('should clear timeout when valid color follows invalid', async () => {
+            const { isValidCSSColor } = await import(
+                '../src/utils/cssValidation'
+            );
+
+            settingsTab.display();
+
+            const bgColorSetting = (settingsTab.containerEl.children[5] as any)
+                ._setting;
+
+            // First, trigger invalid color
+            (isValidCSSColor as any).mockReturnValue(false);
+            await bgColorSetting.triggerTextChange('invalid');
+
+            expect(settingsTab['validationTimeouts'].has('bgColor')).toBe(true);
+
+            // Then trigger valid color
+            (isValidCSSColor as any).mockReturnValue(true);
+            await bgColorSetting.triggerTextChange('#FFFFFF');
+
+            // Timeout should be cleared
+            expect(settingsTab['validationTimeouts'].has('bgColor')).toBe(
+                false
+            );
+            expect(mockPlugin.settings.labelBackgroundColor).toBe('#FFFFFF');
+        });
+
+        it('should handle valid text color change', async () => {
+            const { isValidCSSColor } = await import(
+                '../src/utils/cssValidation'
+            );
+            (isValidCSSColor as any).mockReturnValue(true);
+
+            settingsTab.display();
+
+            // Get the text color setting (7th child)
+            const textColorSetting = (
+                settingsTab.containerEl.children[6] as any
+            )._setting;
+
+            // Trigger onChange with valid color
+            await textColorSetting.triggerTextChange('rgb(255, 255, 255)');
+
+            expect(mockPlugin.settings.labelTextColor).toBe(
+                'rgb(255, 255, 255)'
+            );
+            expect(mockPlugin.saveSettings).toHaveBeenCalled();
+            expect(
+                document.documentElement.style.setProperty
+            ).toHaveBeenCalledWith(
+                '--indexable-folder-label-text',
+                'rgb(255, 255, 255)'
+            );
+        });
+
+        it('should handle empty text color change', async () => {
+            settingsTab.display();
+
+            const textColorSetting = (
+                settingsTab.containerEl.children[6] as any
+            )._setting;
+
+            // Trigger onChange with empty string
+            await textColorSetting.triggerTextChange('');
+
+            expect(mockPlugin.settings.labelTextColor).toBe('');
+            expect(mockPlugin.saveSettings).toHaveBeenCalled();
+        });
+
+        it('should handle invalid text color with debounce', async () => {
+            const { isValidCSSColor } = await import(
+                '../src/utils/cssValidation'
+            );
+            (isValidCSSColor as any).mockReturnValue(false);
+
+            settingsTab.display();
+
+            const textColorSetting = (
+                settingsTab.containerEl.children[6] as any
+            )._setting;
+
+            // Trigger onChange with invalid color
+            await textColorSetting.triggerTextChange('bad-color');
+
+            // Should NOT save invalid value immediately
+            expect(mockPlugin.settings.labelTextColor).not.toBe('bad-color');
+
+            // Should have set up debounced validation
+            expect(settingsTab['validationTimeouts'].has('textColor')).toBe(
+                true
+            );
+        });
+
+        it('should clear timeout when valid text color follows invalid', async () => {
+            const { isValidCSSColor } = await import(
+                '../src/utils/cssValidation'
+            );
+
+            settingsTab.display();
+
+            const textColorSetting = (
+                settingsTab.containerEl.children[6] as any
+            )._setting;
+
+            // First, trigger invalid color
+            (isValidCSSColor as any).mockReturnValue(false);
+            await textColorSetting.triggerTextChange('invalid-color');
+
+            expect(settingsTab['validationTimeouts'].has('textColor')).toBe(
+                true
+            );
+
+            // Then trigger valid color
+            (isValidCSSColor as any).mockReturnValue(true);
+            await textColorSetting.triggerTextChange('var(--text-on-accent)');
+
+            // Timeout should be cleared
+            expect(settingsTab['validationTimeouts'].has('textColor')).toBe(
+                false
+            );
+            expect(mockPlugin.settings.labelTextColor).toBe(
+                'var(--text-on-accent)'
+            );
+        });
+
+        it('should handle special prefixes onChange', async () => {
+            settingsTab.display();
+
+            const specialPrefixesSetting = (
+                settingsTab.containerEl.children[0] as any
+            )._setting;
+
+            await specialPrefixesSetting.triggerTextChange('aa, bb, cc');
+
+            expect(mockPlugin.settings.specialPrefixes).toBe('aa, bb, cc');
+            expect(mockPlugin.saveSettings).toHaveBeenCalled();
+            expect(mockPlugin.prefixNumericFolders).toHaveBeenCalled();
+            expect(mockPlugin.updateStatusBar).toHaveBeenCalled();
+        });
+
+        it('should handle status bar separator onChange', async () => {
+            settingsTab.display();
+
+            const separatorSetting = (
+                settingsTab.containerEl.children[1] as any
+            )._setting;
+
+            await separatorSetting.triggerTextChange(' / ');
+
+            expect(mockPlugin.settings.statusBarSeparator).toBe(' / ');
+            expect(mockPlugin.saveSettings).toHaveBeenCalled();
+            expect(mockPlugin.updateStatusBar).toHaveBeenCalled();
+        });
+
+        it('should handle prefix separator onChange', async () => {
+            settingsTab.display();
+
+            const prefixSeparatorSetting = (
+                settingsTab.containerEl.children[2] as any
+            )._setting;
+
+            await prefixSeparatorSetting.triggerTextChange('-');
+
+            expect(mockPlugin.settings.separator).toBe('-');
+            expect(mockPlugin.saveSettings).toHaveBeenCalled();
+            expect(mockPlugin.prefixNumericFolders).toHaveBeenCalledWith(true);
+            expect(mockPlugin.updateStatusBar).toHaveBeenCalled();
+        });
+
+        it('should handle debug toggle onChange', async () => {
+            settingsTab.display();
+
+            const debugToggleSetting = (
+                settingsTab.containerEl.children[3] as any
+            )._setting;
+
+            await debugToggleSetting.triggerToggleChange(true);
+
+            expect(mockPlugin.settings.debugEnabled).toBe(true);
+            expect(mockPlugin.saveSettings).toHaveBeenCalled();
         });
     });
 

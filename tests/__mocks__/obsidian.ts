@@ -112,10 +112,16 @@ export class PluginSettingTab {
 
 export class Setting {
     settingEl: HTMLElement;
+    private textOnChange: ((value: string) => void) | null = null;
+    private toggleOnChange: ((value: boolean) => void) | null = null;
+    private dropdownOnChange: ((value: string) => void) | null = null;
 
     constructor(containerEl: HTMLElement) {
         this.settingEl = document.createElement('div');
         containerEl.appendChild(this.settingEl);
+
+        // Store reference to this Setting instance on the settingEl
+        (this.settingEl as any)._setting = this;
     }
 
     setName(name: string): this {
@@ -134,7 +140,10 @@ export class Setting {
         const textComponent = {
             setValue: (value: string) => textComponent,
             setPlaceholder: (placeholder: string) => textComponent,
-            onChange: (cb: (value: string) => void) => textComponent,
+            onChange: (callback: (value: string) => void) => {
+                this.textOnChange = callback;
+                return textComponent;
+            },
         };
         cb(textComponent);
         return this;
@@ -143,7 +152,10 @@ export class Setting {
     addToggle(cb: (toggle: any) => void): this {
         const toggleComponent = {
             setValue: (value: boolean) => toggleComponent,
-            onChange: (cb: (value: boolean) => void) => toggleComponent,
+            onChange: (callback: (value: boolean) => void) => {
+                this.toggleOnChange = callback;
+                return toggleComponent;
+            },
         };
         cb(toggleComponent);
         return this;
@@ -153,10 +165,32 @@ export class Setting {
         const dropdownComponent = {
             addOption: (value: string, display: string) => dropdownComponent,
             setValue: (value: string) => dropdownComponent,
-            onChange: (cb: (value: string) => void) => dropdownComponent,
+            onChange: (callback: (value: string) => void) => {
+                this.dropdownOnChange = callback;
+                return dropdownComponent;
+            },
         };
         cb(dropdownComponent);
         return this;
+    }
+
+    // Helper method for tests to trigger onChange
+    triggerTextChange(value: string): void {
+        if (this.textOnChange) {
+            this.textOnChange(value);
+        }
+    }
+
+    triggerToggleChange(value: boolean): void {
+        if (this.toggleOnChange) {
+            this.toggleOnChange(value);
+        }
+    }
+
+    triggerDropdownChange(value: string): void {
+        if (this.dropdownOnChange) {
+            this.dropdownOnChange(value);
+        }
     }
 }
 
