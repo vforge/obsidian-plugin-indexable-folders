@@ -1,30 +1,30 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { registerEvents } from '../src/events';
+import { registerEvents } from 'src/events';
 import { TFolder } from 'obsidian';
-import * as folderActions from '../src/logic/folderActions';
-import * as fileExplorer from '../src/logic/fileExplorer';
-import * as statusBar from '../src/logic/statusBar';
-import { UpdateIndexModal } from '../src/ui/UpdateIndexModal';
-import * as logger from '../src/utils/logger';
+import * as folderActions from 'src/logic/folderActions';
+import * as fileExplorer from 'src/logic/fileExplorer';
+import * as statusBar from 'src/logic/statusBar';
+import { UpdateIndexModal } from 'src/ui/UpdateIndexModal';
+import * as logger from 'src/utils/logger';
 
 // Mock the imported modules
-vi.mock('../src/logic/fileExplorer', () => ({
+vi.mock('src/logic/fileExplorer', () => ({
     startFolderObserver: vi.fn(),
 }));
 
-vi.mock('../src/logic/statusBar', () => ({
+vi.mock('src/logic/statusBar', () => ({
     updateStatusBar: vi.fn(),
 }));
 
-vi.mock('../src/ui/UpdateIndexModal');
+vi.mock('src/ui/UpdateIndexModal');
 
-vi.mock('../src/logic/folderActions', () => ({
+vi.mock('src/logic/folderActions', () => ({
     updateFolderIndex: vi.fn().mockResolvedValue(undefined),
     isSpecialIndex: vi.fn().mockReturnValue(false),
 }));
 
-vi.mock('../src/utils/logger', async () => {
-    const mock = await import('./__mocks__/logger');
+vi.mock('src/utils/logger', async () => {
+    const mock = await import('tests/__mocks__/logger');
     return mock;
 });
 

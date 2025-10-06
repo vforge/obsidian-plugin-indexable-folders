@@ -1,16 +1,16 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { IndexableFoldersSettingTab } from '../../src/ui/SettingsTab';
-import { DEFAULT_SETTINGS } from '../../src/settings';
-import type { IndexableFoldersSettings } from '../../src/settings';
+import { IndexableFoldersSettingTab } from 'src/ui/SettingsTab';
+import { DEFAULT_SETTINGS } from 'src/settings';
+import type { IndexableFoldersSettings } from 'src/settings';
 import { Notice } from 'obsidian';
 
 // Mock the logger
-vi.mock('../../src/utils/logger', () => ({
+vi.mock('src/utils/logger', () => ({
     log: vi.fn(),
 }));
 
 // Mock CSS validation functions
-vi.mock('../../src/utils/cssValidation', () => ({
+vi.mock('src/utils/cssValidation', () => ({
     isValidCSSColor: vi.fn((color: string) => {
         // Simple validation for testing
         if (color.trim() === '') return true;

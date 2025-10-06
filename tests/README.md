@@ -42,11 +42,12 @@ beforeEach(() => {
 
 ## Import Path Conventions
 
-Since tests are in subdirectories, use the appropriate relative paths:
+The project uses path aliases configured in `tsconfig.json` and `vitest.config.ts`:
 
-- **Root level tests** (`tests/main.test.ts`): `import from '../src/...'`
-- **Subdirectory tests** (`tests/ui/SettingsTab.test.ts`): `import from '../../src/...'`
-- **Shared mocks** (from subdirectories): `import from '../__mocks__/...'`
+- **Source code imports**: `import from 'src/...'`
+- **Shared mocks**: `import from 'tests/__mocks__/...'`
+
+No relative paths (`../` or `../../`) are needed - all imports use the `src/` or `tests/` prefixes.
 
 ## Running Tests
 

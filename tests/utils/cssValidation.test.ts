@@ -3,7 +3,7 @@ import {
     isValidCSSColor,
     sanitizeCSSColor,
     getCSSColorErrorMessage,
-} from '../../src/utils/cssValidation';
+} from 'src/utils/cssValidation';
 
 describe('cssValidation', () => {
     beforeEach(() => {

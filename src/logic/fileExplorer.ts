@@ -1,6 +1,6 @@
 import { TFolder } from 'obsidian';
-import IndexableFoldersPlugin from '../main';
-import { log } from '../utils/logger';
+import IndexableFoldersPlugin from 'src/main';
+import { log } from 'src/utils/logger';
 
 /**
  * Handles rename state changes for folder elements

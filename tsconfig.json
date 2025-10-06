@@ -17,7 +17,12 @@
     "lib": [
       "DOM",
       "ES2020"
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"],
+      "tests/*": ["tests/*"]
+    }
   },
   "include": [
     "src/**/*.ts",

@@ -1,6 +1,14 @@
 import { defineConfig } from "vitest/config";
+import path from "path";
 
 export default defineConfig({
+	resolve: {
+		alias: {
+			"src": path.resolve(__dirname, "./src"),
+			"tests": path.resolve(__dirname, "./tests"),
+			obsidian: path.resolve(__dirname, "./tests/__mocks__/obsidian.ts"),
+		},
+	},
 	test: {
 		globals: true,
 		environment: "jsdom",
@@ -9,12 +17,6 @@ export default defineConfig({
 		clearMocks: true,
 		mockReset: true,
 		restoreMocks: true,
-        alias: {
-            obsidian: new URL(
-                "./tests/__mocks__/obsidian.ts",
-                import.meta.url,
-            ).pathname,
-        },
 		coverage: {
 			provider: "v8",
 			reporter: ["text", "json", "html"],

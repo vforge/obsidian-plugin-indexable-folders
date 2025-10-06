@@ -1,10 +1,10 @@
 import { Menu, TFolder } from 'obsidian';
-import IndexableFoldersPlugin from './main';
-import { startFolderObserver } from './logic/fileExplorer';
-import { updateStatusBar } from './logic/statusBar';
-import { UpdateIndexModal } from './ui/UpdateIndexModal';
-import { updateFolderIndex, isSpecialIndex } from './logic/folderActions';
-import { log } from './utils/logger';
+import IndexableFoldersPlugin from 'src/main';
+import { startFolderObserver } from 'src/logic/fileExplorer';
+import { updateStatusBar } from 'src/logic/statusBar';
+import { UpdateIndexModal } from 'src/ui/UpdateIndexModal';
+import { updateFolderIndex, isSpecialIndex } from 'src/logic/folderActions';
+import { log } from 'src/utils/logger';
 
 export function registerEvents(plugin: IndexableFoldersPlugin) {
     plugin.app.workspace.onLayoutReady(() => {

@@ -1,22 +1,22 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import IndexableFoldersPlugin from '../src/main';
-import { DEFAULT_SETTINGS } from '../src/settings';
+import IndexableFoldersPlugin from 'src/main';
+import { DEFAULT_SETTINGS } from 'src/settings';
 
 // Mock the imported modules
-vi.mock('../src/ui/SettingsTab', () => ({
+vi.mock('src/ui/SettingsTab', () => ({
     IndexableFoldersSettingTab: vi.fn(),
 }));
 
-vi.mock('../src/events', () => ({
+vi.mock('src/events', () => ({
     registerEvents: vi.fn(),
 }));
 
-vi.mock('../src/logic/fileExplorer', () => ({
+vi.mock('src/logic/fileExplorer', () => ({
     prefixNumericFolders: vi.fn(),
     revertFolderName: vi.fn(),
 }));
 
-vi.mock('../src/logic/statusBar', () => ({
+vi.mock('src/logic/statusBar', () => ({
     updateStatusBar: vi.fn(),
 }));
 

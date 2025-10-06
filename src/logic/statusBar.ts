@@ -1,5 +1,5 @@
 import { TFolder } from 'obsidian';
-import IndexableFoldersPlugin from '../main';
+import IndexableFoldersPlugin from 'src/main';
 
 export function updateStatusBar(plugin: IndexableFoldersPlugin): void {
     plugin.statusBarItemEl.empty();
