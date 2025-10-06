@@ -25,6 +25,7 @@ This project includes comprehensive VS Code configuration files in `.vscode/`:
 - **`launch.json`**: Debug configurations for running tests
 - **`extensions.json`**: Recommended extensions for development
 - **`setup-node.sh`**: Script to ensure correct Node.js version
+- **`run-with-node.sh`**: Wrapper script that sources the environment setup and runs commands (used by tasks)
 
 Key features:
 

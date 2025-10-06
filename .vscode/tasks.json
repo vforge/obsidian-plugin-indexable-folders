@@ -18,10 +18,9 @@
         {
             "label": "Install Dependencies",
             "type": "shell",
-            "command": "pnpm",
-            "args": ["install"],
+            "command": "./.vscode/run-with-node.sh",
+            "args": ["pnpm", "install"],
             "group": "build",
-            "dependsOn": "Setup Node.js Environment",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -33,13 +32,12 @@
         {
             "label": "Build Project",
             "type": "shell",
-            "command": "pnpm",
-            "args": ["build"],
+            "command": "./.vscode/run-with-node.sh",
+            "args": ["pnpm", "build"],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "dependsOn": "Setup Node.js Environment",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -51,10 +49,9 @@
         {
             "label": "Run Tests",
             "type": "shell",
-            "command": "pnpm",
-            "args": ["test:run"],
+            "command": "./.vscode/run-with-node.sh",
+            "args": ["pnpm", "test:run"],
             "group": "test",
-            "dependsOn": "Setup Node.js Environment",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -66,10 +63,9 @@
         {
             "label": "Run Tests with Coverage",
             "type": "shell",
-            "command": "pnpm",
-            "args": ["test:coverage"],
+            "command": "./.vscode/run-with-node.sh",
+            "args": ["pnpm", "test:coverage"],
             "group": "test",
-            "dependsOn": "Setup Node.js Environment",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
@@ -77,6 +73,22 @@
                 "panel": "shared"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "pnpm: lint",
+            "type": "shell",
+            "command": "./.vscode/run-with-node.sh",
+            "args": ["pnpm", "run", "lint"],
+            "problemMatcher": ["$eslint-compact"],
+            "group": "build"
+        },
+        {
+            "label": "release: dry-run",
+            "type": "shell",
+            "command": "./.vscode/run-with-node.sh",
+            "args": ["./scripts/release.sh", "--dry-run"],
+            "problemMatcher": [],
+            "presentation": { "reveal": "always" }
         }
     ]
 }
