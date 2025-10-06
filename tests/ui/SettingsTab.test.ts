@@ -1,16 +1,16 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { IndexableFoldersSettingTab } from '../src/ui/SettingsTab';
-import { DEFAULT_SETTINGS } from '../src/settings';
-import type { IndexableFoldersSettings } from '../src/settings';
+import { IndexableFoldersSettingTab } from '../../src/ui/SettingsTab';
+import { DEFAULT_SETTINGS } from '../../src/settings';
+import type { IndexableFoldersSettings } from '../../src/settings';
 import { Notice } from 'obsidian';
 
 // Mock the logger
-vi.mock('../src/utils/logger', () => ({
+vi.mock('../../src/utils/logger', () => ({
     log: vi.fn(),
 }));
 
 // Mock CSS validation functions
-vi.mock('../src/utils/cssValidation', () => ({
+vi.mock('../../src/utils/cssValidation', () => ({
     isValidCSSColor: vi.fn((color: string) => {
         // Simple validation for testing
         if (color.trim() === '') return true;
@@ -58,7 +58,6 @@ describe('IndexableFoldersSettingTab', () => {
     });
 
     afterEach(() => {
-        vi.clearAllMocks();
         vi.useRealTimers();
     });
 
@@ -157,7 +156,7 @@ describe('IndexableFoldersSettingTab', () => {
 
         it('should use fallback value when background color is empty', async () => {
             const { sanitizeCSSColor } = await import(
-                '../src/utils/cssValidation'
+                '../../src/utils/cssValidation'
             );
             (sanitizeCSSColor as any).mockReturnValueOnce('');
 
@@ -174,7 +173,7 @@ describe('IndexableFoldersSettingTab', () => {
 
         it('should use fallback value when text color is empty', async () => {
             const { sanitizeCSSColor } = await import(
-                '../src/utils/cssValidation'
+                '../../src/utils/cssValidation'
             );
             (sanitizeCSSColor as any).mockReturnValueOnce('#007ACC');
             (sanitizeCSSColor as any).mockReturnValueOnce('');
@@ -192,7 +191,7 @@ describe('IndexableFoldersSettingTab', () => {
 
         it('should sanitize color values before applying', async () => {
             const { sanitizeCSSColor } = await import(
-                '../src/utils/cssValidation'
+                '../../src/utils/cssValidation'
             );
 
             mockPlugin.settings.labelBackgroundColor = '#007ACC';
@@ -273,7 +272,7 @@ describe('IndexableFoldersSettingTab', () => {
 
         it('should not call callback for invalid non-empty values', async () => {
             const { isValidCSSColor } = await import(
-                '../src/utils/cssValidation'
+                '../../src/utils/cssValidation'
             );
             (isValidCSSColor as any).mockReturnValueOnce(false);
 
@@ -314,7 +313,7 @@ describe('IndexableFoldersSettingTab', () => {
 
         it('should call callback for valid values', async () => {
             const { isValidCSSColor } = await import(
-                '../src/utils/cssValidation'
+                '../../src/utils/cssValidation'
             );
             (isValidCSSColor as any).mockReturnValueOnce(true);
 
@@ -428,7 +427,7 @@ describe('IndexableFoldersSettingTab', () => {
     describe('Color Validation Integration', () => {
         it('should immediately apply valid hex colors', async () => {
             const { isValidCSSColor } = await import(
-                '../src/utils/cssValidation'
+                '../../src/utils/cssValidation'
             );
             (isValidCSSColor as any).mockReturnValue(true);
 
@@ -441,7 +440,7 @@ describe('IndexableFoldersSettingTab', () => {
 
         it('should immediately apply valid rgb colors', async () => {
             const { isValidCSSColor } = await import(
-                '../src/utils/cssValidation'
+                '../../src/utils/cssValidation'
             );
             (isValidCSSColor as any).mockReturnValue(true);
 
@@ -458,7 +457,7 @@ describe('IndexableFoldersSettingTab', () => {
 
         it('should immediately apply valid CSS variables', async () => {
             const { isValidCSSColor } = await import(
-                '../src/utils/cssValidation'
+                '../../src/utils/cssValidation'
             );
             (isValidCSSColor as any).mockReturnValue(true);
 
@@ -488,7 +487,7 @@ describe('IndexableFoldersSettingTab', () => {
     describe('Color Setting onChange Handlers', () => {
         it('should handle valid background color change', async () => {
             const { isValidCSSColor } = await import(
-                '../src/utils/cssValidation'
+                '../../src/utils/cssValidation'
             );
             (isValidCSSColor as any).mockReturnValue(true);
 
@@ -523,7 +522,7 @@ describe('IndexableFoldersSettingTab', () => {
 
         it('should handle invalid background color with debounce', async () => {
             const { isValidCSSColor } = await import(
-                '../src/utils/cssValidation'
+                '../../src/utils/cssValidation'
             );
             (isValidCSSColor as any).mockReturnValue(false);
 
@@ -546,7 +545,7 @@ describe('IndexableFoldersSettingTab', () => {
 
         it('should clear timeout when valid color follows invalid', async () => {
             const { isValidCSSColor } = await import(
-                '../src/utils/cssValidation'
+                '../../src/utils/cssValidation'
             );
 
             settingsTab.display();
@@ -573,7 +572,7 @@ describe('IndexableFoldersSettingTab', () => {
 
         it('should handle valid text color change', async () => {
             const { isValidCSSColor } = await import(
-                '../src/utils/cssValidation'
+                '../../src/utils/cssValidation'
             );
             (isValidCSSColor as any).mockReturnValue(true);
 
@@ -615,7 +614,7 @@ describe('IndexableFoldersSettingTab', () => {
 
         it('should handle invalid text color with debounce', async () => {
             const { isValidCSSColor } = await import(
-                '../src/utils/cssValidation'
+                '../../src/utils/cssValidation'
             );
             (isValidCSSColor as any).mockReturnValue(false);
 
@@ -639,7 +638,7 @@ describe('IndexableFoldersSettingTab', () => {
 
         it('should clear timeout when valid text color follows invalid', async () => {
             const { isValidCSSColor } = await import(
-                '../src/utils/cssValidation'
+                '../../src/utils/cssValidation'
             );
 
             settingsTab.display();

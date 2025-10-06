@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { updateStatusBar } from '../src/logic/statusBar';
+import { updateStatusBar } from '../../src/logic/statusBar';
 import { TFolder, TFile } from 'obsidian';
-import type IndexableFoldersPlugin from '../src/main';
+import type IndexableFoldersPlugin from '../../src/main';
 
 // Mock the logger with shared mock
-vi.mock('../src/utils/logger', async () => {
-    const mock = await import('./__mocks__/logger');
+vi.mock('../../src/utils/logger', async () => {
+    const mock = await import('../__mocks__/logger');
     return mock;
 });
 
@@ -79,10 +79,6 @@ describe('statusBar', () => {
                 },
                 getPrefixRegex: vi.fn().mockReturnValue(/^(\d+)_/),
             } as unknown as IndexableFoldersPlugin;
-        });
-
-        afterEach(() => {
-            vi.clearAllMocks();
         });
 
         it('should empty status bar when called', () => {

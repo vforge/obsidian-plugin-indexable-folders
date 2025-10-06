@@ -3,13 +3,13 @@ import {
     startFolderObserver,
     prefixNumericFolders,
     revertFolderName,
-} from '../src/logic/fileExplorer';
+} from '../../src/logic/fileExplorer';
 import { TFolder } from 'obsidian';
-import * as logger from '../src/utils/logger';
+import * as logger from '../../src/utils/logger';
 
 // Mock the logger with shared mock
-vi.mock('../src/utils/logger', async () => {
-    const mock = await import('./__mocks__/logger');
+vi.mock('../../src/utils/logger', async () => {
+    const mock = await import('../__mocks__/logger');
     return mock;
 });
 
@@ -54,7 +54,6 @@ describe('fileExplorer', () => {
     });
 
     afterEach(() => {
-        vi.clearAllMocks();
         // Clean up DOM
         document.body.innerHTML = '';
     });
@@ -129,17 +128,10 @@ describe('fileExplorer', () => {
                 } as unknown as MutationRecord,
             ];
 
-            // Trigger the observer callback
-            const observerCallback =
-                mockPlugin.folderObserver.callback ||
-                mockPlugin.folderObserver.observe.mock.calls[0]?.[0];
-            if (mockPlugin.folderObserver) {
-                // Manually trigger mutations
-                mockPlugin.folderObserver.disconnect();
-                mockPlugin.handleMutations(mutations);
-            }
+            // The observer was created, so we can manually call handleMutations
+            mockPlugin.handleMutations(mutations);
 
-            expect(mockPlugin.handleMutations).toHaveBeenCalled();
+            expect(mockPlugin.handleMutations).toHaveBeenCalledWith(mutations);
         });
 
         it('should ignore mutations when context menu is open', () => {

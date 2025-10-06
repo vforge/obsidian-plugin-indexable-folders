@@ -1,11 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { isSpecialIndex, updateFolderIndex } from '../src/logic/folderActions';
+import {
+    isSpecialIndex,
+    updateFolderIndex,
+} from '../../src/logic/folderActions';
 import { TFolder, Notice } from 'obsidian';
-import type IndexableFoldersPlugin from '../src/main';
+import type IndexableFoldersPlugin from '../../src/main';
 
 // Mock the logger with shared mock
-vi.mock('../src/utils/logger', async () => {
-    const mock = await import('./__mocks__/logger');
+vi.mock('../../src/utils/logger', async () => {
+    const mock = await import('../__mocks__/logger');
     return mock;
 });
 
@@ -94,13 +97,6 @@ describe('folderActions', () => {
                 getNumericPrefixRegex: vi.fn().mockReturnValue(/^(\d+)_/),
                 getPrefixRegex: vi.fn().mockReturnValue(/^(\d+)_/),
             } as unknown as IndexableFoldersPlugin;
-
-            // Clear mocks
-            vi.clearAllMocks();
-        });
-
-        afterEach(() => {
-            vi.clearAllMocks();
         });
 
         it('should return early if folder has no parent', async () => {

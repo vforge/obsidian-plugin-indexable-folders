@@ -5,6 +5,10 @@ export default defineConfig({
 		globals: true,
 		environment: "jsdom",
 		include: ["tests/**/*.test.ts"],
+		// Automatically clear all mocks between tests
+		clearMocks: true,
+		mockReset: true,
+		restoreMocks: true,
         alias: {
             obsidian: new URL(
                 "./tests/__mocks__/obsidian.ts",

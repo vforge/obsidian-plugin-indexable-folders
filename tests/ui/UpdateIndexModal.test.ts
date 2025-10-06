@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { UpdateIndexModal } from '../src/ui/UpdateIndexModal';
+import { UpdateIndexModal } from '../../src/ui/UpdateIndexModal';
 import { TFolder } from 'obsidian';
-import type IndexableFoldersPlugin from '../src/main';
+import type IndexableFoldersPlugin from '../../src/main';
 
 describe('UpdateIndexModal', () => {
     let modal: UpdateIndexModal;
@@ -37,10 +37,6 @@ describe('UpdateIndexModal', () => {
             mockFolder,
             onSubmitSpy
         );
-    });
-
-    afterEach(() => {
-        vi.clearAllMocks();
     });
 
     describe('constructor', () => {

@@ -16,11 +16,7 @@ vi.mock('../src/logic/statusBar', () => ({
     updateStatusBar: vi.fn(),
 }));
 
-vi.mock('../src/ui/UpdateIndexModal', () => ({
-    UpdateIndexModal: vi.fn().mockImplementation(() => ({
-        open: vi.fn(),
-    })),
-}));
+vi.mock('../src/ui/UpdateIndexModal');
 
 vi.mock('../src/logic/folderActions', () => ({
     updateFolderIndex: vi.fn().mockResolvedValue(undefined),
@@ -41,6 +37,14 @@ describe('events', () => {
     let fileMenuCallback: (menu: any, file: any) => void;
 
     beforeEach(() => {
+        // Set up UpdateIndexModal mock implementation
+        vi.mocked(UpdateIndexModal).mockImplementation(
+            () =>
+                ({
+                    open: vi.fn(),
+                }) as any
+        );
+
         // Create mock workspace with event system
         mockWorkspace = {
             onLayoutReady: vi.fn((callback) => {
@@ -77,10 +81,6 @@ describe('events', () => {
             getNumericPrefixRegex: vi.fn(() => /^(\d+)_/),
             prefixNumericFolders: vi.fn(),
         };
-    });
-
-    afterEach(() => {
-        vi.clearAllMocks();
     });
 
     describe('registerEvents', () => {

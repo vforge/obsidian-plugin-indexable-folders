@@ -33,10 +33,6 @@ describe('IndexableFoldersPlugin', () => {
         vi.spyOn(document.documentElement.style, 'removeProperty');
     });
 
-    afterEach(() => {
-        vi.clearAllMocks();
-    });
-
     describe('Plugin Registration', () => {
         it('should be an instance of Plugin', () => {
             expect(plugin).toBeDefined();
