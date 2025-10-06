@@ -9,7 +9,11 @@
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"lint": "prettier --write ./src && eslint ./src/ --quiet --fix",
-		"prepare": "husky"
+		"prepare": "husky",
+		"test": "vitest",
+		"test:run": "vitest run",
+		"test:ui": "vitest --ui",
+		"test:coverage": "vitest run --coverage"
 	},
 	"keywords": [
 		"obsidian",
@@ -35,6 +39,7 @@
 		"@types/node": "^22.0.0",
 		"@typescript-eslint/eslint-plugin": "^8.10.0",
 		"@typescript-eslint/parser": "^8.10.0",
+		"@vitest/ui": "^3.2.4",
 		"builtin-modules": "^4.0.0",
 		"esbuild": "^0.24.0",
 		"eslint": "^9.12.0",
@@ -46,7 +51,8 @@
 		"prettier": "^3.3.2",
 		"tslib": "^2.7.0",
 		"typescript": "^5.6.0",
-		"typescript-eslint": "^8.10.0"
+		"typescript-eslint": "^8.10.0",
+		"vitest": "^3.2.4"
 	},
 	"lint-staged": {
 		"{src,tests}/**/*.ts": [
