@@ -126,7 +126,7 @@ describe('fileExplorer', () => {
                     attributeName: null,
                     attributeNamespace: null,
                     oldValue: null,
-                } as MutationRecord,
+                } as unknown as MutationRecord,
             ];
 
             // Trigger the observer callback
