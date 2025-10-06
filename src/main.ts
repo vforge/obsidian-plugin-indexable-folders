@@ -5,6 +5,7 @@ import { registerEvents } from 'src/events';
 import { prefixNumericFolders, revertFolderName } from 'src/logic/fileExplorer';
 import { updateStatusBar } from 'src/logic/statusBar';
 import { sanitizeCSSColor } from 'src/utils/cssValidation';
+import { log } from 'src/utils/logger';
 
 export default class IndexableFoldersPlugin extends Plugin {
     settings: IndexableFoldersSettings;
@@ -178,7 +179,7 @@ export default class IndexableFoldersPlugin extends Plugin {
                 try {
                     operation();
                 } catch (error) {
-                    console.error('Error in batched DOM operation:', error);
+                    log(true, 'Error in batched DOM operation:', error);
                 }
             });
         });

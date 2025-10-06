@@ -256,7 +256,7 @@ async function performSmartSwap(
 
         return true;
     } catch (error) {
-        console.error('Smart swap failed:', error);
+        log(true, 'Smart swap failed:', error);
         return false;
     }
 }

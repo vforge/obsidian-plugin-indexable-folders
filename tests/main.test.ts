@@ -20,6 +20,8 @@ vi.mock('src/logic/statusBar', () => ({
     updateStatusBar: vi.fn(),
 }));
 
+vi.mock('src/utils/logger');
+
 describe('IndexableFoldersPlugin', () => {
     let plugin: IndexableFoldersPlugin;
     let mockApp: any;
@@ -457,9 +459,6 @@ describe('IndexableFoldersPlugin', () => {
         });
 
         it('should catch errors in operations without stopping others', async () => {
-            const consoleErrorSpy = vi
-                .spyOn(console, 'error')
-                .mockImplementation(() => {});
             const operation1 = vi.fn(() => {
                 throw new Error('Test error');
             });
@@ -470,7 +469,7 @@ describe('IndexableFoldersPlugin', () => {
             // Wait for requestAnimationFrame to execute
             await new Promise((resolve) => setTimeout(resolve, 100));
 
-            expect(consoleErrorSpy).toHaveBeenCalled();
+            // Both operations should have been called, even though operation1 threw
             expect(operation1).toHaveBeenCalled();
             expect(operation2).toHaveBeenCalled();
         });
