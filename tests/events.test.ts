@@ -27,9 +27,10 @@ vi.mock('../src/logic/folderActions', () => ({
     isSpecialIndex: vi.fn().mockReturnValue(false),
 }));
 
-vi.mock('../src/utils/logger', () => ({
-    log: vi.fn(),
-}));
+vi.mock('../src/utils/logger', async () => {
+    const mock = await import('./__mocks__/logger');
+    return mock;
+});
 
 describe('events', () => {
     let mockPlugin: any;

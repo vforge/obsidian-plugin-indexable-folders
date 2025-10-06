@@ -7,10 +7,11 @@ import {
 import { TFolder } from 'obsidian';
 import * as logger from '../src/utils/logger';
 
-// Mock the logger
-vi.mock('../src/utils/logger', () => ({
-    log: vi.fn(),
-}));
+// Mock the logger with shared mock
+vi.mock('../src/utils/logger', async () => {
+    const mock = await import('./__mocks__/logger');
+    return mock;
+});
 
 describe('fileExplorer', () => {
     let mockPlugin: any;

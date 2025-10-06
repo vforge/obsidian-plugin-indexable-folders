@@ -1,6 +1,9 @@
 /**
  * Mock for Obsidian API
- * This file mocks the core Obsidian classes and types needed for testing
+ * This file mocks the core Obsidian classes and types needed for testing.
+ *
+ * Other shared mocks are also available in this directory:
+ * - logger.ts: Mock for the logger utility
  */
 
 export class Plugin {
