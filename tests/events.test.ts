@@ -389,6 +389,15 @@ describe('events', () => {
                 );
             });
 
+            // NOTE: The following tests verify onClick handler registration only, not execution.
+            // Testing the actual execution of these handlers is complex due to module mocking
+            // limitations - the handlers are closures that capture imports at module load time,
+            // making it difficult to verify calls to mocked functions like updateFolderIndex.
+            // The handler logic is instead validated through:
+            // 1. Guard clause tests (below) that verify boundary conditions
+            // 2. Manual testing in the Obsidian environment
+            // 3. Integration with the rest of the tested codebase
+
             it('should register onClick handler for "Move up"', async () => {
                 const items: any[] = [];
                 mockMenu.addItem = vi.fn((callback) => {

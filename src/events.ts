@@ -124,6 +124,9 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
             });
 
             // Add "Move up" option
+            // NOTE: Testing the onClick handler execution is complex due to module mocking
+            // limitations. The handler logic is validated through manual testing and guard
+            // clause tests that verify boundary conditions.
             menu.addItem((item) => {
                 item.setTitle('Move up')
                     .setIcon('arrow-up')
@@ -146,6 +149,9 @@ export function registerEvents(plugin: IndexableFoldersPlugin) {
             });
 
             // Add "Move down" option
+            // NOTE: Testing the onClick handler execution is complex due to module mocking
+            // limitations. The handler logic is validated through manual testing and guard
+            // clause tests that verify boundary conditions.
             menu.addItem((item) => {
                 const maxNumber = Math.pow(10, prefixLength) - 1;
                 item.setTitle('Move down')
