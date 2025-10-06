@@ -183,3 +183,43 @@ export class Modal {
         // To be implemented by subclass
     }
 }
+
+/**
+ * Extend HTMLElement prototype with Obsidian's helper methods
+ * These are used in the actual plugin code but don't exist in standard DOM
+ */
+declare global {
+    interface HTMLElement {
+        setText(text: string): HTMLElement;
+        addClass(...classNames: string[]): HTMLElement;
+        removeClass(...classNames: string[]): HTMLElement;
+        toggleClass(className: string, force?: boolean): HTMLElement;
+    }
+}
+
+HTMLElement.prototype.setText = function (text: string): HTMLElement {
+    this.textContent = text;
+    return this;
+};
+
+HTMLElement.prototype.addClass = function (
+    ...classNames: string[]
+): HTMLElement {
+    this.classList.add(...classNames);
+    return this;
+};
+
+HTMLElement.prototype.removeClass = function (
+    ...classNames: string[]
+): HTMLElement {
+    this.classList.remove(...classNames);
+    return this;
+};
+
+HTMLElement.prototype.toggleClass = function (
+    className: string,
+    force?: boolean
+): HTMLElement {
+    this.classList.toggle(className, force);
+    return this;
+};
