@@ -115,6 +115,7 @@ export class Setting {
     private textOnChange: ((value: string) => void) | null = null;
     private toggleOnChange: ((value: boolean) => void) | null = null;
     private dropdownOnChange: ((value: string) => void) | null = null;
+    private buttonOnClick: (() => void) | null = null;
 
     constructor(containerEl: HTMLElement) {
         this.settingEl = document.createElement('div');
@@ -137,9 +138,20 @@ export class Setting {
     }
 
     addText(cb: (text: any) => void): this {
+        const inputEl = document.createElement('input');
+        inputEl.type = 'text';
+        this.settingEl.appendChild(inputEl);
+
         const textComponent = {
-            setValue: (value: string) => textComponent,
-            setPlaceholder: (placeholder: string) => textComponent,
+            inputEl: inputEl,
+            setValue: (value: string) => {
+                inputEl.value = value;
+                return textComponent;
+            },
+            setPlaceholder: (placeholder: string) => {
+                inputEl.placeholder = placeholder;
+                return textComponent;
+            },
             onChange: (callback: (value: string) => void) => {
                 this.textOnChange = callback;
                 return textComponent;
@@ -171,6 +183,30 @@ export class Setting {
             },
         };
         cb(dropdownComponent);
+        return this;
+    }
+
+    addButton(cb: (button: any) => void): this {
+        const buttonEl = document.createElement('button');
+        this.settingEl.appendChild(buttonEl);
+
+        const buttonComponent = {
+            buttonEl: buttonEl,
+            setButtonText: (text: string) => {
+                buttonEl.textContent = text;
+                return buttonComponent;
+            },
+            setCta: () => {
+                buttonEl.classList.add('mod-cta');
+                return buttonComponent;
+            },
+            onClick: (callback: () => void) => {
+                this.buttonOnClick = callback;
+                buttonEl.addEventListener('click', callback);
+                return buttonComponent;
+            },
+        };
+        cb(buttonComponent);
         return this;
     }
 
