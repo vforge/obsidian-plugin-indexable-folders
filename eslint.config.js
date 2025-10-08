@@ -4,7 +4,7 @@ import prettier from 'eslint-config-prettier';
 import obsidianmd from 'eslint-plugin-obsidianmd';
 
 export default [
-    { ignores: ['main.js', 'coverage/**', 'node_modules/**', '*.d.ts', '*.mjs', 'tests/**', 'vitest.config.ts'] },
+    { ignores: ['main.js', 'coverage/**', 'node_modules/**', '*.d.ts', '*.mjs', 'tests/**', 'vitest.config.ts', 'eslint.config.js'] },
     eslint.configs.recommended,
     ...obsidianmd.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
