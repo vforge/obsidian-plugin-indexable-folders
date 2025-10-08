@@ -16,6 +16,12 @@ To work on this plugin locally:
 3. Run `pnpm install` to install dependencies.
 4. Run `pnpm dev` to start compilation in watch mode.
 
+## API Documentation
+
+This project uses TypeScript to provide type checking and documentation. The repository depends on the Obsidian plugin API type definitions (`obsidian.d.ts`) which include TSDoc comments describing the API surface used by the plugin.
+
+For full API documentation and examples see: <https://github.com/obsidianmd/obsidian-api>
+
 ### VS Code Setup
 
 This project includes comprehensive VS Code configuration files in `.vscode/`:
