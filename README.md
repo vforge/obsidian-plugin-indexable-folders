@@ -63,9 +63,16 @@ Personalize the appearance of your index labels with custom colors:
 
 ## Support
 
-If you find this plugin useful, you can support my work by buying me a coffee.
+If you find this plugin useful, you can support development and maintenance through one of the following funding options. Thank you — every bit helps and motivates continued improvements.
 
 [![Buy Me A Coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=vforge1&button_colour=FFDD00&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff)](https://www.buymeacoffee.com/vforge1)
+[![Sponsor on GitHub](https://img.shields.io/badge/-Sponsor%20on%20GitHub-181717?style=for-the-badge&logo=github)](https://github.com/sponsors/vforge)
+
+- Buy Me a Coffee: [https://www.buymeacoffee.com/vforge1](https://www.buymeacoffee.com/vforge1)
+- GitHub Sponsors: [https://github.com/sponsors/vforge](https://github.com/sponsors/vforge)
+- Patreon: [https://www.patreon.com/](https://www.patreon.com/)
+
+If you'd like to support but can't contribute financially, opening issues, suggesting improvements, or sharing the plugin with others are all valuable ways to help.
 
 ## Installation
 
