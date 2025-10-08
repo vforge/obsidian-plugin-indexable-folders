@@ -2,10 +2,6 @@
 
 This document tracks planned features and improvements for the Indexable Folders plugin.
 
-## Development Tasks
-
-- [ ] Finish testing setup
-
 ## Future Enhancements
 
 ### Drag-and-Drop Reordering for Indexed Folders
