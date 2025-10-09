@@ -140,8 +140,8 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                         );
                         this.plugin.settings.specialPrefixes = value;
                         await this.plugin.saveSettings();
-                        // Re-render folders to apply new settings
-                        this.plugin.prefixNumericFolders();
+                        // Re-render folders to apply new settings (force refresh to update prefixes)
+                        this.plugin.prefixNumericFolders(true);
                         // Update status bar in case the current folder is affected
                         this.plugin.updateStatusBar();
                     })
@@ -155,7 +155,7 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     this.plugin.settings.specialPrefixes =
                         DEFAULT_SETTINGS.specialPrefixes;
                     await this.plugin.saveSettings();
-                    this.plugin.prefixNumericFolders();
+                    this.plugin.prefixNumericFolders(true);
                     this.plugin.updateStatusBar();
                     this.display(); // Refresh to show new value
                 })

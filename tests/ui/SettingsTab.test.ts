@@ -679,7 +679,7 @@ describe('IndexableFoldersSettingTab', () => {
 
             expect(mockPlugin.settings.specialPrefixes).toBe('aa, bb, cc');
             expect(mockPlugin.saveSettings).toHaveBeenCalled();
-            expect(mockPlugin.prefixNumericFolders).toHaveBeenCalled();
+            expect(mockPlugin.prefixNumericFolders).toHaveBeenCalledWith(true);
             expect(mockPlugin.updateStatusBar).toHaveBeenCalled();
         });
 
