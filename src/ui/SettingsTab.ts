@@ -338,7 +338,7 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
         // Advanced section
         new Setting(containerEl).setName('Advanced').setHeading();
 
-        const debugEnabledSetting = new Setting(containerEl)
+        new Setting(containerEl)
             .setName('Enable debug logging')
             .setDesc(
                 'Enable debug logging to the browser console. Useful for troubleshooting issues.'
@@ -351,17 +351,5 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     })
             );
-
-        debugEnabledSetting.addExtraButton((button) =>
-            button
-                .setIcon('reset')
-                .setTooltip('Reset to default')
-                .onClick(async () => {
-                    this.plugin.settings.debugEnabled =
-                        DEFAULT_SETTINGS.debugEnabled;
-                    await this.plugin.saveSettings();
-                    this.display();
-                })
-        );
     }
 }
