@@ -42,7 +42,8 @@
                 "echo": true,
                 "reveal": "always",
                 "focus": false,
-                "panel": "shared"
+                "panel": "shared",
+                "showReuseMessage": true
             },
             "problemMatcher": ["$tsc"]
         },
@@ -66,20 +67,6 @@
             "command": "./.vscode/run-with-node.sh",
             "args": ["pnpm", "test:coverage"],
             "group": "test",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared"
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Vitest: coverage UI",
-            "type": "shell",
-            "command": "./.vscode/run-with-node.sh",
-            "args": ["pnpm", "test:ui:coverage"],
-            "group": "test",
             "isBackground": true,
             "runOptions": {
                 "runOn": "folderOpen"
@@ -90,6 +77,20 @@
                 "focus": false,
                 "panel": "shared",
                 "showReuseMessage": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Vitest: coverage UI",
+            "type": "shell",
+            "command": "./.vscode/run-with-node.sh",
+            "args": ["pnpm", "test:ui:coverage"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
             },
             "problemMatcher": []
         },
