@@ -75,6 +75,25 @@
             "problemMatcher": []
         },
         {
+            "label": "Vitest: coverage UI",
+            "type": "shell",
+            "command": "./.vscode/run-with-node.sh",
+            "args": ["pnpm", "test:ui:coverage"],
+            "group": "test",
+            "isBackground": true,
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "pnpm: lint",
             "type": "shell",
             "command": "./.vscode/run-with-node.sh",
