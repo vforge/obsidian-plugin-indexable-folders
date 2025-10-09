@@ -86,6 +86,43 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
         // Clear any existing timeouts when re-displaying settings
         this.clearValidationTimeouts();
 
+        const prefixSeparatorSetting = new Setting(containerEl)
+            .setName('Prefix separator')
+            .setDesc(
+                'The character used to separate numeric prefixes from folder names (e.g., "01_Folder Name").'
+            )
+            .addText((text) =>
+                text
+                    .setPlaceholder('e.g., _ or -')
+                    .setValue(this.plugin.settings.separator)
+                    .onChange(async (value) => {
+                        log(
+                            this.plugin.settings.debugEnabled,
+                            'separator setting changed to:',
+                            value
+                        );
+                        this.plugin.settings.separator = value;
+                        await this.plugin.saveSettings();
+                        // Re-render folders to apply new settings (force refresh to update separator)
+                        this.plugin.prefixNumericFolders(true);
+                        // Update status bar in case the current folder is affected
+                        this.plugin.updateStatusBar();
+                    })
+            );
+
+        prefixSeparatorSetting.addExtraButton((button) =>
+            button
+                .setIcon('reset')
+                .setTooltip('Reset to default')
+                .onClick(async () => {
+                    this.plugin.settings.separator = DEFAULT_SETTINGS.separator;
+                    await this.plugin.saveSettings();
+                    this.plugin.prefixNumericFolders(true);
+                    this.plugin.updateStatusBar();
+                    this.display();
+                })
+        );
+
         const specialPrefixesSetting = new Setting(containerEl)
             .setName('Special prefixes')
             .setDesc(
@@ -124,40 +161,6 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                 })
         );
 
-        const statusBarSeparatorSetting = new Setting(containerEl)
-            .setName('Status bar separator')
-            .setDesc(
-                'The character(s) used to separate folder paths in the status bar.'
-            )
-            .addText((text) =>
-                text
-                    .setPlaceholder('e.g., → or /')
-                    .setValue(this.plugin.settings.statusBarSeparator)
-                    .onChange(async (value) => {
-                        log(
-                            this.plugin.settings.debugEnabled,
-                            'status bar separator setting changed to:',
-                            value
-                        );
-                        this.plugin.settings.statusBarSeparator = value;
-                        await this.plugin.saveSettings();
-                        this.plugin.updateStatusBar();
-                    })
-            );
-
-        statusBarSeparatorSetting.addExtraButton((button) =>
-            button
-                .setIcon('reset')
-                .setTooltip('Reset to default')
-                .onClick(async () => {
-                    this.plugin.settings.statusBarSeparator =
-                        DEFAULT_SETTINGS.statusBarSeparator;
-                    await this.plugin.saveSettings();
-                    this.plugin.updateStatusBar();
-                    this.display();
-                })
-        );
-
         const statusBarEnabledSetting = new Setting(containerEl)
             .setName('Show status bar path')
             .setDesc(
@@ -191,65 +194,36 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                 })
         );
 
-        const prefixSeparatorSetting = new Setting(containerEl)
-            .setName('Prefix separator')
+        const statusBarSeparatorSetting = new Setting(containerEl)
+            .setName('Status bar separator')
             .setDesc(
-                'The character used to separate numeric prefixes from folder names (e.g., "01_Folder Name").'
+                'The character(s) used to separate folder paths in the status bar.'
             )
             .addText((text) =>
                 text
-                    .setPlaceholder('e.g., _ or -')
-                    .setValue(this.plugin.settings.separator)
+                    .setPlaceholder('e.g., → or /')
+                    .setValue(this.plugin.settings.statusBarSeparator)
                     .onChange(async (value) => {
                         log(
                             this.plugin.settings.debugEnabled,
-                            'separator setting changed to:',
+                            'status bar separator setting changed to:',
                             value
                         );
-                        this.plugin.settings.separator = value;
+                        this.plugin.settings.statusBarSeparator = value;
                         await this.plugin.saveSettings();
-                        // Re-render folders to apply new settings (force refresh to update separator)
-                        this.plugin.prefixNumericFolders(true);
-                        // Update status bar in case the current folder is affected
                         this.plugin.updateStatusBar();
                     })
             );
 
-        prefixSeparatorSetting.addExtraButton((button) =>
+        statusBarSeparatorSetting.addExtraButton((button) =>
             button
                 .setIcon('reset')
                 .setTooltip('Reset to default')
                 .onClick(async () => {
-                    this.plugin.settings.separator = DEFAULT_SETTINGS.separator;
+                    this.plugin.settings.statusBarSeparator =
+                        DEFAULT_SETTINGS.statusBarSeparator;
                     await this.plugin.saveSettings();
-                    this.plugin.prefixNumericFolders(true);
                     this.plugin.updateStatusBar();
-                    this.display();
-                })
-        );
-
-        const debugEnabledSetting = new Setting(containerEl)
-            .setName('Enable debug logging')
-            .setDesc(
-                'Enable debug logging to the browser console. Useful for troubleshooting issues.'
-            )
-            .addToggle((toggle) =>
-                toggle
-                    .setValue(this.plugin.settings.debugEnabled)
-                    .onChange(async (value) => {
-                        this.plugin.settings.debugEnabled = value;
-                        await this.plugin.saveSettings();
-                    })
-            );
-
-        debugEnabledSetting.addExtraButton((button) =>
-            button
-                .setIcon('reset')
-                .setTooltip('Reset to default')
-                .onClick(async () => {
-                    this.plugin.settings.debugEnabled =
-                        DEFAULT_SETTINGS.debugEnabled;
-                    await this.plugin.saveSettings();
                     this.display();
                 })
         );
@@ -357,6 +331,35 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                         DEFAULT_SETTINGS.labelTextColor;
                     await this.plugin.saveSettings();
                     this.updateLabelStyles();
+                    this.display();
+                })
+        );
+
+        // Advanced section
+        new Setting(containerEl).setName('Advanced').setHeading();
+
+        const debugEnabledSetting = new Setting(containerEl)
+            .setName('Enable debug logging')
+            .setDesc(
+                'Enable debug logging to the browser console. Useful for troubleshooting issues.'
+            )
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.debugEnabled)
+                    .onChange(async (value) => {
+                        this.plugin.settings.debugEnabled = value;
+                        await this.plugin.saveSettings();
+                    })
+            );
+
+        debugEnabledSetting.addExtraButton((button) =>
+            button
+                .setIcon('reset')
+                .setTooltip('Reset to default')
+                .onClick(async () => {
+                    this.plugin.settings.debugEnabled =
+                        DEFAULT_SETTINGS.debugEnabled;
+                    await this.plugin.saveSettings();
                     this.display();
                 })
         );
