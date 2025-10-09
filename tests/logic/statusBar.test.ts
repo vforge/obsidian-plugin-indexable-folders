@@ -76,6 +76,7 @@ describe('statusBar', () => {
                     debugEnabled: false,
                     statusBarSeparator: ' › ',
                     separator: '_',
+                    statusBarEnabled: true,
                 },
                 getPrefixRegex: vi.fn().mockReturnValue(/^(\d+)_/),
             } as unknown as IndexableFoldersPlugin;

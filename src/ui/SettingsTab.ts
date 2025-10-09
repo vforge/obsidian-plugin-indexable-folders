@@ -158,6 +158,39 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                 })
         );
 
+        const statusBarEnabledSetting = new Setting(containerEl)
+            .setName('Show status bar path')
+            .setDesc(
+                'Display the full folder path with styled index labels in the status bar when viewing a file.'
+            )
+            .addToggle((toggle) =>
+                toggle
+                    .setValue(this.plugin.settings.statusBarEnabled)
+                    .onChange(async (value) => {
+                        log(
+                            this.plugin.settings.debugEnabled,
+                            'status bar enabled setting changed to:',
+                            value
+                        );
+                        this.plugin.settings.statusBarEnabled = value;
+                        await this.plugin.saveSettings();
+                        this.plugin.updateStatusBar();
+                    })
+            );
+
+        statusBarEnabledSetting.addExtraButton((button) =>
+            button
+                .setIcon('reset')
+                .setTooltip('Reset to default')
+                .onClick(async () => {
+                    this.plugin.settings.statusBarEnabled =
+                        DEFAULT_SETTINGS.statusBarEnabled;
+                    await this.plugin.saveSettings();
+                    this.plugin.updateStatusBar();
+                    this.display();
+                })
+        );
+
         const prefixSeparatorSetting = new Setting(containerEl)
             .setName('Prefix separator')
             .setDesc(

@@ -493,8 +493,8 @@ describe('IndexableFoldersSettingTab', () => {
 
             settingsTab.display();
 
-            // Get the background color setting (6th child, after heading)
-            const bgColorSetting = (settingsTab.containerEl.children[5] as any)
+            // Get the background color setting (7th child, after heading and new status bar enabled setting)
+            const bgColorSetting = (settingsTab.containerEl.children[6] as any)
                 ._setting;
 
             // Trigger onChange with valid color
@@ -510,7 +510,7 @@ describe('IndexableFoldersSettingTab', () => {
         it('should handle empty background color change', async () => {
             settingsTab.display();
 
-            const bgColorSetting = (settingsTab.containerEl.children[5] as any)
+            const bgColorSetting = (settingsTab.containerEl.children[6] as any)
                 ._setting;
 
             // Trigger onChange with empty string
@@ -528,7 +528,7 @@ describe('IndexableFoldersSettingTab', () => {
 
             settingsTab.display();
 
-            const bgColorSetting = (settingsTab.containerEl.children[5] as any)
+            const bgColorSetting = (settingsTab.containerEl.children[6] as any)
                 ._setting;
 
             // Trigger onChange with invalid color
@@ -550,7 +550,7 @@ describe('IndexableFoldersSettingTab', () => {
 
             settingsTab.display();
 
-            const bgColorSetting = (settingsTab.containerEl.children[5] as any)
+            const bgColorSetting = (settingsTab.containerEl.children[6] as any)
                 ._setting;
 
             // First, trigger invalid color
@@ -578,9 +578,9 @@ describe('IndexableFoldersSettingTab', () => {
 
             settingsTab.display();
 
-            // Get the text color setting (7th child)
+            // Get text color setting (8th child)
             const textColorSetting = (
-                settingsTab.containerEl.children[6] as any
+                settingsTab.containerEl.children[7] as any
             )._setting;
 
             // Trigger onChange with valid color
@@ -602,7 +602,7 @@ describe('IndexableFoldersSettingTab', () => {
             settingsTab.display();
 
             const textColorSetting = (
-                settingsTab.containerEl.children[6] as any
+                settingsTab.containerEl.children[7] as any
             )._setting;
 
             // Trigger onChange with empty string
@@ -621,7 +621,7 @@ describe('IndexableFoldersSettingTab', () => {
             settingsTab.display();
 
             const textColorSetting = (
-                settingsTab.containerEl.children[6] as any
+                settingsTab.containerEl.children[7] as any
             )._setting;
 
             // Trigger onChange with invalid color
@@ -644,7 +644,7 @@ describe('IndexableFoldersSettingTab', () => {
             settingsTab.display();
 
             const textColorSetting = (
-                settingsTab.containerEl.children[6] as any
+                settingsTab.containerEl.children[7] as any
             )._setting;
 
             // First, trigger invalid color
@@ -701,7 +701,7 @@ describe('IndexableFoldersSettingTab', () => {
             settingsTab.display();
 
             const prefixSeparatorSetting = (
-                settingsTab.containerEl.children[2] as any
+                settingsTab.containerEl.children[3] as any
             )._setting;
 
             await prefixSeparatorSetting.triggerTextChange('-');
@@ -716,7 +716,7 @@ describe('IndexableFoldersSettingTab', () => {
             settingsTab.display();
 
             const debugToggleSetting = (
-                settingsTab.containerEl.children[3] as any
+                settingsTab.containerEl.children[4] as any
             )._setting;
 
             await debugToggleSetting.triggerToggleChange(true);

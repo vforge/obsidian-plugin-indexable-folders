@@ -3,6 +3,12 @@ import IndexableFoldersPlugin from 'src/main';
 
 export function updateStatusBar(plugin: IndexableFoldersPlugin): void {
     plugin.statusBarItemEl.empty();
+
+    // If status bar is disabled, just clear it and return
+    if (!plugin.settings.statusBarEnabled) {
+        return;
+    }
+
     const activeFile = plugin.app.workspace.getActiveFile();
 
     if (!activeFile || !activeFile.parent) {
