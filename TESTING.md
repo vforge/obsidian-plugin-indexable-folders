@@ -29,7 +29,7 @@ pnpm run test:coverage # Run tests with coverage
   - ✅ Code formatting check (Prettier)
   - ✅ Linting check (ESLint)
   - ✅ All unit tests (Vitest)
-  
+
 - **`pnpm run verify`** - Same as `test:all` but includes coverage report
 
 ### Build Scripts
