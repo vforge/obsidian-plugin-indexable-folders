@@ -99,6 +99,50 @@ The project uses the new ESLint flat configuration format (`eslint.config.js`) i
 - Prettier integration via `eslint-config-prettier`
 - Custom rules for TypeScript development
 
+## Testing
+
+This project uses [Vitest](https://vitest.dev/) for unit testing. For complete testing documentation, see [TESTING.md](TESTING.md).
+
+### Quick Reference
+
+```bash
+# Run all checks (recommended before committing)
+pnpm run test:all       # typecheck + lint + tests
+pnpm run verify         # same as test:all with coverage
+
+# Individual commands
+pnpm test               # Watch mode (interactive)
+pnpm run test:run       # Run once and exit
+pnpm run test:coverage  # Run with coverage report
+pnpm run test:ui        # Open Vitest UI
+```
+
+### Before Committing
+
+Always run the complete verification to ensure your changes don't break anything:
+
+```bash
+pnpm run test:all
+# or with coverage
+pnpm run verify
+```
+
+This ensures:
+1. ✅ TypeScript compiles without errors
+2. ✅ Code follows style guidelines (Prettier + ESLint)
+3. ✅ All tests pass
+
+### Writing Tests
+
+When adding new functionality:
+
+1. Create test files in `tests/` matching the source structure (e.g., `src/logic/foo.ts` → `tests/logic/foo.test.ts`)
+2. Follow existing test patterns for consistency
+3. Mock Obsidian API using `tests/__mocks__/obsidian.ts`
+4. Run tests in watch mode during development: `pnpm test`
+
+See [TESTING.md](TESTING.md) for detailed testing guidelines and best practices.
+
 ## Releasing New Releases
 
 - Update your `manifest.json` with your new version number, such as `0.0.2`, and the minimum Obsidian version required for your latest release.

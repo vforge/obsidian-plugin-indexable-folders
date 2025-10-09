@@ -82,19 +82,19 @@ Test files should be placed in the `tests/` directory and follow the naming conv
 ### Basic Test Structure
 
 ```typescript
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from 'vitest';
 
-describe("Feature Name", () => {
-  it("should do something specific", () => {
-    // Arrange
-    const input = "test";
+describe('Feature Name', () => {
+    it('should do something specific', () => {
+        // Arrange
+        const input = 'test';
 
-    // Act
-    const result = processInput(input);
+        // Act
+        const result = processInput(input);
 
-    // Assert
-    expect(result).toBe("expected output");
-  });
+        // Assert
+        expect(result).toBe('expected output');
+    });
 });
 ```
 
