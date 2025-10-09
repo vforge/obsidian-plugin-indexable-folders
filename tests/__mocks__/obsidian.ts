@@ -116,6 +116,7 @@ export class Setting {
     private toggleOnChange: ((value: boolean) => void) | null = null;
     private dropdownOnChange: ((value: string) => void) | null = null;
     private buttonOnClick: (() => void) | null = null;
+    private extraButtonOnClick: (() => void) | null = null;
 
     constructor(containerEl: HTMLElement) {
         this.settingEl = document.createElement('div');
@@ -202,6 +203,31 @@ export class Setting {
             },
             onClick: (callback: () => void) => {
                 this.buttonOnClick = callback;
+                buttonEl.addEventListener('click', callback);
+                return buttonComponent;
+            },
+        };
+        cb(buttonComponent);
+        return this;
+    }
+
+    addExtraButton(cb: (button: any) => void): this {
+        const buttonEl = document.createElement('button');
+        buttonEl.classList.add('clickable-icon');
+        this.settingEl.appendChild(buttonEl);
+
+        const buttonComponent = {
+            buttonEl: buttonEl,
+            setIcon: (icon: string) => {
+                buttonEl.setAttribute('aria-label', icon);
+                return buttonComponent;
+            },
+            setTooltip: (tooltip: string) => {
+                buttonEl.setAttribute('title', tooltip);
+                return buttonComponent;
+            },
+            onClick: (callback: () => void) => {
+                this.extraButtonOnClick = callback;
                 buttonEl.addEventListener('click', callback);
                 return buttonComponent;
             },

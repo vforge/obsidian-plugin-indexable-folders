@@ -6,6 +6,7 @@ import {
     sanitizeCSSColor,
     getCSSColorErrorMessage,
 } from 'src/utils/cssValidation';
+import { DEFAULT_SETTINGS } from 'src/settings';
 
 export class IndexableFoldersSettingTab extends PluginSettingTab {
     plugin: IndexableFoldersPlugin;
@@ -85,7 +86,7 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
         // Clear any existing timeouts when re-displaying settings
         this.clearValidationTimeouts();
 
-        new Setting(containerEl)
+        const specialPrefixesSetting = new Setting(containerEl)
             .setName('Special prefixes')
             .setDesc(
                 'A comma-separated list of case-insensitive prefixes that will be styled but not changeable (e.g., for archive folders).'
@@ -109,7 +110,21 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     })
             );
 
-        new Setting(containerEl)
+        specialPrefixesSetting.addExtraButton((button) =>
+            button
+                .setIcon('reset')
+                .setTooltip('Reset to default')
+                .onClick(async () => {
+                    this.plugin.settings.specialPrefixes =
+                        DEFAULT_SETTINGS.specialPrefixes;
+                    await this.plugin.saveSettings();
+                    this.plugin.prefixNumericFolders();
+                    this.plugin.updateStatusBar();
+                    this.display(); // Refresh to show new value
+                })
+        );
+
+        const statusBarSeparatorSetting = new Setting(containerEl)
             .setName('Status bar separator')
             .setDesc(
                 'The character(s) used to separate folder paths in the status bar.'
@@ -130,7 +145,20 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     })
             );
 
-        new Setting(containerEl)
+        statusBarSeparatorSetting.addExtraButton((button) =>
+            button
+                .setIcon('reset')
+                .setTooltip('Reset to default')
+                .onClick(async () => {
+                    this.plugin.settings.statusBarSeparator =
+                        DEFAULT_SETTINGS.statusBarSeparator;
+                    await this.plugin.saveSettings();
+                    this.plugin.updateStatusBar();
+                    this.display();
+                })
+        );
+
+        const prefixSeparatorSetting = new Setting(containerEl)
             .setName('Prefix separator')
             .setDesc(
                 'The character used to separate numeric prefixes from folder names (e.g., "01_Folder Name").'
@@ -154,7 +182,20 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     })
             );
 
-        new Setting(containerEl)
+        prefixSeparatorSetting.addExtraButton((button) =>
+            button
+                .setIcon('reset')
+                .setTooltip('Reset to default')
+                .onClick(async () => {
+                    this.plugin.settings.separator = DEFAULT_SETTINGS.separator;
+                    await this.plugin.saveSettings();
+                    this.plugin.prefixNumericFolders(true);
+                    this.plugin.updateStatusBar();
+                    this.display();
+                })
+        );
+
+        const debugEnabledSetting = new Setting(containerEl)
             .setName('Enable debug logging')
             .setDesc(
                 'Enable debug logging to the browser console. Useful for troubleshooting issues.'
@@ -168,10 +209,22 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     })
             );
 
+        debugEnabledSetting.addExtraButton((button) =>
+            button
+                .setIcon('reset')
+                .setTooltip('Reset to default')
+                .onClick(async () => {
+                    this.plugin.settings.debugEnabled =
+                        DEFAULT_SETTINGS.debugEnabled;
+                    await this.plugin.saveSettings();
+                    this.display();
+                })
+        );
+
         // Theming section
         new Setting(containerEl).setName('Theming').setHeading();
 
-        new Setting(containerEl)
+        const labelBgColorSetting = new Setting(containerEl)
             .setName('Label background color')
             .setDesc(
                 'The background color for the index labels (numeric prefixes). Use any valid CSS color value.'
@@ -210,7 +263,20 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                     })
             );
 
-        new Setting(containerEl)
+        labelBgColorSetting.addExtraButton((button) =>
+            button
+                .setIcon('reset')
+                .setTooltip('Reset to default')
+                .onClick(async () => {
+                    this.plugin.settings.labelBackgroundColor =
+                        DEFAULT_SETTINGS.labelBackgroundColor;
+                    await this.plugin.saveSettings();
+                    this.updateLabelStyles();
+                    this.display();
+                })
+        );
+
+        const labelTextColorSetting = new Setting(containerEl)
             .setName('Label text color')
             .setDesc(
                 'The text color for the index labels (numeric prefixes). Use any valid CSS color value.'
@@ -248,5 +314,18 @@ export class IndexableFoldersSettingTab extends PluginSettingTab {
                         }
                     })
             );
+
+        labelTextColorSetting.addExtraButton((button) =>
+            button
+                .setIcon('reset')
+                .setTooltip('Reset to default')
+                .onClick(async () => {
+                    this.plugin.settings.labelTextColor =
+                        DEFAULT_SETTINGS.labelTextColor;
+                    await this.plugin.saveSettings();
+                    this.updateLabelStyles();
+                    this.display();
+                })
+        );
     }
 }
